@@ -258,3 +258,4 @@ export default function AISettingsModal({ isOpen, onClose, currentConfig, onSave
     </div>
   );
 }
+

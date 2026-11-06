@@ -13,29 +13,29 @@ export const LLM_PROVIDERS = [
   {
     id: 'gemini',
     name: 'Google Gemini',
-    badge: 'Gratis & Cepat',
-    defaultModel: 'gemini-2.0-flash',
-    models: ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'],
+    badge: 'Aktif & Thinking Mode',
+    defaultModel: 'gemini-2.5-flash',
+    models: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-3.8-flash', 'gemini-3.5-flash-lite'],
     keyPlaceholder: 'AIzaSy...',
     keyHelpUrl: 'https://aistudio.google.com/app/apikey',
     keyHelpText: 'Dapatkan API Key Gratis di Google AI Studio'
   },
   {
-    id: 'github',
-    name: 'GitHub Models',
-    badge: 'Student Pack / Free',
-    defaultModel: 'openai/gpt-4o',
-    models: ['openai/gpt-4o', 'openai/gpt-4o-mini', 'meta/llama-3.3-70b-instruct', 'mistralai/mistral-large-2407'],
-    keyPlaceholder: 'ghp_...',
-    keyHelpUrl: 'https://github.com/settings/tokens/new?scopes=repo,workflow&description=GitHub-Models-Lemo-Opuscar',
-    keyHelpText: 'Gunakan GitHub Personal Access Token (PAT)'
+    id: 'deepseek',
+    name: 'DeepSeek',
+    badge: 'V3 & R1 Reasoning',
+    defaultModel: 'deepseek-chat',
+    models: ['deepseek-chat', 'deepseek-reasoner'],
+    keyPlaceholder: 'sk-...',
+    keyHelpUrl: 'https://platform.deepseek.com/api_keys',
+    keyHelpText: 'Dapatkan API Key di DeepSeek Platform'
   },
   {
     id: 'groq',
     name: 'Groq',
-    badge: 'Ultra Fast',
+    badge: 'Llama 3.3 Ultra Fast',
     defaultModel: 'llama-3.3-70b-versatile',
-    models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'],
+    models: ['llama-3.3-70b-versatile', 'deepseek-r1-distill-llama-70b', 'llama-3.1-8b-instant'],
     keyPlaceholder: 'gsk_...',
     keyHelpUrl: 'https://console.groq.com/keys',
     keyHelpText: 'Dapatkan API Key di Groq Console'
@@ -43,9 +43,9 @@ export const LLM_PROVIDERS = [
   {
     id: 'openai',
     name: 'OpenAI',
-    badge: 'Official',
-    defaultModel: 'gpt-4o-mini',
-    models: ['gpt-4o-mini', 'gpt-4o'],
+    badge: 'Flagship & Reasoning',
+    defaultModel: 'gpt-4o',
+    models: ['gpt-4o', 'gpt-4o-mini', 'o3-mini', 'o1'],
     keyPlaceholder: 'sk-...',
     keyHelpUrl: 'https://platform.openai.com/api-keys',
     keyHelpText: 'Dapatkan API Key di OpenAI Platform'
@@ -53,9 +53,9 @@ export const LLM_PROVIDERS = [
   {
     id: 'openrouter',
     name: 'OpenRouter',
-    badge: 'Universal',
-    defaultModel: 'google/gemini-2.0-flash-001',
-    models: ['google/gemini-2.0-flash-001', 'anthropic/claude-3.5-sonnet', 'meta-llama/llama-3.3-70b-instruct'],
+    badge: 'Universal Router',
+    defaultModel: 'deepseek/deepseek-r1',
+    models: ['deepseek/deepseek-r1', 'google/gemini-2.5-flash', 'anthropic/claude-3.7-sonnet', 'meta-llama/llama-3.3-70b-instruct'],
     keyPlaceholder: 'sk-or-...',
     keyHelpUrl: 'https://openrouter.ai/keys',
     keyHelpText: 'Dapatkan API Key di OpenRouter'
@@ -76,23 +76,12 @@ export const getStoredLLMConfig = () => {
   try {
     const raw = localStorage.getItem('LEMO_LLM_CONFIG');
     if (raw) return JSON.parse(raw);
-    
-    // Auto-detect GitHub PAT if user already saved it for rendering
-    const githubPat = localStorage.getItem('GITHUB_STUDIO_PAT');
-    if (githubPat) {
-      return {
-        provider: 'github',
-        apiKey: githubPat,
-        model: 'gpt-4o',
-        baseUrl: ''
-      };
-    }
   } catch (e) {}
 
   return {
     provider: 'gemini',
     apiKey: '',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     baseUrl: ''
   };
 };
@@ -155,8 +144,8 @@ async function callLLM({ provider, apiKey, model, baseUrl, messages, temperature
   };
 
   switch (provider) {
-    case 'github':
-      endpoint = 'https://models.github.ai/inference/chat/completions';
+    case 'deepseek':
+      endpoint = 'https://api.deepseek.com/chat/completions';
       break;
     case 'groq':
       endpoint = 'https://api.groq.com/openai/v1/chat/completions';
@@ -182,7 +171,7 @@ async function callLLM({ provider, apiKey, model, baseUrl, messages, temperature
     temperature
   };
 
-  if (jsonMode && (provider === 'openai' || provider === 'github' || provider === 'groq')) {
+  if (jsonMode && (provider === 'openai' || provider === 'deepseek' || provider === 'groq')) {
     payload.response_format = { type: 'json_object' };
   }
 

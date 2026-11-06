@@ -14,7 +14,7 @@ export default function StyleGallery({ selectedStyle, onSelectStyle }) {
       .then(data => {
         const enriched = data.map(item => ({
           ...item,
-          posterUrl: `./posters/${item.slug}.jpg`,
+          posterUrl: `./posters/${item.slug}.webp`,
           engine: getEngineType(item.slug, item.cat_en)
         }));
         setStyles(enriched);
