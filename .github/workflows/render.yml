@@ -33,10 +33,10 @@ jobs:
       - name: Checkout Studio Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20.x
+      - name: Setup Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
@@ -46,7 +46,7 @@ jobs:
       - name: Install System Codecs & Headless Display
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg libsox-fmt-all mesa-utils libgl1-mesa-glx xvfb
+          sudo apt-get install -y -qq ffmpeg xvfb libgl1 mesa-utils
 
       - name: Install Python Audio & Voice Dependencies
         run: |
