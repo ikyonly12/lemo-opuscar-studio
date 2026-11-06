@@ -17,7 +17,7 @@ import * as HUD from './hud.js';
 const W = 1920, H = 1080;
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(1.5); // Super-Sampling Anti-Aliasing (crisp edges, stable GPU throughput)
+renderer.setPixelRatio(1); // Native 1080p broadcast resolution (4x MSAA handled by DofScenePass)
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -31,7 +31,7 @@ ov.width = W; ov.height = H;
 
 const scene = new THREE.Scene();
 const cam = new THREE.PerspectiveCamera(30, W / H, 0.005, 30);
-const post = makePost(renderer, scene, cam, W, H, { ssaa: 2, ao: true, aoRadius: 3.5, aoThickness: 3.0, aoAmt: 0.88 });
+const post = makePost(renderer, scene, cam, W, H);
 
 // ---------- Assets & HDRI ----------
 const fontList = ['500 36px Fredoka', '600 38px Fredoka', '64px "Lilita One"', '32px "Lilita One"'];

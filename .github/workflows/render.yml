@@ -31,7 +31,7 @@ jobs:
   render_film:
     name: Cloud Render & Direct Download Assembly
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout Studio Repository
@@ -112,8 +112,8 @@ jobs:
           xvfb-run -a node "$LIB/core/render/still.mjs" "$TARGET_DIR" 2.0 10.0 --size "$SIZE"
 
           # 2. Parallel Frame-by-Frame Video Capture
-          echo "[2/4] Capturing deterministic frames across 3 parallel Playwright workers..."
-          xvfb-run -a node "$LIB/core/render/video.mjs" "$TARGET_DIR" --fps 24 --workers 3 --size "$SIZE" --out "$OUT_DIR/video.mp4"
+          echo "[2/4] Capturing deterministic frames across 4 parallel Playwright workers..."
+          xvfb-run -a node "$LIB/core/render/video.mjs" "$TARGET_DIR" --fps 24 --workers 4 --size "$SIZE" --out "$OUT_DIR/video.mp4"
 
           # 3. Audio Assembly (Master Audio + Speech Ducking)
           echo "[3/4] Preparing master audio track..."
