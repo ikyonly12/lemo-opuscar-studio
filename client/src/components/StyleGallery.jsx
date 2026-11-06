@@ -148,3 +148,4 @@ export default function StyleGallery({ selectedStyle, onSelectStyle }) {
     </div>
   );
 }
+

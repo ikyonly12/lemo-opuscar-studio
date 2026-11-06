@@ -12,7 +12,7 @@ router.get('/config', (req, res) => {
   if (fs.existsSync(elevenConfigPath)) {
     try {
       eleven = JSON.parse(fs.readFileSync(elevenConfigPath, 'utf8'));
-    } catch {}
+    } catch { }
   }
 
   res.json({

@@ -37,7 +37,7 @@ wss.on('connection', (ws) => {
       if (msg.type === 'ping') {
         ws.send(JSON.stringify({ type: 'pong' }));
       }
-    } catch (e) {}
+    } catch (e) { }
   });
 });
 

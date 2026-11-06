@@ -118,3 +118,4 @@ export default function AudioPanel({ audioConfig, setAudioConfig }) {
     </div>
   );
 }
+
