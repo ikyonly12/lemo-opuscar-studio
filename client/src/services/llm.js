@@ -24,10 +24,10 @@ export const LLM_PROVIDERS = [
     id: 'github',
     name: 'GitHub Models',
     badge: 'Student Pack / Free',
-    defaultModel: 'gpt-4o',
-    models: ['gpt-4o', 'gpt-4o-mini', 'meta-llama-3.3-70b-instruct', 'mistral-large-2407'],
+    defaultModel: 'openai/gpt-4o',
+    models: ['openai/gpt-4o', 'openai/gpt-4o-mini', 'meta/llama-3.3-70b-instruct', 'mistralai/mistral-large-2407'],
     keyPlaceholder: 'ghp_...',
-    keyHelpUrl: 'https://github.com/settings/tokens/new?description=GitHub-Models-Lemo-Opuscar',
+    keyHelpUrl: 'https://github.com/settings/tokens/new?scopes=repo,workflow&description=GitHub-Models-Lemo-Opuscar',
     keyHelpText: 'Gunakan GitHub Personal Access Token (PAT)'
   },
   {
@@ -156,7 +156,7 @@ async function callLLM({ provider, apiKey, model, baseUrl, messages, temperature
 
   switch (provider) {
     case 'github':
-      endpoint = 'https://models.inference.ai.azure.com/chat/completions';
+      endpoint = 'https://models.github.ai/inference/chat/completions';
       break;
     case 'groq':
       endpoint = 'https://api.groq.com/openai/v1/chat/completions';
@@ -193,11 +193,23 @@ async function callLLM({ provider, apiKey, model, baseUrl, messages, temperature
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(`${provider.toUpperCase()} Error (${res.status}): ${err.error?.message || res.statusText}`);
+    const errText = await res.text().catch(() => '');
+    let errMsg = res.statusText;
+    try {
+      const errJson = JSON.parse(errText);
+      errMsg = errJson.error?.message || errJson.message || errMsg;
+    } catch (e) {
+      if (errText) errMsg = errText.slice(0, 150);
+    }
+    throw new Error(`${provider.toUpperCase()} Error (${res.status}): ${errMsg}`);
   }
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error(`${provider.toUpperCase()} mengembalikan respon bukan JSON. Pastikan Token & Model valid.`);
+  }
   const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error(`Respon kosong dari ${provider}.`);
   return content;
@@ -377,3 +389,4 @@ Buatkan rancangan film 60 detik lengkap dengan 15-22 micro-shots dan word-chunk 
     throw new Error(`Gagal memproses format treatment dari AI: ${err.message}`);
   }
 }
+
