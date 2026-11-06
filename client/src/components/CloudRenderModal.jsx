@@ -15,6 +15,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
   useEffect(() => {
     const savedToken = localStorage.getItem('GITHUB_STUDIO_PAT');
     if (savedToken) setToken(savedToken);
+    
     return () => {
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
     };
@@ -238,8 +239,8 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
         {(status === 'IDLE' || status === 'DISPATCHING' || status === 'ERROR') && (
           <form onSubmit={handleDispatch} className="space-y-4">
             <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
                   <Key className="w-3 h-3 text-amber-400" />
                   GitHub Personal Access Token (PAT)
                 </span>
@@ -249,27 +250,32 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
                   rel="noreferrer"
                   className="text-[10px] text-amber-400 hover:underline flex items-center gap-0.5"
                 >
-                  Klik di sini untuk Buat Token Otomatis
+                  Link Buat Token (Scopes Auto-Checked)
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
-              </label>
+              </div>
               <input
                 type="password"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                placeholder="ghp_... atau gho_..."
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 text-xs px-3.5 py-2.5 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500 font-mono"
                 required
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                Token disimpan aman di memori browser lokal Anda untuk memerintahkan runner cloud secara langsung.
+                Target Repositori: <code className="text-amber-400 font-mono font-bold">ikyonly12/lemo-opuscar-studio</code> · Memerlukan scope: <code className="text-emerald-400 font-mono">repo</code> dan <code className="text-emerald-400 font-mono">workflow</code>
               </p>
             </div>
 
             {status === 'ERROR' && (
-              <div className="p-3 bg-red-950/40 border border-red-800/80 rounded-xl text-xs text-red-400 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{message}</span>
+              <div className="p-3 bg-red-950/40 border border-red-800/80 rounded-xl text-xs text-red-300 space-y-1">
+                <div className="flex items-center gap-2 font-semibold text-red-400">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>Autentikasi GitHub Ditolak (Status 401)</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-slate-300">
+                  Token Anda tidak valid atau belum memiliki izin <b>'repo'</b> dan <b>'workflow'</b>. Pastikan Anda menyalin token yang memiliki kedua izin tersebut untuk repositori <code className="text-amber-400 font-mono">ikyonly12/lemo-opuscar-studio</code>.
+                </p>
               </div>
             )}
 
