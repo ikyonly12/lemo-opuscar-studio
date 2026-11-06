@@ -58,7 +58,8 @@ jobs:
           git clone --depth 1 https://github.com/lemomo-ai/lemo-opuscar.git "$HOME/lemo-opuscar"
           cd "$HOME/lemo-opuscar"
           npm install --no-audit --no-fund
-          npx playwright install --with-deps chromium-headless-shell
+          node node_modules/playwright-core/cli.js install --with-deps chromium-headless-shell
+          node node_modules/playwright-core/cli.js install chromium-headless-shell
 
       - name: Execute Cloud Render Pipeline
         run: |

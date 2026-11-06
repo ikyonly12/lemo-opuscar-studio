@@ -27,23 +27,30 @@ async def synthesize_voice():
     print("[*] Synthesizing Indonesian neural voiceover via Edge-TTS (id-ID-ArdiNeural)...")
     for idx, (start_time, text) in enumerate(LINES):
         line_wav = f"out/line_{idx}.mp3"
-        comm = edge_tts.Communicate(text, "id-ID-ArdiNeural", rate="+0%", volume="+0%")
-        await comm.save(line_wav)
+        try:
+            comm = edge_tts.Communicate(text, "id-ID-ArdiNeural", rate="+0%", volume="+0%")
+            await asyncio.wait_for(comm.save(line_wav), timeout=15.0)
 
-        # Read mp3 into numpy array
-        data, rate = sf.read(line_wav)
-        if len(data.shape) > 1:
-            data = data.mean(axis=1) # stereo to mono
-        
-        # Resample if needed
-        if rate != SR:
-            import scipy.signal
-            data = scipy.signal.resample(data, int(len(data) * SR / rate))
+            # Read mp3 into numpy array
+            data, rate = sf.read(line_wav)
+            if len(data.shape) > 1:
+                data = data.mean(axis=1) # stereo to mono
+            
+            # Resample if needed
+            if rate != SR:
+                import scipy.signal
+                data = scipy.signal.resample(data, int(len(data) * SR / rate))
 
-        start_idx = int(start_time * SR)
-        end_idx = min(TOTAL_SAMPLES, start_idx + len(data))
-        length = end_idx - start_idx
-        voice_track[start_idx:end_idx] += data[:length] * 0.95
+            start_idx = int(start_time * SR)
+            end_idx = min(TOTAL_SAMPLES, start_idx + len(data))
+            length = end_idx - start_idx
+            voice_track[start_idx:end_idx] += data[:length] * 0.95
+        except Exception as e:
+            print(f"[!] Note on line {idx}: {e}")
+            start_idx = int(start_time * SR)
+            tone_len = min(int(SR * 2.5), TOTAL_SAMPLES - start_idx)
+            t_tone = np.linspace(0, tone_len / SR, tone_len)
+            voice_track[start_idx:start_idx+tone_len] += (np.sin(2 * np.pi * 440.0 * t_tone) * 0.10).astype(np.float32)
 
     return voice_track
 
