@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clapperboard, CloudLightning, Github, Sparkles } from 'lucide-react';
+import { Clapperboard, CloudLightning, Sparkles } from 'lucide-react';
 import StyleGallery from './components/StyleGallery';
 import StoryPitcher from './components/StoryPitcher';
 import AudioPanel from './components/AudioPanel';
