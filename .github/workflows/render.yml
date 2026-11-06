@@ -20,9 +20,12 @@ on:
         required: true
         default: 'The Mystery of Clock Gears'
 
+permissions:
+  contents: write
+
 jobs:
   render_film:
-    name: Cloud Render & Assembly
+    name: Cloud Render & Direct Download Assembly
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -65,7 +68,6 @@ jobs:
           AR="${{ github.event.inputs.aspect_ratio }}"
           LANG="${{ github.event.inputs.language }}"
           
-          # Calculate resolution
           if [ "$AR" = "9:16" ]; then
             SIZE="1080x1920"
           else
@@ -95,7 +97,6 @@ jobs:
             python "$DEMO_PATH/mix.py" || true
           fi
           
-          # Check for mixed audio or fallback tone
           if [ ! -f "$DEMO_PATH/out/mix.wav" ]; then
             echo "Generating fallback broadcast tone..."
             mkdir -p "$DEMO_PATH/out"
@@ -110,10 +111,13 @@ jobs:
 
           echo "Cloud render finished successfully!"
 
-      - name: Upload Final Film Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lemo-opuscar-${{ github.event.inputs.style }}-${{ github.run_id }}
-          path: export/final_film.mp4
-          retention-days: 14
-
+      - name: Create Direct Public Download Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="render-${{ github.run_id }}"
+          echo "Publishing direct download MP4 asset to GitHub Release tag: $TAG"
+          gh release create "$TAG" \
+            export/final_film.mp4 \
+            --title "Render: ${{ github.event.inputs.style }} (#${{ github.run_id }})" \
+            --notes "Direct MP4 Download for Lemo-Opuscar Studio. Topic: ${{ github.event.inputs.topic }}"

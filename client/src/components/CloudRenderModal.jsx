@@ -1,21 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2, Key } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2, Key, Download, Play } from 'lucide-react';
 
 export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
   const [token, setToken] = useState('');
   const [owner, setOwner] = useState('ikyonly12');
   const [repo, setRepo] = useState('lemo-opuscar-studio');
-  const [status, setStatus] = useState('IDLE'); // IDLE, DISPATCHING, SUCCESS, ERROR
+  const [status, setStatus] = useState('IDLE'); // IDLE, DISPATCHING, RUNNING, SUCCESS, ERROR
   const [message, setMessage] = useState('');
-  const [actionUrl, setActionUrl] = useState('');
+  const [activeRun, setActiveRun] = useState(null);
+  const [directVideoUrl, setDirectVideoUrl] = useState('');
+  
+  const pollTimerRef = useRef(null);
 
-  // Load saved token from localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem('GITHUB_STUDIO_PAT');
     if (savedToken) setToken(savedToken);
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
   }, []);
 
   if (!isOpen) return null;
+
+  // Poll GitHub Actions run status until completed
+  const startPolling = (targetRunId) => {
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+
+    pollTimerRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner.trim()}/${repo.trim()}/actions/runs/${targetRunId}`, {
+          headers: {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `Bearer ${token.trim()}`
+          }
+        });
+        if (res.ok) {
+          const runData = await res.json();
+          setActiveRun(runData);
+
+          if (runData.status === 'completed') {
+            clearInterval(pollTimerRef.current);
+            if (runData.conclusion === 'success') {
+              setStatus('SUCCESS');
+              // Direct 1-click download URL from GitHub Release asset
+              const mp4Url = `https://github.com/${owner.trim()}/${repo.trim()}/releases/download/render-${targetRunId}/final_film.mp4`;
+              setDirectVideoUrl(mp4Url);
+            } else {
+              setStatus('ERROR');
+              setMessage(`Proses cloud selesai dengan status: ${runData.conclusion}. Silakan periksa log detail di GitHub.`);
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+    }, 5000);
+  };
 
   const handleDispatch = async (e) => {
     e.preventDefault();
@@ -26,12 +66,12 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
 
     setStatus('DISPATCHING');
     setMessage('Menghubungkan ke GitHub Actions Cloud Runner...');
+    setActiveRun(null);
+    setDirectVideoUrl('');
 
     try {
-      // Save token locally for convenience
       localStorage.setItem('GITHUB_STUDIO_PAT', token.trim());
 
-      // Direct Client-to-GitHub REST API dispatch (100% Serverless!)
       const targetUrl = `https://api.github.com/repos/${owner.trim()}/${repo.trim()}/actions/workflows/render.yml/dispatches`;
 
       const response = await fetch(targetUrl, {
@@ -54,11 +94,30 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
       });
 
       if (response.status === 204 || response.status === 200) {
-        setStatus('SUCCESS');
-        setMessage('Job rendering berhasil dikirim ke Cloud Runner GitHub Actions!');
-        setActionUrl(`https://github.com/${owner.trim()}/${repo.trim()}/actions`);
+        setStatus('RUNNING');
+        setMessage('Job rendering diterima! Menunggu cloud worker menyala...');
+
+        // Fetch newest run after 3 seconds
+        setTimeout(async () => {
+          try {
+            const runsRes = await fetch(`https://api.github.com/repos/${owner.trim()}/${repo.trim()}/actions/workflows/render.yml/runs?per_page=1`, {
+              headers: {
+                'Accept': 'application/vnd.github+json',
+                'Authorization': `Bearer ${token.trim()}`
+              }
+            });
+            if (runsRes.ok) {
+              const runsData = await runsRes.json();
+              if (runsData.workflow_runs?.length > 0) {
+                const latestRun = runsData.workflow_runs[0];
+                setActiveRun(latestRun);
+                startPolling(latestRun.id);
+              }
+            }
+          } catch (e) {}
+        }, 3000);
+
       } else {
-        const errText = await response.text();
         setStatus('ERROR');
         setMessage(`Gagal mengirim ke GitHub (Status ${response.status}): Pastikan Token memiliki izin 'repo' dan 'workflow'.`);
       }
@@ -70,7 +129,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 transition cursor-pointer"
@@ -87,7 +146,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
               Cloud Render Farm (GitHub Actions)
             </h2>
             <p className="text-xs text-slate-400">
-              Serverless: Menjalankan Playwright & FFmpeg langsung di Cloud Linux 4 vCPU 16GB
+              Render film di cloud server Linux 4 vCPU 16GB RAM & Download langsung di website
             </p>
           </div>
         </div>
@@ -97,33 +156,86 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
           <div><span className="text-slate-500">Style:</span> <b className="text-amber-400">{renderParams.style}</b></div>
           <div><span className="text-slate-500">Rasio:</span> <b>{renderParams.aspectRatio}</b></div>
           <div><span className="text-slate-500">Bahasa:</span> <b>{renderParams.language.toUpperCase()}</b></div>
-          <div><span className="text-slate-500">Cloud Worker:</span> <b className="text-emerald-400">Ubuntu 24.04 (4 vCPU)</b></div>
+          <div><span className="text-slate-500">Cloud Worker:</span> <b className="text-emerald-400">Ubuntu Linux (4 vCPU)</b></div>
         </div>
 
-        {status === 'SUCCESS' ? (
+        {/* RUNNING STATE */}
+        {status === 'RUNNING' && (
           <div className="py-6 text-center space-y-4">
+            <div className="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-full flex items-center justify-center mx-auto border border-amber-500/30">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-100 text-sm">Sedang Merender di Cloud...</h3>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                {activeRun?.status === 'queued'
+                  ? 'Menunggu alokasi runner server Ubuntu...'
+                  : 'Playwright headless browser sedang merender 24 FPS & mixing audio... Halaman akan otomatis menampilkan tombol download begitu selesai!'}
+              </p>
+            </div>
+            <div className="pt-2">
+              <a
+                href={`https://github.com/${owner}/${repo}/actions`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-950 hover:bg-slate-800 text-slate-400 text-[11px] rounded-lg border border-slate-800 transition"
+              >
+                Intip log terminal di tab GitHub
+                <ExternalLink className="w-3 h-3 text-amber-400" />
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* SUCCESS STATE: DIRECT IN-WEBSITE PLAYER & DOWNLOAD */}
+        {status === 'SUCCESS' && (
+          <div className="py-4 text-center space-y-4">
             <div className="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
               <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-100 text-sm">Rendering Berhasil Dimulai di Cloud!</h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                GitHub Actions sedang merender animasi Three.js/Canvas frame demi frame dan menyatukan audio menjadi MP4.
+              <h3 className="font-bold text-slate-100 text-sm">Film Berhasil Dirender!</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Tonton video hasil render di bawah ini dan klik tombol untuk mendownload langsung file MP4:
               </p>
             </div>
-            {actionUrl && (
+
+            {/* In-Website Video Player */}
+            {directVideoUrl && (
+              <div className="bg-black rounded-xl overflow-hidden border border-slate-800 shadow-xl my-3">
+                <video
+                  src={directVideoUrl}
+                  controls
+                  autoPlay
+                  className="w-full max-h-[320px] mx-auto object-contain"
+                />
+              </div>
+            )}
+
+            {/* Direct Download Button */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <a
-                href={actionUrl}
+                href={directVideoUrl}
+                download="final_film.mp4"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs rounded-xl shadow transition"
+                className="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition cursor-pointer"
               >
-                Lihat Progress di GitHub Actions
-                <ExternalLink className="w-3.5 h-3.5" />
+                <Download className="w-4 h-4 stroke-[2.5]" />
+                Download Video Master (.MP4)
               </a>
-            )}
+              <button
+                onClick={() => setStatus('IDLE')}
+                className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-xl transition cursor-pointer"
+              >
+                Render Film Baru
+              </button>
+            </div>
           </div>
-        ) : (
+        )}
+
+        {/* IDLE / FORM STATE */}
+        {(status === 'IDLE' || status === 'DISPATCHING' || status === 'ERROR') && (
           <form onSubmit={handleDispatch} className="space-y-4">
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1 flex items-center justify-between">
@@ -137,7 +249,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
                   rel="noreferrer"
                   className="text-[10px] text-amber-400 hover:underline flex items-center gap-0.5"
                 >
-                  Buat Token Baru (1 Klik)
+                  Klik di sini untuk Buat Token Otomatis
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
               </label>
@@ -150,7 +262,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
                 required
               />
               <p className="text-[10px] text-slate-500 mt-1">
-                Token disimpan aman di browser lokal Anda untuk memicu Cloud Runner secara langsung.
+                Token disimpan aman di memori browser lokal Anda untuk memerintahkan runner cloud secara langsung.
               </p>
             </div>
 
@@ -165,7 +277,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
               <button
                 type="submit"
                 disabled={status === 'DISPATCHING'}
-                className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {status === 'DISPATCHING' ? (
                   <>
