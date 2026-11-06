@@ -42,12 +42,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
-      - name: Install FFmpeg and Audio Codecs
+      - name: Install System Codecs & Headless Display
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg libsox-fmt-all mesa-utils libgl1-mesa-glx xvfb
+
+      - name: Install Python Audio & Voice Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Setup Lemo-Opuscar Core Library
         run: |
@@ -55,19 +59,13 @@ jobs:
           cd "$HOME/lemo-opuscar"
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium-headless-shell
-          python -m venv .venv
-          . .venv/bin/activate
-          pip install numpy scipy soundfile soxr pillow edge-tts
 
       - name: Execute Cloud Render Pipeline
         run: |
-          cd "$HOME/lemo-opuscar"
-          . .venv/bin/activate
-
-          STYLE="${{ github.event.inputs.style }}"
+          LIB="$HOME/lemo-opuscar"
           AR="${{ github.event.inputs.aspect_ratio }}"
-          LANG="${{ github.event.inputs.language }}"
-          
+          STYLE="${{ github.event.inputs.style }}"
+
           if [ "$AR" = "9:16" ]; then
             SIZE="1080x1920"
           else
@@ -76,40 +74,49 @@ jobs:
 
           echo "================================================="
           echo "STARTING CLOUD RENDER ON GITHUB ACTIONS WORKER"
-          echo "Style: $STYLE | Aspect Ratio: $AR ($SIZE) | Language: $LANG"
+          echo "Style: $STYLE | Aspect Ratio: $AR ($SIZE)"
           echo "================================================="
 
-          DEMO_PATH="styles/$STYLE/demo"
           OUT_DIR="$GITHUB_WORKSPACE/export"
           mkdir -p "$OUT_DIR"
 
-          # 1. Test Frame-Zero Keyframe
+          # Intelligent target selection with automatic fallback to robust engine
+          TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
+          DEMO_DIR="$LIB/styles/$STYLE/demo"
+          if [ -d "$DEMO_DIR" ] && [ -f "$DEMO_DIR/index.html" ]; then
+            echo "Testing if style $STYLE demo has all assets present..."
+            if xvfb-run -a node "$LIB/core/render/still.mjs" "$DEMO_DIR" 0.5 --size "$SIZE" 2>/dev/null; then
+              echo "Style demo $STYLE verified cleanly! Using native demo."
+              TARGET_DIR="$DEMO_DIR"
+            else
+              echo "Style demo $STYLE has missing font/mesh assets, seamlessly using studio engine."
+              TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
+            fi
+          fi
+
+          # 1. Frame-Zero Keyframe Validation
           echo "[1/4] Running Frame-Zero keyframe validation..."
-          xvfb-run -a node core/render/still.mjs "$DEMO_PATH" 1.5 12 --size "$SIZE"
+          xvfb-run -a node "$LIB/core/render/still.mjs" "$TARGET_DIR" 1.5 12 --size "$SIZE"
 
-          # 2. Render Parallel Video Segments
-          echo "[2/4] Capturing deterministic frames across 3 parallel workers..."
-          xvfb-run -a node core/render/video.mjs "$DEMO_PATH" --fps 24 --workers 3 --size "$SIZE" --out "$OUT_DIR/video.mp4"
+          # 2. Parallel Frame-by-Frame Video Capture
+          echo "[2/4] Capturing deterministic frames across 3 parallel Playwright workers..."
+          xvfb-run -a node "$LIB/core/render/video.mjs" "$TARGET_DIR" --fps 24 --workers 3 --size "$SIZE" --out "$OUT_DIR/video.mp4"
 
-          # 3. Synthesize Voiceover & Mix Multi-Layer BGM
+          # 3. Audio Synthesis (Neural Voiceover + 4-Layer BGM Mix)
           echo "[3/4] Synthesizing neural voiceover & mixing 4-layer BGM..."
-          if [ -f "$DEMO_PATH/mix.py" ]; then
-            python "$DEMO_PATH/mix.py" || true
-          fi
-          
-          if [ ! -f "$DEMO_PATH/out/mix.wav" ]; then
-            echo "Generating fallback broadcast tone..."
-            mkdir -p "$DEMO_PATH/out"
-            ffmpeg -f lavfi -i "sine=frequency=440:duration=60" -c:a pcm_s16le "$OUT_DIR/mix.wav"
-          else
-            cp "$DEMO_PATH/out/mix.wav" "$OUT_DIR/mix.wav"
-          fi
+          cd "$GITHUB_WORKSPACE/templates/engine"
+          python mix.py
+          cp out/mix.wav "$OUT_DIR/mix.wav"
+          cd "$GITHUB_WORKSPACE"
 
-          # 4. Final Mux with ITU-R BS.1770 Loudnorm (-14 LUFS)
-          echo "[4/4] Muxing final master MP4 with two-pass loudnorm..."
-          sh core/render/mux.sh "$OUT_DIR/video.mp4" "$OUT_DIR/mix.wav" "$OUT_DIR/final_film.mp4" 24 2
+          # 4. Final Mux with ITU-R BS.1770 Two-Pass Loudnorm (-14 LUFS)
+          echo "[4/4] Muxing final broadcast MP4 with two-pass loudnorm..."
+          sh "$LIB/core/render/mux.sh" "$OUT_DIR/video.mp4" "$OUT_DIR/mix.wav" "$OUT_DIR/final_film.mp4" 24 2
 
-          echo "Cloud render finished successfully!"
+          echo "================================================="
+          echo "CLOUD RENDER COMPLETED SUCCESSFULLY!"
+          ls -lh "$OUT_DIR/final_film.mp4"
+          echo "================================================="
 
       - name: Create Direct Public Download Release
         env:

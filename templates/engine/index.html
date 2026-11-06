@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Lemo-Opuscar Production Engine</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #08090d; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #subtitle-layer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .chunk-badge {
+      background: rgba(8, 9, 13, 0.88);
+      color: #fde047;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 10px 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(253, 224, 71, 0.35);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      text-align: center;
+      max-width: 800px;
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+  <div id="subtitle-layer">
+    <div id="sub-chunk" class="chunk-badge"></div>
+  </div>
+
+  <script type="module">
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const subEl = document.getElementById('sub-chunk');
+
+    // Total Duration: 60.0 Seconds (Complies with 60s - 120s mandate)
+    window.DUR = 60.0;
+
+    // Subtitle phrase chunks (2 to 5 words max per chunk, strictly single-line)
+    const SUB_CHUNKS = [
+      { t0: 0.5, t1: 2.2, text: "Pernahkah Anda bertanya-tanya," },
+      { t0: 2.3, t1: 4.8, text: "mengapa tombol snooze berdurasi" },
+      { t0: 4.9, t1: 7.2, text: "tepat sembilan menit?" },
+      { t0: 7.5, t1: 9.8, text: "Bukan sepuluh, bukan lima." },
+      { t0: 10.0, t1: 12.8, text: "Tahun sembilan belas lima puluh enam," },
+      { t0: 13.0, t1: 15.6, text: "perusahaan jam Telechron" },
+      { t0: 15.8, t1: 18.5, text: "menghadapi masalah mekanik besar." },
+      { t0: 18.8, t1: 21.5, text: "Gigi roda gigi jam weker" },
+      { t0: 21.7, t1: 24.5, text: "hanya bisa disinkronkan" },
+      { t0: 24.7, t1: 27.8, text: "pada siklus roda tertentu." },
+      { t0: 28.2, t1: 31.0, text: "Roda gigi sepuluh menit" },
+      { t0: 31.2, t1: 34.0, text: "terlalu besar untuk sasis jam." },
+      { t0: 34.4, t1: 37.2, text: "Pilihannya hanya satu:" },
+      { t0: 37.4, t1: 40.5, text: "sembilan menit atau sepuluh lewat." },
+      { t0: 41.0, t1: 43.8, text: "Para insinyur memilih" },
+      { t0: 44.0, t1: 47.0, text: "sembilan menit lebih aman," },
+      { t0: 47.3, t1: 50.2, text: "agar orang tidak tertidur pulas." },
+      { t0: 50.5, t1: 53.5, text: "Namun bagi biologi manusia," },
+      { t0: 53.8, t1: 56.5, text: "sembilan menit merusak siklus otak." },
+      { t0: 56.8, t1: 59.5, text: "Itulah misteri tombol snooze." }
+    ];
+
+    // Smoothstep & Easing
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const ss = (e0, e1, x) => {
+      const t = clamp((x - e0) / (e1 - e0), 0, 1);
+      return t * t * (3 - 2 * t);
+    };
+
+    // Deterministic Render Function (Zero Randomness, Pure f(t))
+    window.render = function(t) {
+      const W = canvas.width = window.innerWidth || 1920;
+      const H = canvas.height = window.innerHeight || 1080;
+      const cx = W / 2, cy = H / 2;
+
+      // 1. Clear Frame & Dynamic Cinematic Backdrop
+      const bgGrad = ctx.createRadialGradient(cx, cy, 50, cx, cy, Math.max(W, H) * 0.85);
+      bgGrad.addColorStop(0, '#151928');
+      bgGrad.addColorStop(0.5, '#0b0d16');
+      bgGrad.addColorStop(1, '#040508');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Micro-Shot Pacing Camera Math (18 contextual micro-shots, ASL: ~3.3s)
+      const shotIndex = Math.floor(t / 3.33);
+      const shotTime = t % 3.33;
+      const shotProgress = shotTime / 3.33;
+
+      // Camera Track / Spline: Push in, Dutch Tilt & Subtle Float
+      ctx.save();
+      const zoom = 1.0 + 0.12 * Math.sin(t * 0.4) + ss(0, 3.33, shotTime) * 0.05;
+      const panX = Math.sin(t * 0.35) * 40 * (shotIndex % 2 === 0 ? 1 : -1);
+      const panY = Math.cos(t * 0.28) * 25;
+      const tilt = Math.sin(shotIndex * 1.7) * 0.035;
+
+      ctx.translate(cx + panX, cy + panY);
+      ctx.scale(zoom, zoom);
+      ctx.rotate(tilt);
+      ctx.translate(-cx, -cy);
+
+      // 3. Technical Blueprint Grid & Circular Radials
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      ctx.lineWidth = 1.5;
+      const gridSize = 64;
+      for (let x = 0; x < W; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      // 4. Hero Subject: Precision Procedural Clockwork Chassis & Meshing Gears
+      const drawGear = (gx, gy, radius, teeth, rot, color, toothDepth = 18) => {
+        ctx.save();
+        ctx.translate(gx, gy);
+        ctx.rotate(rot);
+
+        // Gear Outer Teeth
+        ctx.beginPath();
+        for (let i = 0; i < teeth; i++) {
+          const a1 = (i / teeth) * Math.PI * 2;
+          const a2 = ((i + 0.35) / teeth) * Math.PI * 2;
+          const a3 = ((i + 0.5) / teeth) * Math.PI * 2;
+          const a4 = ((i + 0.85) / teeth) * Math.PI * 2;
+
+          const rOut = radius + toothDepth;
+          const rIn = radius;
+
+          if (i === 0) ctx.moveTo(Math.cos(a1) * rIn, Math.sin(a1) * rIn);
+          ctx.lineTo(Math.cos(a1) * rIn, Math.sin(a1) * rIn);
+          ctx.lineTo(Math.cos(a2) * rOut, Math.sin(a2) * rOut);
+          ctx.lineTo(Math.cos(a3) * rOut, Math.sin(a3) * rOut);
+          ctx.lineTo(Math.cos(a4) * rIn, Math.sin(a4) * rIn);
+        }
+        ctx.closePath();
+
+        // Shading & Rim Glow
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#fef08a';
+        ctx.stroke();
+
+        // Gear Center Hollow Rim & Hub
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.65, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(10, 12, 18, 0.9)';
+        ctx.fill();
+        ctx.stroke();
+
+        // Spokes
+        for (let s = 0; s < 5; s++) {
+          const sa = (s / 5) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(sa) * radius * 0.65, Math.sin(sa) * radius * 0.65);
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = color;
+          ctx.stroke();
+        }
+
+        // Center Pin Brass Nut
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.restore();
+      };
+
+      // Continuous Gear Kinematics (Physical Meshing Ratio)
+      const gearSpeed = t * 1.25;
+      
+      // Main Center Drive Gear (Radius 160, 24 Teeth)
+      drawGear(cx - 110, cy, 160, 24, gearSpeed, '#d97706', 22);
+
+      // Driven Snooze Ratio Gear (Radius 106, 16 Teeth, Interlocking at -1.5x speed)
+      drawGear(cx + 172, cy - 25, 106, 16, -gearSpeed * 1.5 + 0.15, '#b45309', 18);
+
+      // Pinion Escapement Gear (Radius 60, 9 Teeth, Ratio at 2.66x speed)
+      drawGear(cx + 45, cy + 185, 60, 9, gearSpeed * 2.66, '#f59e0b', 14);
+
+      // 5. Technical HUD Calibration Annotations & Telemetry
+      ctx.font = 'bold 15px "Segoe UI", Roboto, monospace';
+      ctx.fillStyle = 'rgba(253, 224, 71, 0.85)';
+      ctx.fillText(`TELECHRON 1956 CHASSIS · GEAR TOLERANCE 0.04mm`, cx - 380, cy - 240);
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+      ctx.fillText(`ESCAPEMENT SPEED: ${(gearSpeed * 60).toFixed(1)} RPM`, cx - 380, cy - 218);
+      ctx.fillText(`SNOOZE RATIO: 9.000 MIN (MECHANICAL LOCK)`, cx - 380, cy - 196);
+
+      // Chronometer Arc Indicator
+      ctx.beginPath();
+      ctx.arc(cx - 110, cy, 210, -Math.PI * 0.5, -Math.PI * 0.5 + ((t % 9) / 9) * Math.PI * 2);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+
+      // Mechanical Lever & Cam Simulation
+      const camY = Math.sin(t * 3.5) * 22;
+      ctx.beginPath();
+      ctx.moveTo(cx + 172, cy - 25);
+      ctx.lineTo(cx + 280, cy - 110 + camY);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx + 280, cy - 110 + camY, 14, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.stroke();
+
+      ctx.restore();
+
+      // 6. Floating Ambient Micro-Dust Particles
+      for (let p = 0; p < 45; p++) {
+        const px = (Math.sin(p * 99 + t * 0.15) * 0.5 + 0.5) * W;
+        const py = (Math.cos(p * 33 + t * 0.22) * 0.5 + 0.5) * H;
+        const pSize = (Math.sin(p * 11 + t) * 0.5 + 0.5) * 2.5 + 1.0;
+        ctx.beginPath();
+        ctx.arc(px, py, pSize, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(253, 224, 71, 0.35)';
+        ctx.fill();
+      }
+
+      // 7. Single-Line Word-Chunk Subtitle Logic (Strict Single-Line Mandate)
+      const activeChunk = SUB_CHUNKS.find(c => t >= c.t0 && t <= c.t1);
+      if (activeChunk) {
+        subEl.innerText = activeChunk.text;
+        subEl.style.display = 'block';
+      } else {
+        subEl.style.display = 'none';
+      }
+    };
+
+    // Ready signal
+    window.READY = true;
+
+    // Trigger frame 0
+    window.render(0);
+  </script>
+</body>
+</html>
