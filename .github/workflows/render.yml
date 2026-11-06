@@ -97,11 +97,15 @@ jobs:
           mkdir -p "$OUT_DIR"
           TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
 
-          # 0. Link Core Engine Dependencies (Three.js, OFL fonts, Poly Haven PBR/HDRI)
-          echo "[0/4] Linking engine dependencies into target project..."
+          # 0. Setup Assets, Fonts, and Dependencies
+          echo "[0/4] Preparing engine assets, fonts, and node_modules..."
           ln -sfn "$LIB/node_modules" "$TARGET_DIR/node_modules"
           ln -sfn "$LIB/core/fonts" "$TARGET_DIR/fonts"
-          ln -sfn "$LIB/core/assets/polyhaven" "$TARGET_DIR/assets"
+          mkdir -p "$TARGET_DIR/assets"
+          cp -rn "$LIB/core/assets/polyhaven/"* "$TARGET_DIR/assets/" 2>/dev/null || true
+          echo "Downloading Poly Haven HDRI lythwood_lounge_2k.hdr..."
+          curl -fSL -o "$TARGET_DIR/assets/lythwood_lounge_2k.hdr" "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/lythwood_lounge_2k.hdr"
+          ls -lh "$TARGET_DIR/assets"
 
           # 1. Frame-Zero Keyframe Validation
           echo "[1/4] Running Frame-Zero keyframe validation..."
