@@ -75,7 +75,7 @@ const vignetteShader = {
 export function makePost(renderer, scene, camera, w, h) {
   const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType }));
   const dof = new DofScenePass(scene, camera, w, h);
-  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), .2, .5, 1.6);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(w, h), .12, .4, 2.4);
   const vig = new ShaderPass(vignetteShader);
   const out = new OutputPass();
   composer.addPass(dof); composer.addPass(bloom); composer.addPass(vig); composer.addPass(out);

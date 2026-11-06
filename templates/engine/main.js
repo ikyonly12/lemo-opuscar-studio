@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as L from './lib.js';
 import { clamp, lerp, seg, ss, eo, eio, back, track } from './lib.js';
 import * as A from './art.js';
-import { cv } from './paper.js';
+import { cv, finishCut } from './paper.js';
 import { makeBook, coverCanvases, texOf } from './book.js';
 import { pages, buildSets, updatePops, RISE } from './sets.js';
 import { makePassengerActor, makeEngineerActor } from './actors.js';
@@ -21,7 +21,7 @@ renderer.setPixelRatio(1); // Native 1080p broadcast resolution (4x MSAA handled
 renderer.setSize(W, H);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.appendChild(renderer.domElement);
@@ -42,7 +42,7 @@ hdr.mapping = THREE.EquirectangularReflectionMapping;
 scene.environment = hdr;
 scene.background = hdr;
 scene.backgroundBlurriness = 0.28;
-scene.environmentIntensity = 0.82;
+scene.environmentIntensity = 0.28;
 
 // Walnut desk with PBR maps
 const tl = new THREE.TextureLoader();
@@ -87,29 +87,7 @@ if (lamp) {
 }
 
 // ---------- Book & Mechanisms ----------
-const cover = coverCanvases((x, px, py, w, h) => {
-  // Title on front cover of pop-up book
-  x.save();
-  x.fillStyle = '#1e3a8a';
-  x.fillRect(px, py, w, h);
-  // Gold decorative border
-  x.strokeStyle = '#f59e0b';
-  x.lineWidth = 14;
-  x.strokeRect(px + 40, py + 40, w - 80, h - 80);
-  x.lineWidth = 4;
-  x.strokeRect(px + 60, py + 60, w - 120, h - 120);
-
-  x.fillStyle = '#fef3c7';
-  x.textAlign = 'center';
-  x.textBaseline = 'middle';
-  x.font = '700 80px "Lilita One", sans-serif';
-  x.fillText(COVER_TITLE, px + w / 2, py + h * 0.38);
-  x.font = '500 42px Fredoka, sans-serif';
-  x.fillStyle = '#93c5fd';
-  x.fillText(COVER_SUBTITLE, px + w / 2, py + h * 0.52);
-  x.restore();
-});
-
+const cover = coverCanvases();
 const book = makeBook(cover);
 scene.add(book.root);
 
@@ -123,21 +101,21 @@ const SPREAD = [
 ];
 const { L: POPS } = buildSets(book);
 
-// Characters
+// Characters (Staged in foreground layer at Z = 0.20, with 8cm clearance from background wall at Z = 0.12)
 const passenger = makePassengerActor();
-passenger.root.position.set(-0.06, 0, 0.16);
+passenger.root.position.set(-0.06, 0, 0.20);
 passenger.root.rotation.x = -Math.PI / 2;
 book.stage.add(passenger.root);
 
 const engineer = makeEngineerActor();
-engineer.root.position.set(-0.08, 0, 0.15);
+engineer.root.position.set(-0.08, 0, 0.20);
 engineer.root.rotation.x = -Math.PI / 2;
 engineer.root.visible = false;
 book.stage.add(engineer.root);
 
 // ---------- Lights Hierarchy ----------
 const lampHead = new THREE.Vector3(-0.28, 0.38, 0.44);
-const spot = new THREE.SpotLight('#fff4e2', 2.0, 3.2, 0.72, 0.55, 1.8);
+const spot = new THREE.SpotLight('#fff4e2', 0.35, 3.2, 0.72, 0.55, 1.8);
 spot.position.copy(lampHead);
 spot.target.position.set(0.02, 0, 0.2);
 spot.castShadow = true;
@@ -147,7 +125,7 @@ spot.shadow.normalBias = 0.0004;
 spot.shadow.radius = 4;
 scene.add(spot, spot.target);
 
-const sun = new THREE.DirectionalLight('#fff0dd', 1.2);
+const sun = new THREE.DirectionalLight('#fff0dd', 1.1);
 sun.position.set(0.6, 1.2, 0.8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
@@ -156,7 +134,7 @@ sun.shadow.normalBias = 0.0003;
 sun.shadow.radius = 3;
 scene.add(sun);
 
-const ambLight = new THREE.AmbientLight('#ffeacc', 0.40);
+const ambLight = new THREE.AmbientLight('#ffeacc', 0.28);
 scene.add(ambLight);
 
 // ---------- 19 Contextual Micro-Shots (ASL ~3.3s) ----------
@@ -174,18 +152,18 @@ const SH = [
   ],
   // Shot 03: Subject Tracking - Passenger at Window (8.0s -> 11.5s)
   [
-    [8.0, -0.07, 0.12, 0.36, -0.05, 0.09, 0.16, 28, 2.6, 0.21],
-    [11.5, -0.06, 0.11, 0.34, -0.04, 0.09, 0.16, 28, 2.6, 0.20]
+    [8.0, -0.07, 0.12, 0.36, -0.06, 0.09, 0.20, 28, 2.6, 0.16],
+    [11.5, -0.06, 0.11, 0.34, -0.05, 0.09, 0.20, 28, 2.6, 0.14]
   ],
-  // Shot 04: Extreme Macro Detail - The Breather Hole (11.5s -> 15.0s)
+  // Shot 04: Extreme Macro Detail - The Breather Hole on Window (11.5s -> 15.0s)
   [
-    [11.5, 0.04, 0.065, 0.26, 0.04, 0.055, 0.16, 26, 3.2, 0.12],
-    [15.0, 0.04, 0.060, 0.24, 0.04, 0.055, 0.16, 26, 3.4, 0.10]
+    [11.5, 0.05, 0.065, 0.24, 0.05, 0.055, 0.12, 26, 3.2, 0.12],
+    [15.0, 0.05, 0.060, 0.22, 0.05, 0.055, 0.12, 26, 3.4, 0.10]
   ],
   // Shot 05: Reaction / POV Passenger Worried (15.0s -> 18.5s)
   [
-    [15.0, -0.08, 0.11, 0.32, -0.06, 0.10, 0.16, 28, 2.6, 0.18],
-    [18.5, -0.07, 0.10, 0.30, -0.06, 0.10, 0.16, 28, 2.6, 0.16]
+    [15.0, -0.08, 0.11, 0.32, -0.06, 0.10, 0.20, 28, 2.6, 0.12],
+    [18.5, -0.07, 0.10, 0.30, -0.06, 0.10, 0.20, 28, 2.6, 0.10]
   ],
   // Shot 06: Window Cloud Vista (18.5s -> 22.0s)
   [
@@ -214,8 +192,8 @@ const SH = [
   ],
   // Shot 11: British Engineer Realization (39.0s -> 43.5s)
   [
-    [39.0, -0.10, 0.12, 0.32, -0.08, 0.10, 0.15, 28, 2.6, 0.19],
-    [43.5, -0.09, 0.11, 0.30, -0.08, 0.10, 0.15, 28, 2.6, 0.17]
+    [39.0, -0.10, 0.12, 0.32, -0.08, 0.10, 0.20, 28, 2.6, 0.12],
+    [43.5, -0.09, 0.11, 0.30, -0.08, 0.10, 0.20, 28, 2.6, 0.10]
   ],
   // Shot 12: Drafting Table Wrap & Page Turn 1 (43.5s -> 53.8s)
   [
@@ -225,22 +203,22 @@ const SH = [
   ],
   // Shot 13: Spread 2 - Isometric 3-Layer Exploded Window (53.8s -> 58.5s)
   [
-    [53.8, -0.05, 0.15, 0.38, 0.0, 0.08, 0.15, 30, 2.4, 0.26],
-    [58.5, -0.03, 0.13, 0.36, 0.0, 0.08, 0.15, 30, 2.4, 0.24]
+    [53.8, -0.14, 0.16, 0.38, 0.0, 0.07, 0.15, 32, 1.8, 0.28],
+    [58.5, -0.12, 0.15, 0.36, 0.0, 0.07, 0.15, 32, 1.8, 0.26]
   ],
   // Shot 14: Exploded Pull-Apart: Outer, Middle, Inner (58.5s -> 63.5s)
   [
-    [58.5, 0.05, 0.11, 0.32, 0.01, 0.08, 0.15, 28, 2.6, 0.20],
-    [63.5, 0.06, 0.10, 0.30, 0.01, 0.08, 0.15, 28, 2.8, 0.18]
+    [58.5, 0.0, 0.16, 0.44, 0.0, 0.07, 0.15, 32, 1.8, 0.32],
+    [63.5, 0.0, 0.15, 0.42, 0.0, 0.07, 0.15, 32, 1.8, 0.30]
   ],
   // Shot 15: Pressure Particle Flow into Breather Hole (63.5s -> 69.0s)
   [
-    [63.5, 0.0, 0.070, 0.24, 0.0, 0.055, 0.15, 26, 3.2, 0.11],
-    [69.0, 0.0, 0.065, 0.22, 0.0, 0.055, 0.15, 26, 3.4, 0.09]
+    [63.5, 0.0, 0.09, 0.28, 0.0, 0.035, 0.15, 28, 2.4, 0.16],
+    [69.0, 0.0, 0.08, 0.26, 0.0, 0.035, 0.15, 28, 2.6, 0.14]
   ],
   // Shot 16: Diagrammatic Top-Down & Page Turn 2 (69.0s -> 78.4s)
   [
-    [69.0, 0.0, 0.20, 0.46, 0.0, 0.07, 0.16, 32, 2.0, 0.36],
+    [69.0, 0.0, 0.22, 0.44, 0.0, 0.06, 0.16, 32, 1.8, 0.34],
     [75.8, 0.0, 0.26, 0.54, 0.0, 0.07, 0.16, 32, 1.8, 0.44],
     [78.4, 0.0, 0.24, 0.50, 0.0, 0.07, 0.16, 32, 1.8, 0.40]
   ],
@@ -251,8 +229,8 @@ const SH = [
   ],
   // Shot 18: Peaceful Passenger & Frost-Free Glass (85.0s -> 92.0s)
   [
-    [85.0, -0.06, 0.11, 0.32, -0.04, 0.09, 0.16, 28, 2.6, 0.19],
-    [92.0, -0.04, 0.10, 0.30, -0.03, 0.09, 0.16, 28, 2.6, 0.18]
+    [85.0, -0.06, 0.11, 0.32, -0.05, 0.09, 0.20, 28, 2.6, 0.12],
+    [92.0, -0.04, 0.10, 0.30, -0.04, 0.09, 0.20, 28, 2.6, 0.10]
   ],
   // Shot 19: Epilogue Pullback & Book Closes (92.0s -> 99.0s)
   [
@@ -281,6 +259,7 @@ function camAt(t) {
 }
 
 // ---------- Book Turn & Render Logic ----------
+let curPassPose = 'point';
 window.render = function(t) {
   // 1. Book open/close
   let op = 0;
@@ -321,8 +300,15 @@ window.render = function(t) {
   // 3. Update Pop-up state machine (Lifecycle: Fold flat before leaf sweep)
   updatePops(POPS, t, spread, turnK);
 
-  // 4. Update actors visibility per spread (Zero clipping)
+  // 4. Update actors visibility & emotional poses per spread
   if (spread === 0 && turning < 0) {
+    if (curPassPose !== 'point') {
+      A.drawPassenger(passenger.canvas.getContext('2d'), { lean: 0, arm: 'point', mouth: 'o', look: [1, 0] });
+      const cut = finishCut(passenger.canvas, 12);
+      passenger.mesh.userData.tex.image = cut;
+      passenger.mesh.userData.tex.needsUpdate = true;
+      curPassPose = 'point';
+    }
     const k = back(seg(t, RISE[0], RISE[0] + 0.6), 1.3);
     passenger.root.visible = k > 0.01;
     passenger.root.rotation.x = -Math.PI / 2 * (1 - k);
@@ -333,6 +319,13 @@ window.render = function(t) {
     engineer.root.visible = k > 0.01;
     engineer.root.rotation.x = -Math.PI / 2 * (1 - k);
   } else if (spread === 3 && turning < 0) {
+    if (curPassPose !== 'smile') {
+      A.drawPassenger(passenger.canvas.getContext('2d'), { lean: -0.04, arm: 'rest', mouth: 'smile', look: [1, -0.2] });
+      const cut = finishCut(passenger.canvas, 12);
+      passenger.mesh.userData.tex.image = cut;
+      passenger.mesh.userData.tex.needsUpdate = true;
+      curPassPose = 'smile';
+    }
     const k = back(seg(t, RISE[3], RISE[3] + 0.6), 1.3);
     passenger.root.visible = k > 0.01;
     passenger.root.rotation.x = -Math.PI / 2 * (1 - k);

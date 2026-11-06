@@ -43,6 +43,8 @@ export function drawBubbles(x, t, anchors) {
     if (t < t0 - 0.05 || t > t1 + 0.25) continue;
     const an = anchors[who];
     if (!an) continue;
+    // Don't render bubble if character is far off-screen
+    if (an[0] < -50 || an[0] > W + 50 || an[1] < -50 || an[1] > H + 50) continue;
 
     const kin = back(seg(t, t0, t0 + 0.22), 2.0);
     const kout = 1 - ss(seg(t, t1, t1 + 0.2));
@@ -53,11 +55,11 @@ export function drawBubbles(x, t, anchors) {
     x.save();
     x.font = '600 38px Fredoka, sans-serif';
     const tw = Math.max(x.measureText(text).width, 220);
-    const bw = tw + 70, bh = 110;
+    const bw = tw + 70, bh = 100;
 
-    let bx = clamp(an[0] - bw * 0.4, 40, W - bw - 40);
-    let by = clamp(an[1] - bh - 60, 40, H - 240);
-    const tx = clamp(an[0], bx + 40, bx + bw - 40);
+    let bx = clamp(an[0] - bw * 0.45, 60, W - bw - 60);
+    let by = clamp(an[1] - bh - 85, 50, H - 240);
+    const tx = clamp(an[0], bx + 45, bx + bw - 45);
 
     x.translate(tx, by + bh);
     x.scale(k, k);
@@ -67,19 +69,19 @@ export function drawBubbles(x, t, anchors) {
     // Drop shadow
     x.fillStyle = 'rgba(30, 20, 15, 0.24)';
     x.beginPath();
-    x.roundRect(bx + 6, by + 10, bw, bh, 32);
+    x.roundRect(bx + 6, by + 10, bw, bh, 30);
     x.fill();
 
     // Body + Tail
     x.fillStyle = '#fffef8';
     x.beginPath();
-    x.roundRect(bx, by, bw, bh, 32);
-    x.moveTo(tx - 20, by + bh - 2);
-    x.lineTo(lerp(tx, an[0], 0.65), Math.min(an[1] - 12, by + bh + 48));
-    x.lineTo(tx + 16, by + bh - 2);
+    x.roundRect(bx, by, bw, bh, 30);
+    x.moveTo(tx - 18, by + bh - 2);
+    x.lineTo(lerp(tx, an[0], 0.65), Math.min(an[1] - 16, by + bh + 45));
+    x.lineTo(tx + 18, by + bh - 2);
     x.fill();
 
-    x.lineWidth = 5;
+    x.lineWidth = 4.5;
     x.strokeStyle = INK;
     x.lineJoin = 'round';
     x.stroke();

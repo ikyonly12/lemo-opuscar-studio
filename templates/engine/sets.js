@@ -1,7 +1,7 @@
 // Four pop-up spreads with strict 5-phase lifecycle state machine (anti-clipping)
 import * as THREE from 'three';
 import * as A from './art.js';
-import { cv, paperFill, INK, sh, smoothOpen, GRAIN } from './paper.js';
+import { cv, paperFill, INK, sh, smoothOpen, GRAIN, finishCut } from './paper.js';
 import { mulberry, clamp, lerp, seg, back, ss, eio, eo, TAU } from './lib.js';
 import { BW, BD, texOf } from './book.js';
 import { cutMesh, blobShadow } from './cutmesh.js';
@@ -98,17 +98,17 @@ export function pages() {
 
   // Spread 3: High-Altitude Sunset & Golden Horizon
   P.sky3 = page(x => {
-    grad(x, [[0, '#4338ca'], [0.4, '#d97706'], [0.75, '#f59e0b'], [1, '#fef3c7']]);
-    // Golden sun glowing on the horizon
-    const g = x.createRadialGradient(PW * 0.7, PH * 0.55, 10, PW * 0.7, PH * 0.55, 600);
-    g.addColorStop(0, 'rgba(255, 243, 196, 0.95)');
-    g.addColorStop(0.3, 'rgba(251, 191, 36, 0.6)');
-    g.addColorStop(1, 'rgba(251, 191, 36, 0)');
-    x.fillStyle = g;
-    x.fillRect(0, 0, PW, PH);
+    grad(x, [[0, '#312e81'], [0.4, '#c026d3'], [0.75, '#f97316'], [1, '#fde047']]);
+    // Sunset cloud bank
+    x.fillStyle = 'rgba(253, 224, 71, 0.45)';
+    x.beginPath();
+    x.arc(PW * 0.3, PH * 0.7, 240, 0, TAU);
+    x.arc(PW * 0.5, PH * 0.65, 300, 0, TAU);
+    x.arc(PW * 0.7, PH * 0.7, 260, 0, TAU);
+    x.fill();
   });
   P.ground3 = page(x => {
-    grad(x, [[0, '#78350f'], [1, '#451a03']]);
+    grad(x, [[0, '#1e1b4b'], [1, '#0f172a']]);
   });
 
   return P;
@@ -118,20 +118,20 @@ export function pages() {
 export function buildSets(book) {
   const L = []; // List of pop-up elements
 
-  // 1. Spread 0: Modern Cabin Oval Window
+  // 1. Spread 0: Modern Cabin Oval Window (Background wall layer at Z = 0.12)
   const cWin0 = cv(A.WIN_W, A.WIN_H);
   A.drawCabinWindow(cWin0.getContext('2d'), { holeZoom: 1.0, glowHole: true });
-  const mWin0 = cutMesh({ c: cWin0, w: 0.18, h: 0.22, ax: 0.5, ay: 0.96 });
-  mWin0.position.set(0.04, 0, 0.16);
+  const mWin0 = cutMesh({ c: finishCut(cWin0, 12), w: 0.18, h: 0.22, ax: 0.5, ay: 0.96 });
+  mWin0.position.set(0.05, 0, 0.12);
   mWin0.rotation.x = -Math.PI / 2;
   book.stage.add(mWin0);
   L.push({ spread: 0, mesh: mWin0 });
 
-  // 2. Spread 1: Comet Jet Fuselage & Stress Fracture
+  // 2. Spread 1: Comet Jet Fuselage & Stress Fracture (Background wall layer at Z = 0.12)
   const cComet = cv(A.COMET_W, A.COMET_H);
   A.drawCometFuselage(cComet.getContext('2d'), { stressAlpha: 1.0, crackProgress: 0.5 });
-  const mComet = cutMesh({ c: cComet, w: 0.32, h: 0.20, ax: 0.5, ay: 0.88 });
-  mComet.position.set(-0.02, 0, 0.15);
+  const mComet = cutMesh({ c: finishCut(cComet, 12), w: 0.32, h: 0.20, ax: 0.5, ay: 0.88 });
+  mComet.position.set(-0.01, 0, 0.12);
   mComet.rotation.x = -Math.PI / 2;
   mComet.visible = false;
   book.stage.add(mComet);
@@ -142,26 +142,26 @@ export function buildSets(book) {
   const cMid = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cMid.getContext('2d'), 'middle');
   const cInn = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cInn.getContext('2d'), 'inner');
 
-  const mOut = cutMesh({ c: cOut, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
-  const mMid = cutMesh({ c: cMid, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
-  const mInn = cutMesh({ c: cInn, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
+  const mOut = cutMesh({ c: finishCut(cOut, 10), w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
+  const mMid = cutMesh({ c: finishCut(cMid, 10), w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
+  const mInn = cutMesh({ c: finishCut(cInn, 10), w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
 
   const expGroup = new THREE.Group();
   mOut.position.set(0, 0, 0.05);
   mMid.position.set(0, 0, 0.0);
   mInn.position.set(0, 0, -0.05);
   expGroup.add(mOut); expGroup.add(mMid); expGroup.add(mInn);
-  expGroup.position.set(0.0, 0, 0.15);
+  expGroup.position.set(0.0, 0, 0.14);
   expGroup.rotation.x = -Math.PI / 2;
   expGroup.visible = false;
   book.stage.add(expGroup);
   L.push({ spread: 2, mesh: expGroup, mOut, mMid, mInn });
 
-  // 4. Spread 3: Hero Window with Sunset View
+  // 4. Spread 3: Hero Window with Sunset View (Background wall layer at Z = 0.12)
   const cWin3 = cv(A.WIN_W, A.WIN_H);
   A.drawCabinWindow(cWin3.getContext('2d'), { holeZoom: 1.2, glowHole: false });
-  const mWin3 = cutMesh({ c: cWin3, w: 0.20, h: 0.24, ax: 0.5, ay: 0.96 });
-  mWin3.position.set(0.02, 0, 0.16);
+  const mWin3 = cutMesh({ c: finishCut(cWin3, 12), w: 0.20, h: 0.24, ax: 0.5, ay: 0.96 });
+  mWin3.position.set(0.04, 0, 0.12);
   mWin3.rotation.x = -Math.PI / 2;
   mWin3.visible = false;
   book.stage.add(mWin3);
@@ -210,12 +210,12 @@ export function updatePops(L, t, curSpread, turnK = 0) {
       }
     }
 
-    // Animate exploded layers pull-apart during Shot 14
+    // Animate exploded layers pull-apart horizontally and depth-wise
     if (s === 2 && item.mOut && item.mMid && item.mInn) {
-      const sep = lerp(0.02, 0.065, ss(seg(t, 58.5, 63.5)));
-      item.mOut.position.z = sep;
-      item.mMid.position.z = 0;
-      item.mInn.position.z = -sep;
+      const sep = lerp(0.0, 0.075, ss(seg(t, 58.5, 63.5)));
+      item.mOut.position.set(-sep * 1.25, 0, sep * 0.5);
+      item.mMid.position.set(0, 0, 0);
+      item.mInn.position.set(sep * 1.25, 0, -sep * 0.5);
     }
   }
 }

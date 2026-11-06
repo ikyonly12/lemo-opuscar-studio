@@ -5,8 +5,27 @@ import { texOf } from './book.js';
 const cache = new Map();
 export function mats(tex, backCol = '#efe8da') {
   const k = tex.uuid + backCol; if (cache.has(k)) return cache.get(k);
-  const front = new THREE.MeshStandardMaterial({ map: tex, alphaTest: .5, alphaToCoverage: true, roughness: .88, side: THREE.FrontSide });
-  const back = new THREE.MeshStandardMaterial({ map: tex, alphaTest: .5, alphaToCoverage: true, roughness: .92, side: THREE.BackSide });
+  const front = new THREE.MeshStandardMaterial({
+    map: tex,
+    alphaTest: .5,
+    alphaToCoverage: false,
+    roughness: .88,
+    side: THREE.FrontSide,
+    shadowSide: THREE.FrontSide,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1
+  });
+  const back = new THREE.MeshStandardMaterial({
+    map: tex,
+    alphaTest: .5,
+    alphaToCoverage: false,
+    roughness: .92,
+    side: THREE.BackSide,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1
+  });
   const bc = new THREE.Color(backCol);
   back.onBeforeCompile = s => { s.uniforms.backCol = { value: bc }; s.fragmentShader = 'uniform vec3 backCol;\n' + s.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n diffuseColor.rgb = backCol;'); };
   back.customProgramCacheKey = () => 'paperback';
@@ -20,7 +39,10 @@ export function cutMesh(item, o = {}) {
   const geo = new THREE.PlaneGeometry(w, h); geo.translate(w / 2 - item.ax * w, item.ay * h - h / 2, 0);
   const m = mats(tex, o.backCol);
   const f = new THREE.Mesh(geo, m.front), b = new THREE.Mesh(geo, m.back);
-  f.castShadow = o.shadow ?? true; f.customDepthMaterial = m.depth; f.receiveShadow = true; b.receiveShadow = true;
+  f.position.z = 0.0001;
+  b.position.z = -0.0001;
+  f.castShadow = o.shadow ?? true; f.customDepthMaterial = m.depth; f.receiveShadow = true;
+  b.castShadow = false; b.receiveShadow = false;
   const g = new THREE.Group(); g.add(f, b); g.userData = { w, h, tex, front: f, back: b };
   return g;
 }

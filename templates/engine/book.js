@@ -24,39 +24,103 @@ function edgeCanvas() {
 // cloth cover + gold-foil title; also generates the roughness(g)/metalness(b) map
 export function coverCanvases(drawPipIcon) {
   const w = 2048, h = Math.round(2048 * BD / BW), c = cv(w, h), x = c.getContext('2d'), m = cv(w, h), y = m.getContext('2d');
-  // cloth weave
-  x.fillStyle = '#1f5566'; x.fillRect(0, 0, w, h);
-  const R = mulberry(3);
-  for (let i = 0; i < h; i += 3) { x.fillStyle = `rgba(0,0,0,${.05 + R() * .07})`; x.fillRect(0, i, w, 1.2); }
-  for (let i = 0; i < w; i += 3) { x.fillStyle = `rgba(255,255,255,${.02 + R() * .04})`; x.fillRect(i, 0, 1.2, h); }
-  for (let i = 0; i < 90; i++) { const px = R() * w, py = R() * h, r = 60 + R() * 300, g = x.createRadialGradient(px, py, 0, px, py, r); g.addColorStop(0, `rgba(${R() < .5 ? '0,0,0' : '120,170,180'},${.06 * R()})`); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r); }
+  
+  // Luxury Midnight Navy cloth weave
+  x.fillStyle = '#0f172a'; x.fillRect(0, 0, w, h);
+  const R = mulberry(5);
+  for (let i = 0; i < h; i += 3) { x.fillStyle = `rgba(0,0,0,${.06 + R() * .08})`; x.fillRect(0, i, w, 1.2); }
+  for (let i = 0; i < w; i += 3) { x.fillStyle = `rgba(255,255,255,${.03 + R() * .05})`; x.fillRect(i, 0, 1.2, h); }
+  for (let i = 0; i < 90; i++) {
+    const px = R() * w, py = R() * h, r = 60 + R() * 300, g = x.createRadialGradient(px, py, 0, px, py, r);
+    g.addColorStop(0, `rgba(${R() < .5 ? '0,0,0' : '30,58,138'},${.08 * R()})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r);
+  }
+
   // gold areas are also drawn into m (b = metal, g = roughness)
   y.fillStyle = 'rgb(0,235,0)'; y.fillRect(0, 0, w, h);
-  const GOLD = '#e0b456';
+  const GOLD = '#f59e0b';
   const both = fn => { x.save(); fn(x, GOLD); x.restore(); y.save(); fn(y, 'rgb(0,90,255)'); y.restore(); };
-  both((k, col) => { k.strokeStyle = col; k.lineWidth = 10; k.strokeRect(90, 90, w - 180, h - 180); k.lineWidth = 4; k.strokeRect(120, 120, w - 240, h - 240);
-    for (const [cx, cy] of [[120, 120], [w - 120, 120], [120, h - 120], [w - 120, h - 120]]) { k.beginPath(); k.arc(cx, cy, 34, 0, Math.PI * 2); k.fillStyle = col; k.fill(); } });
-  both((k, col) => { k.fillStyle = col; k.textAlign = 'center'; k.textBaseline = 'alphabetic';
-    k.font = '150px "Lilita One"'; k.fillText('The Little', w * .63, h * .33);
-    k.font = '210px "Lilita One"'; k.fillText("Sprite's", w * .63, h * .52);
-    k.font = '170px "Lilita One"'; k.fillText('Adventure', w * .63, h * .69);
-    k.font = 'italic 70px "IM Fell English"'; k.fillText('~ a paper tale ~', w * .63, h * .81); });
-  // round illustration (paper-coloured ground + Pip)
-  const cx = w * .24, cy = h * .52, r = 330;
-  both((k, col) => { k.beginPath(); k.arc(cx, cy, r + 26, 0, Math.PI * 2); k.lineWidth = 14; k.strokeStyle = col; k.stroke(); });
+
+  // Decorative double gold border with corner rosettes
+  both((k, col) => {
+    k.strokeStyle = col; k.lineWidth = 12; k.strokeRect(90, 90, w - 180, h - 180);
+    k.lineWidth = 4; k.strokeRect(120, 120, w - 240, h - 240);
+    for (const [cx, cy] of [[120, 120], [w - 120, 120], [120, h - 120], [w - 120, h - 120]]) {
+      k.beginPath(); k.arc(cx, cy, 32, 0, Math.PI * 2); k.fillStyle = col; k.fill();
+    }
+  });
+
+  // Authentic Documentary Gold Title on Right Side
+  const tx = w * .655;
+  both((k, col) => {
+    k.fillStyle = col; k.textAlign = 'center'; k.textBaseline = 'alphabetic';
+    // Perfectly stacked 7-letter words: RAHASIA / JENDELA / PESAWAT
+    k.font = '700 110px "Lilita One"'; k.fillText('RAHASIA', tx, h * .30);
+    k.font = '700 135px "Lilita One"'; k.fillText('JENDELA', tx, h * .43);
+    k.font = '700 135px "Lilita One"'; k.fillText('PESAWAT', tx, h * .56);
+    
+    // Thin gold decorative divider line
+    k.beginPath();
+    k.moveTo(tx - 240, h * .62);
+    k.lineTo(tx + 240, h * .62);
+    k.lineWidth = 4;
+    k.strokeStyle = col;
+    k.stroke();
+
+    // Small decorative center diamond
+    k.beginPath();
+    const dy = h * .62;
+    k.moveTo(tx, dy - 9); k.lineTo(tx + 9, dy); k.lineTo(tx, dy + 9); k.lineTo(tx - 9, dy);
+    k.closePath();
+    k.fill();
+
+    k.font = '500 42px "Fredoka", sans-serif'; k.fillText('The Airplane Window Breather Hole', tx, h * .70);
+    k.font = 'italic 34px "Fredoka", sans-serif'; k.fillText('~ Sejarah, Tekanan Udara & Lubang Napas ~', tx, h * .78);
+  });
+
+  // Round Aviation Emblem on Left Side (re-proportioned & repositioned with ample clearance)
+  const cx = w * .22, cy = h * .50, r = 260;
+  both((k, col) => {
+    k.beginPath(); k.arc(cx, cy, r + 20, 0, Math.PI * 2); k.lineWidth = 12; k.strokeStyle = col; k.stroke();
+  });
+
   x.save(); x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.clip();
-  x.fillStyle = '#f4e9cf'; x.fillRect(cx - r, cy - r, 2 * r, 2 * r);
-  x.fillStyle = '#9fd18a'; x.beginPath(); x.ellipse(cx, cy + r * .95, r * 1.3, r * .55, 0, 0, Math.PI * 2); x.fill();
-  x.fillStyle = '#ffd766'; x.beginPath(); x.arc(cx + r * .45, cy - r * .45, r * .2, 0, Math.PI * 2); x.fill();
-  drawPipIcon(x, cx - r * .5, cy - r * .55, r * 1.0, r * 1.25);
+  // Deep blue gradient sky
+  const skyGrad = x.createLinearGradient(cx, cy - r, cx, cy + r);
+  skyGrad.addColorStop(0, '#1e3a8a');
+  skyGrad.addColorStop(1, '#3b82f6');
+  x.fillStyle = skyGrad; x.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+
+  // Stylized golden sunset clouds
+  x.fillStyle = 'rgba(253, 224, 71, 0.45)';
+  x.beginPath(); x.arc(cx - 55, cy + 105, 105, 0, Math.PI * 2); x.fill();
+  x.beginPath(); x.arc(cx + 65, cy + 90, 120, 0, Math.PI * 2); x.fill();
+
+  // White paper oval airplane window silhouette
+  x.fillStyle = '#fffdf7';
+  x.beginPath(); x.roundRect(cx - 75, cy - 110, 150, 200, 68); x.fill();
+  x.lineWidth = 7; x.strokeStyle = '#f59e0b'; x.stroke();
+
+  // Inner oval reveal
+  x.fillStyle = '#93c5fd';
+  x.beginPath(); x.roundRect(cx - 60, cy - 95, 120, 170, 52); x.fill();
+
+  // Dark circular breather hole with red dashed callout ring
+  x.fillStyle = '#0f172a'; x.beginPath(); x.arc(cx, cy + 38, 10, 0, Math.PI * 2); x.fill();
+  x.lineWidth = 3; x.strokeStyle = '#ef4444';
+  x.setLineDash([5, 4]);
+  x.beginPath(); x.arc(cx, cy + 38, 22, 0, Math.PI * 2); x.stroke();
+  x.setLineDash([]);
   x.restore();
-  y.save(); y.beginPath(); y.arc(cx, cy, r, 0, Math.PI * 2); y.fillStyle = 'rgb(0,200,0)'; y.fill(); y.restore();
+
+  y.save(); y.beginPath(); y.arc(cx, cy, r, 0, Math.PI * 2); y.fillStyle = 'rgb(0,180,0)'; y.fill(); y.restore();
   return { c, m };
 }
 
 export function makeBook(cover) {
   const root = new THREE.Group();
-  const cloth = new THREE.MeshStandardMaterial({ color: '#1f5566', roughness: .85 });
+  const cloth = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: .85 });
   const edge = texOf(edgeCanvas()); edge.wrapS = edge.wrapT = THREE.RepeatWrapping;
   const edgeMat = new THREE.MeshStandardMaterial({ map: edge, roughness: .95 });
   const pageTop = new THREE.MeshStandardMaterial({ color: '#f3ead6', roughness: .95 });
@@ -106,7 +170,6 @@ export function makeBook(cover) {
     const th = Math.PI / 2 * u, L = bendAmt * Math.sin(Math.PI * u);
     for (const g of [lf, lb2]) {
       const p = g.attributes.position, n = NS + 1;
-      // PlaneGeometry vertex order: rows iy=0..NS (y from +0.5 to -0.5), 2 per row
       let zz = 0, yy = 0;
       const col = [];
       for (let iy = 0; iy <= NS; iy++) {

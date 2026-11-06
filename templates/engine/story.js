@@ -2,45 +2,44 @@
 
 export const DUR = 99.0;
 
-// Subtitle chunks (generated from voices/dur.json and chunk_subtitles.py)
+// Subtitle chunks (Clean, single-line, 2 to 5 words, strictly lower-third)
 // [t0, t1, text]
 export const SUBS = [
-  [3.40, 5.71, "Pernahkah Anda memperhatikan lubang jarum"],
-  [5.71, 7.40, "mungil di bagian bawah jendela"],
-  [7.40, 8.58, "pesawat saat terbang?"],
-  [9.20, 11.98, "Banyak penumpang cemas mengira jendela retak,"],
-  [11.98, 14.88, "atau kabin mengalami kebocoran udara berbahaya."],
-  [17.20, 20.35, "Padahal, lubang sekecil ini memikul rahasia"],
-  [20.35, 23.12, "keselamatan terbesar dalam sejarah kedirgantaraan."],
-  [26.50, 30.22, "Semua bermula dari tragedi kelam tahun 1954"],
-  [30.22, 32.55, "pada pesawat jet komersial pertama di dunia,"],
-  [32.55, 34.49, "de Havilland Comet."],
-  [35.00, 37.82, "Pesawat jet tersebut tiba-tiba hancur"],
-  [37.82, 40.41, "berkeping-keping di angkasa tanpa peringatan apa pun."],
-  [43.50, 47.05, "Penyelidikan membuktikan: jendela persegi menciptakan"],
-  [47.05, 49.25, "konsentrasi tegangan dahsyat di sudut-sudutnya"],
-  [49.25, 50.88, "hingga badan pesawat robek."],
-  [54.20, 57.65, "Sejak itu, seluruh jendela pesawat diubah menjadi oval"],
-  [57.65, 59.85, "dan dirancang dengan tiga lapisan akrilik"],
-  [59.85, 61.34, "berteknologi tinggi."],
-  [61.80, 65.12, "Lubang jarum ini dinamakan breather hole,"],
-  [65.12, 67.25, "berada persis di lapisan kaca tengah"],
-  [67.25, 68.65, "untuk mengalirkan tekanan udara."],
-  [69.00, 72.15, "Dengan lubang ini, perbedaan tekanan udara raksasa"],
-  [72.15, 74.20, "ditanggung aman oleh kaca terluar"],
-  [74.20, 75.32, "yang paling tebal."],
-  [78.80, 82.55, "Selain menjaga tekanan, sirkulasi lubang ini juga membuang"],
-  [82.55, 84.85, "kelembapan udara kabin agar kaca tidak membeku"],
-  [84.85, 86.94, "pada suhu minus lima puluh derajat."],
-  [89.80, 92.25, "Sebuah lubang jarum sederhana,"],
-  [92.25, 94.60, "penjaga nyawa jutaan manusia yang melayang di angkasa."]
+  [3.40, 5.20, "Pernahkah Anda memperhatikan"],
+  [5.20, 6.40, "lubang jarum mungil di jendela"],
+  [6.40, 7.25, "pesawat saat terbang?"],
+  [8.50, 10.70, "Banyak penumpang cemas mengira jendela retak,"],
+  [10.70, 13.00, "atau kabin mengalami kebocoran udara berbahaya."],
+  [17.20, 19.40, "Padahal, lubang sekecil ini memikul rahasia"],
+  [19.40, 22.00, "keselamatan terbesar dalam sejarah kedirgantaraan."],
+  [26.80, 28.70, "Semua bermula dari tragedi kelam"],
+  [28.70, 30.30, "tahun 1954 pada pesawat jet"],
+  [30.30, 31.85, "komersial pertama di dunia,"],
+  [31.85, 33.00, "de Havilland Comet."],
+  [34.00, 35.80, "Pesawat jet tersebut tiba-tiba hancur"],
+  [35.80, 37.85, "berkeping-keping di angkasa tanpa peringatan."],
+  [42.50, 45.00, "Penyelidikan membuktikan: jendela persegi menciptakan"],
+  [45.00, 47.15, "konsentrasi tegangan dahsyat di sudut-sudutnya"],
+  [47.15, 48.45, "hingga badan pesawat robek."],
+  [54.50, 57.50, "Sejak itu, seluruh jendela pesawat"],
+  [57.50, 60.25, "diubah oval dengan tiga lapis akrilik."],
+  [61.50, 63.80, "Lubang jarum ini dinamakan breather hole,"],
+  [63.80, 65.50, "berada persis di kaca tengah"],
+  [65.50, 66.80, "untuk mengalirkan tekanan udara."],
+  [68.00, 70.30, "Dengan lubang ini, perbedaan tekanan udara"],
+  [70.30, 72.70, "ditanggung aman oleh kaca terluar yang tebal."],
+  [78.80, 81.80, "Selain tekanan, sirkulasi lubang ini juga"],
+  [81.80, 83.50, "membuang kelembapan kabin agar kaca"],
+  [83.50, 85.30, "tidak membeku pada suhu minus lima puluh derajat."],
+  [89.50, 91.50, "Sebuah lubang jarum sederhana,"],
+  [91.50, 93.70, "penjaga nyawa jutaan manusia di angkasa."]
 ];
 
 // Character bubbles: [who, start, end, text]
 export const BUB = [
-  ['passenger', 15.2, 17.0, "Tunggu, apa jendela ini retak?!"],
-  ['engineer', 40.8, 43.2, "Sudut tajam jendela merobek logam!"],
-  ['passenger', 87.2, 89.4, "Pemandangannya sungguh menakjubkan."]
+  ['passenger', 15.0, 17.6, "Tunggu, apa jendela ini retak?!"],
+  ['engineer', 39.5, 41.8, "Sudut tajam jendela merobek logam!"],
+  ['passenger', 86.2, 88.8, "Pemandangannya sungguh menakjubkan."]
 ];
 
 // Chapters for overhead ribbon banners
