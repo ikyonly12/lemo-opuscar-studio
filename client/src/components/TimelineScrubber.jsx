@@ -1,32 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Smartphone, Monitor, Film, Layers, Sparkles } from 'lucide-react';
 
-const DEFAULT_SHOTS = [
-  { id: 1, start: 0.0, end: 3.5, type: 'Wide Establishing', desc: 'Overview of entire world / set' },
-  { id: 2, start: 3.5, end: 6.8, type: 'Extreme Macro', desc: 'Macro close-up on primary mechanical element' },
-  { id: 3, start: 6.8, end: 10.2, type: 'Subject Tracking', desc: 'Camera glides along moving trajectory' },
-  { id: 4, start: 10.2, end: 13.5, type: 'Reaction / POV', desc: 'Character reaction / mechanical response' },
-  { id: 5, start: 13.5, end: 17.0, type: 'Isometric Cut', desc: 'Orthogonal diagrammatic blueprint view' },
-  { id: 6, start: 17.0, end: 20.4, type: 'Push-in Detail', desc: 'Fast dynamic push-in on key turning point' },
-  { id: 7, start: 20.4, end: 24.0, type: 'Dutch Tilt', desc: 'Tension angle reflecting the central conflict' },
-  { id: 8, start: 24.0, end: 27.5, type: 'Extreme Close-up', desc: 'Critical physical detail in high focus' },
-  { id: 9, start: 27.5, end: 31.0, type: 'Tracking Action', desc: 'Fast motion tracking with secondary bounces' },
-  { id: 10, start: 31.0, end: 34.5, type: 'Wide Set Rebuild', desc: 'Physical transformation of the set' },
-  { id: 11, start: 34.5, end: 38.0, type: 'Macro Insert', desc: 'Key mechanism locking into place' },
-  { id: 12, start: 38.0, end: 41.5, type: 'High Angle', desc: 'Expansive overview of completed structure' },
-  { id: 13, start: 41.5, end: 45.0, type: 'Subject POV', desc: 'Point of view looking through the device' },
-  { id: 14, start: 45.0, end: 48.5, type: 'Orbit Inspection', desc: 'Continuous camera orbit around hero element' },
-  { id: 15, start: 48.5, end: 52.0, type: 'Climactic Reveal', desc: 'Dramatic pull-back revealing scale' },
-  { id: 16, start: 52.0, end: 56.0, type: 'Thematic Culmination', desc: 'Final narrative resolution' },
-  { id: 17, start: 56.0, end: 60.0, type: 'Clean End Title', desc: 'Punchy payoff title with zero credits' }
-];
-
 export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspectRatio, treatment, selectedStory }) {
   const [currentTime, setCurrentTime] = useState(1.5);
   const [isPlaying, setIsPlaying] = useState(false);
   const totalDuration = 60.0;
 
-  // Active shots list (from AI treatment or default broadcast blueprint)
+  // Active shots list strictly from AI treatment (Zero dummy shots)
   const shots = treatment?.shots?.length > 0
     ? treatment.shots.map((s, idx) => ({
         id: s.id || idx + 1,
@@ -35,12 +15,16 @@ export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspect
         type: s.type || 'Cinematic Shot',
         desc: s.description || s.camera || 'Motivated camera angle'
       }))
-    : DEFAULT_SHOTS;
+    : [];
+
+  const hasShots = shots.length > 0;
 
   // Active shot at current time
-  const activeShot = shots.find(s => currentTime >= s.start && currentTime < s.end) || shots[shots.length - 1];
+  const activeShot = hasShots
+    ? (shots.find(s => currentTime >= s.start && currentTime < s.end) || shots[shots.length - 1])
+    : null;
 
-  // Active subtitle at current time (if treatment has subtitles)
+  // Active subtitle at current time (strictly from AI treatment)
   const activeSub = treatment?.subtitles?.find(sub => currentTime >= sub.start && currentTime < sub.end);
 
   // Play animation loop
@@ -72,7 +56,11 @@ export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspect
             Interactive Viewport & Dynamic Shot Scrubber
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Mandat Lemo-Opuscar: <b className="text-amber-300">{shots.length} Micro-Shots</b> (ASL: {(60 / shots.length).toFixed(1)}s per shot)
+            Mandat Lemo-Opuscar: {hasShots ? (
+              <><b className="text-amber-300">{shots.length} Micro-Shots</b> (ASL: {(60 / shots.length).toFixed(1)}s per shot)</>
+            ) : (
+              <span className="text-purple-400">Menunggu AI merancang 15–25 Micro-Shots & Subtitle Word-Chunk...</span>
+            )}
           </p>
         </div>
 
@@ -111,35 +99,61 @@ export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspect
           }`}
         >
           {/* Active Shot HUD Badge */}
-          <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
-            <span className="px-2 py-1 rounded bg-black/80 backdrop-blur-md text-[10px] font-mono text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
-              <Film className="w-3 h-3 text-amber-400" />
-              SHOT {activeShot.id}/{shots.length}: {activeShot.type}
-            </span>
-          </div>
+          {activeShot && (
+            <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
+              <span className="px-2 py-1 rounded bg-black/80 backdrop-blur-md text-[10px] font-mono text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+                <Film className="w-3 h-3 text-amber-400" />
+                SHOT {String(activeShot.id).padStart(2, '0')}/{shots.length}: {activeShot.type}
+              </span>
+            </div>
+          )}
 
-          <div className="text-center p-6 space-y-3 z-0">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
-              <Layers className="w-6 h-6" />
+          {hasShots && activeShot ? (
+            <div className="text-center p-6 space-y-3 z-0">
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+                <Layers className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                  Style: <span className="text-amber-400">{selectedStyle}</span>
+                </p>
+                <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-1 line-clamp-2">
+                  {activeShot.desc}
+                </p>
+                <p className="text-[10px] text-slate-500 font-mono mt-1">
+                  Interval: {activeShot.start.toFixed(1)}s – {activeShot.end.toFixed(1)}s
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
-                Style: <span className="text-amber-400">{selectedStyle}</span>
-              </p>
-              <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-1 line-clamp-2">
-                {activeShot.desc}
-              </p>
-              <p className="text-[10px] text-slate-500 font-mono mt-1">
-                Shot Interval: {activeShot.start.toFixed(1)}s – {activeShot.end.toFixed(1)}s
-              </p>
+          ) : (
+            <div className="text-center p-6 space-y-3 z-0">
+              <div className="w-12 h-12 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mx-auto text-purple-400">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-200">
+                  {selectedStory ? 'AI Merancang Multi-Shot Treatment...' : 'Menunggu Pilihan Ide Cerita'}
+                </p>
+                <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-1">
+                  {selectedStory
+                    ? `Menyusun kamera dan narasi untuk: "${selectedStory.title}"`
+                    : 'Pilih ide cerita di atas atau masukkan topik untuk melihat urutan shot sinematik.'}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Subtitle Chunk Simulation Overlay (Strict Word-Chunk: 2 to 5 words) */}
           <div className={`absolute ${isPortrait ? 'bottom-16' : 'bottom-6'} left-0 right-0 px-4 text-center pointer-events-none z-10`}>
-            <span className="inline-block bg-black/85 text-amber-300 font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl backdrop-blur-md border border-amber-500/20 max-w-[800px]">
-              {activeSub ? activeSub.text : selectedStory ? `"${selectedStory.title.split(':')[0]}"` : '"Inovasi Sejarah Tersembunyi"'}
-            </span>
+            {activeSub ? (
+              <span className="inline-block bg-black/85 text-amber-300 font-semibold text-xs px-3 py-1.5 rounded-lg shadow-xl backdrop-blur-md border border-amber-500/20 max-w-[800px]">
+                {activeSub.text}
+              </span>
+            ) : selectedStory ? (
+              <span className="inline-block bg-black/70 text-slate-300 text-[11px] px-3 py-1 rounded-lg border border-slate-700/50">
+                {selectedStory.title}
+              </span>
+            ) : null}
           </div>
 
           {/* Mobile Safe Area Guideline (Portrait Only) */}
@@ -156,7 +170,7 @@ export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspect
         <div className="flex items-center justify-between text-[11px] text-slate-400">
           <span className="flex items-center gap-1 font-mono">
             <Film className="w-3 h-3 text-amber-400" />
-            Timeline Micro-Shots ({shots.length} Angles):
+            Timeline Micro-Shots ({hasShots ? `${shots.length} Angles` : '0 Shots'}):
           </span>
           <span className="font-mono text-amber-400">
             t = {currentTime.toFixed(2)}s / 60.0s
@@ -165,32 +179,39 @@ export default function TimelineScrubber({ selectedStyle, aspectRatio, setAspect
 
         {/* Visual Multi-Segment Timeline Track */}
         <div className="h-4 w-full bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex">
-          {shots.map((shot) => {
-            const widthPct = ((shot.end - shot.start) / totalDuration) * 100;
-            const isShotActive = currentTime >= shot.start && currentTime < shot.end;
-            return (
-              <div
-                key={shot.id}
-                onClick={() => setCurrentTime(shot.start)}
-                title={`Shot ${shot.id}: ${shot.type} (${shot.start.toFixed(1)}s - ${shot.end.toFixed(1)}s)`}
-                style={{ width: `${widthPct}%` }}
-                className={`h-full border-r border-slate-900 transition-colors cursor-pointer ${
-                  isShotActive
-                    ? 'bg-amber-400'
-                    : shot.id % 2 === 0
-                    ? 'bg-slate-800 hover:bg-slate-700'
-                    : 'bg-slate-700/70 hover:bg-slate-600'
-                }`}
-              />
-            );
-          })}
+          {hasShots ? (
+            shots.map((shot) => {
+              const widthPct = ((shot.end - shot.start) / totalDuration) * 100;
+              const isShotActive = currentTime >= shot.start && currentTime < shot.end;
+              return (
+                <div
+                  key={shot.id}
+                  onClick={() => setCurrentTime(shot.start)}
+                  title={`Shot ${shot.id}: ${shot.type} (${shot.start.toFixed(1)}s - ${shot.end.toFixed(1)}s)`}
+                  style={{ width: `${widthPct}%` }}
+                  className={`h-full border-r border-slate-900 transition-colors cursor-pointer ${
+                    isShotActive
+                      ? 'bg-amber-400'
+                      : shot.id % 2 === 0
+                      ? 'bg-slate-800 hover:bg-slate-700'
+                      : 'bg-slate-700/70 hover:bg-slate-600'
+                  }`}
+                />
+              );
+            })
+          ) : (
+            <div className="w-full h-full bg-slate-900/60 flex items-center justify-center text-[10px] text-slate-500 font-mono">
+              [Menunggu Treatment AI]
+            </div>
+          )}
         </div>
 
         {/* Scrubber Controls */}
         <div className="flex items-center gap-3 pt-2">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="w-9 h-9 rounded-xl bg-amber-500 hover:bg-amber-400 text-black flex items-center justify-center transition cursor-pointer shadow-lg shadow-amber-500/20"
+            disabled={!hasShots}
+            className="w-9 h-9 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black flex items-center justify-center transition cursor-pointer shadow-lg shadow-amber-500/20"
           >
             {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
           </button>

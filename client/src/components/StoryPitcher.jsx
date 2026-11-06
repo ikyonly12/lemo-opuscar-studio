@@ -1,84 +1,33 @@
 import React, { useState } from 'react';
-import { Lightbulb, RefreshCw, CheckCircle2, Wand2, Bot, Sparkles, Loader2, AlertCircle, Key } from 'lucide-react';
+import { Lightbulb, RefreshCw, CheckCircle2, Wand2, Sparkles, Loader2, AlertCircle, Key, Plus } from 'lucide-react';
 import { generateAIStoryConcepts } from '../services/llm';
-
-const FALLBACK_STORIES = [
-  {
-    id: 'traffic-light-yellow-physics',
-    title: 'The Dilemma Zone: The Mathematical Trap Behind Yellow Traffic Lights',
-    topic: 'The 1960s Gazis-Herman-Maradudin mathematical proof demonstrating the physical impossibility of stopping or clearing an intersection at certain speeds, giving birth to the universal yellow-light timing standard.',
-    rationale: 'Clean typographic diagrams and vector road layout vectors match mathematical kinematic formulas perfectly.',
-    suggestedStyle: 'blueprint'
-  },
-  {
-    id: 'keyboard-qwerty-typewriter-jam',
-    title: 'The Slowdown Myth: How Telegraph Morsecodes Built QWERTY',
-    topic: 'Why the myth of slowing down fast typists is false, and how E. Remington & Sons designed the 1873 Sholes layout to optimize acoustic decoding of high-speed transatlantic Morse code telegrams.',
-    rationale: 'Exploded mechanical linkages and archival telegraph papers capture 19th century industrial engineering.',
-    suggestedStyle: 'exploded-teardown'
-  },
-  {
-    id: 'barcode-bullseye-scanner-laser',
-    title: 'From Sand Dunes to Supermarkets: The Laser That Saved Retail',
-    topic: 'How Norman Joseph Woodland drew Morse code in Miami sand in 1948, creating the bullseye circular barcode that failed under hot incandescent bulbs until helium-neon lasers unlocked the 1974 Wrigley gum pack scan.',
-    rationale: 'Retro optical scans and precision line grids reflect the dawn of modern laser automation.',
-    suggestedStyle: 'circuit-board'
-  },
-  {
-    id: 'airplane-black-box-orange',
-    title: 'The Flight Recorder Mystery: Why the Black Box is Painted Dayglo Orange',
-    topic: 'David Warren 1953 Aeronautical Research Laboratories invention of the magnetic wire crash recorder, the aviation establishment skepticism, and the optical contrast physics dictating bright orange paint.',
-    rationale: 'Aeronautical CAD diagrams and military briefing boards ground the investigation in real aircraft telemetry.',
-    suggestedStyle: 'blueprint'
-  },
-  {
-    id: 'ballpoint-pen-high-altitude-war',
-    title: 'The 30,000-Foot Ball: How WWII Bombers Made the Biro Pen Immortal',
-    topic: 'Why Laszlo Biro fountain pen alternative was ignored until RAF pilots found fountain pens burst under unpressurized bomber cockpits, turning capillary ink tubes into critical wartime equipment.',
-    rationale: 'Capillary ink fluid dynamics and brass ball-bearing tolerances shine in exploded macro visuals.',
-    suggestedStyle: 'exploded-teardown'
-  },
-  {
-    id: 'escalator-curved-step-geometry',
-    title: 'The Invisible Hinge: How Escalator Steps Disappear Into Geometry',
-    topic: 'Jesse Reno 1892 inclined elevator versus Charles Seeberger cleated step patent, solving the dangerous pinch point where mechanical stairs level out into comb plates.',
-    rationale: 'CAD cross-sections and synchronized gear tracks visualize internal escalator kinetics.',
-    suggestedStyle: 'paper-popup'
-  }
-];
 
 export default function StoryPitcher({ onSelectStory, currentStory, llmConfig, onOpenAISettings, onSelectStyle }) {
   const [candidates, setCandidates] = useState([]);
   const [customTopic, setCustomTopic] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [isAiGenerated, setIsAiGenerated] = useState(false);
+
+  const hasApiKey = Boolean(llmConfig?.apiKey?.trim());
 
   const fetchPitches = async () => {
     setErrorMsg('');
 
-    // If API Key is present, call the real AI LLM!
-    if (llmConfig?.apiKey?.trim()) {
-      setLoading(true);
-      try {
-        const aiStories = await generateAIStoryConcepts(llmConfig, customTopic);
-        setCandidates(aiStories);
-        setIsAiGenerated(true);
-      } catch (err) {
-        console.error('LLM story generation failed:', err);
-        setErrorMsg(`Gagal memanggil AI (${llmConfig.provider}): ${err.message}. Menampilkan ide offline fallback.`);
-        // Fallback to offline shuffle
-        const shuffled = [...FALLBACK_STORIES].sort(() => 0.5 - Math.random());
-        setCandidates(shuffled.slice(0, 3));
-        setIsAiGenerated(false);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      // Offline fallback shuffle
-      const shuffled = [...FALLBACK_STORIES].sort(() => 0.5 - Math.random());
-      setCandidates(shuffled.slice(0, 3));
-      setIsAiGenerated(false);
+    if (!hasApiKey) {
+      onOpenAISettings();
+      setErrorMsg('Harap masukkan API Key AI Anda terlebih dahulu (Google Gemini Gratis, DeepSeek, Groq, OpenAI). Sistem bekerja 100% online tanpa data dummy.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const aiStories = await generateAIStoryConcepts(llmConfig, customTopic);
+      setCandidates(aiStories);
+    } catch (err) {
+      console.error('LLM story generation failed:', err);
+      setErrorMsg(`Gagal memanggil AI (${llmConfig?.provider || 'LLM'}): ${err.message}. Periksa API Key atau kuota Anda.`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +36,8 @@ export default function StoryPitcher({ onSelectStory, currentStory, llmConfig, o
     if (!customTopic.trim()) return;
     onSelectStory({
       id: 'custom-' + Date.now(),
-      title: customTopic.split('.')[0] || 'Custom Studio Project',
-      topic: customTopic,
+      title: customTopic.split('.')[0] || 'Topik Kustom Studio',
+      topic: customTopic.trim(),
       rationale: 'Topik kustom pengguna dengan arahan visual deterministik.',
       suggestedStyle: null
     });
@@ -103,50 +52,46 @@ export default function StoryPitcher({ onSelectStory, currentStory, llmConfig, o
               <Lightbulb className="w-5 h-5" />
               Ide Cerita & Konsep Naratif
             </h2>
-            {isAiGenerated ? (
+            {candidates.length > 0 && (
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
                 Live AI ({llmConfig?.provider})
               </span>
-            ) : (
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                Preset Offline
-              </span>
             )}
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Rumus Lemo-Opuscar: Fenomena sehari-hari + Asal-usul sejarah tak terduga + Logika mekanik/sains
+            Rumus Lemo-Opuscar: Fenomena modern + Asal-usul sejarah/fisika tak terduga + Logika visual
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {!llmConfig?.apiKey?.trim() && (
+          {!hasApiKey ? (
             <button
               onClick={onOpenAISettings}
               className="flex items-center gap-1.5 px-3 py-2 bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 border border-purple-800/80 rounded-xl text-xs font-medium transition cursor-pointer"
             >
               <Key className="w-3.5 h-3.5 text-purple-400" />
-              Masukkan API Key AI
+              Hubungkan API Key AI
+            </button>
+          ) : (
+            <button
+              onClick={fetchPitches}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  AI Sedang Menulis Ide...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  {candidates.length > 0 ? 'Generate 3 Ide Baru (AI)' : 'Generate 3 Ide Cerita (AI)'}
+                </>
+              )}
             </button>
           )}
-
-          <button
-            onClick={fetchPitches}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition cursor-pointer"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                AI Sedang Berpikir...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-3.5 h-3.5" />
-                {candidates.length > 0 ? 'Generate 3 Ide Baru (AI)' : 'Generate 3 Ide Cerita (AI)'}
-              </>
-            )}
-          </button>
         </div>
       </div>
 
@@ -155,6 +100,51 @@ export default function StoryPitcher({ onSelectStory, currentStory, llmConfig, o
         <div className="mb-4 p-3 rounded-xl bg-amber-950/30 border border-amber-800/50 text-amber-300 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span className="flex-1 font-mono text-[11px]">{errorMsg}</span>
+        </div>
+      )}
+
+      {/* No API Key & No Candidates Callout */}
+      {!hasApiKey && candidates.length === 0 && (
+        <div className="p-6 rounded-xl border border-dashed border-slate-800 bg-slate-950/50 text-center space-y-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200">Sistem 100% Online Berbasis AI (Zero Data Dummy)</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+              Setiap ide cerita dan arahan visual dirancang langsung secara real-time oleh model AI pilihan Anda.
+              Hubungkan API Key (misal Google Gemini Gratis di AI Studio) atau tulis topik langsung di bawah.
+            </p>
+          </div>
+          <button
+            onClick={onOpenAISettings}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-purple-600/20 transition cursor-pointer"
+          >
+            <Key className="w-3.5 h-3.5" />
+            Buka Pengaturan AI (BYOK)
+          </button>
+        </div>
+      )}
+
+      {/* Empty State when Key is configured but haven't clicked generate */}
+      {hasApiKey && candidates.length === 0 && !loading && (
+        <div className="p-6 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-center space-y-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
+            <Lightbulb className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200">AI Siap Digunakan ({llmConfig.provider}: {llmConfig.model})</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+              Klik tombol di bawah untuk meminta AI menghasilkan 3 konsep cerita orisinal berdasarkan fenomena modern dan sejarah ilmiah, atau masukkan tema kustom Anda.
+            </p>
+          </div>
+          <button
+            onClick={fetchPitches}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-black rounded-xl text-xs font-bold shadow-lg shadow-amber-500/20 transition cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4" />
+            Generate 3 Ide Cerita (AI)
+          </button>
         </div>
       )}
 
@@ -219,17 +209,29 @@ export default function StoryPitcher({ onSelectStory, currentStory, llmConfig, o
       <form onSubmit={handleCustomSubmit} className="flex gap-2">
         <input
           type="text"
-          placeholder="Atau tulis tema panduan untuk AI (misal: Mengapa tombol darurat eskalator dirancang melengkung?)..."
+          placeholder="Atau tulis tema panduan Anda (misal: Mengapa tombol darurat eskalator dirancang melengkung?)..."
           value={customTopic}
           onChange={(e) => setCustomTopic(e.target.value)}
           className="flex-1 bg-slate-950 border border-slate-800 text-xs px-4 py-2.5 rounded-xl focus:outline-none focus:border-amber-500 text-slate-200 transition"
         />
         <button
           type="submit"
-          className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 transition cursor-pointer"
+          className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
         >
+          <Plus className="w-3.5 h-3.5" />
           Pakai Ide Ini
         </button>
+        {hasApiKey && (
+          <button
+            type="button"
+            onClick={fetchPitches}
+            disabled={loading || !customTopic.trim()}
+            className="px-4 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Kembangkan Tema (AI)
+          </button>
+        )}
       </form>
     </div>
   );

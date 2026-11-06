@@ -18,7 +18,11 @@ on:
       topic:
         description: 'Story Topic & Brief'
         required: true
-        default: 'The Mystery of Clock Gears'
+        default: 'Inovasi Sejarah Tersembunyi'
+      treatment_b64:
+        description: 'Base64-encoded AI Treatment JSON payload'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -61,6 +65,62 @@ jobs:
           node node_modules/playwright-core/cli.js install --with-deps chromium-headless-shell
           node node_modules/playwright-core/cli.js install chromium-headless-shell
 
+      - name: Inject Dynamic Story Treatment (Zero Dummy Data)
+        run: |
+          B64="${{ github.event.inputs.treatment_b64 }}"
+          TOPIC="${{ github.event.inputs.topic }}"
+          STYLE="${{ github.event.inputs.style }}"
+          LANG="${{ github.event.inputs.language }}"
+          AR="${{ github.event.inputs.aspect_ratio }}"
+
+          mkdir -p "$GITHUB_WORKSPACE/templates/engine"
+
+          if [ -n "$B64" ]; then
+            echo "[*] Decoding Base64 dynamic AI Treatment payload..."
+            echo "$B64" | base64 -d > "$GITHUB_WORKSPACE/templates/engine/story.json"
+          else
+            echo "[*] Constructing dynamic story.json from workflow inputs..."
+            python3 -c "
+import json
+payload = {
+    'title': '''$TOPIC''',
+    'topic': '''$TOPIC''',
+    'style': '$STYLE',
+    'language': '$LANG',
+    'aspectRatio': '$AR',
+    'shots': [],
+    'subtitles': [],
+    'voiceLines': [{'t': 1.0, 'text': '''$TOPIC'''}]
+}
+with open('$GITHUB_WORKSPACE/templates/engine/story.json', 'w', encoding='utf-8') as f:
+    json.dump(payload, f, ensure_ascii=False)
+"
+          fi
+
+          echo "[*] Story payload verified:"
+          head -n 25 "$GITHUB_WORKSPACE/templates/engine/story.json"
+
+          # Inject STORY_DATA directly into templates/engine/index.html
+          python3 -c "
+import json, re
+
+with open('$GITHUB_WORKSPACE/templates/engine/story.json', 'r', encoding='utf-8') as sf:
+    data = json.load(sf)
+
+with open('$GITHUB_WORKSPACE/templates/engine/index.html', 'r', encoding='utf-8') as hf:
+    html = hf.read()
+
+injection = f'<script>window.STORY_DATA = {json.dumps(data, ensure_ascii=False)};</script>'
+if 'window.STORY_DATA =' in html:
+    html = re.sub(r'<script>window\.STORY_DATA = .*?;</script>', injection, html, flags=re.DOTALL)
+else:
+    html = html.replace('</head>', f'{injection}\n</head>')
+
+with open('$GITHUB_WORKSPACE/templates/engine/index.html', 'w', encoding='utf-8') as hf:
+    hf.write(html)
+print('[OK] Dynamic story injected directly into index.html!')
+"
+
       - name: Execute Cloud Render Pipeline
         run: |
           LIB="$HOME/lemo-opuscar"
@@ -80,20 +140,7 @@ jobs:
 
           OUT_DIR="$GITHUB_WORKSPACE/export"
           mkdir -p "$OUT_DIR"
-
-          # Intelligent target selection with automatic fallback to robust engine
           TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
-          DEMO_DIR="$LIB/styles/$STYLE/demo"
-          if [ -d "$DEMO_DIR" ] && [ -f "$DEMO_DIR/index.html" ]; then
-            echo "Testing if style $STYLE demo has all assets present..."
-            if xvfb-run -a node "$LIB/core/render/still.mjs" "$DEMO_DIR" 0.5 --size "$SIZE" 2>/dev/null; then
-              echo "Style demo $STYLE verified cleanly! Using native demo."
-              TARGET_DIR="$DEMO_DIR"
-            else
-              echo "Style demo $STYLE has missing font/mesh assets, seamlessly using studio engine."
-              TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
-            fi
-          fi
 
           # 1. Frame-Zero Keyframe Validation
           echo "[1/4] Running Frame-Zero keyframe validation..."

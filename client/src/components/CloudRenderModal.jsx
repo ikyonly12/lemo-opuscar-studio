@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2, Key, Download, Play } from 'lucide-react';
+import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2, Key, Download, Film, Sparkles } from 'lucide-react';
 
 export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
   const [token, setToken] = useState('');
@@ -65,6 +65,11 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
       return;
     }
 
+    if (!renderParams?.story) {
+      alert('Pilih atau tulis ide cerita terlebih dahulu di studio sebelum memulai render!');
+      return;
+    }
+
     setStatus('DISPATCHING');
     setMessage('Menghubungkan ke GitHub Actions Cloud Runner...');
     setActiveRun(null);
@@ -72,6 +77,23 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
 
     try {
       localStorage.setItem('GITHUB_STUDIO_PAT', token.trim());
+
+      // Serialize dynamic treatment to Base64 (Zero Dummy Data)
+      let treatmentB64 = '';
+      const payload = {
+        title: renderParams.treatment?.title || renderParams.story?.title || 'Studio Film',
+        topic: renderParams.story?.topic || renderParams.story?.title || '',
+        style: renderParams.style || 'paper-popup',
+        aspectRatio: renderParams.aspectRatio || '16:9',
+        language: renderParams.language || 'id',
+        shots: renderParams.treatment?.shots || [],
+        subtitles: renderParams.treatment?.subtitles || [],
+        voiceLines: renderParams.treatment?.voiceLines || [],
+        foleyCues: renderParams.treatment?.foleyCues || []
+      };
+
+      const jsonStr = JSON.stringify(payload);
+      treatmentB64 = btoa(encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
 
       const targetUrl = `https://api.github.com/repos/${owner.trim()}/${repo.trim()}/actions/workflows/render.yml/dispatches`;
 
@@ -89,7 +111,8 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
             style: renderParams.style || 'paper-popup',
             aspect_ratio: renderParams.aspectRatio || '16:9',
             language: renderParams.language || 'id',
-            topic: renderParams.story?.topic || renderParams.story?.title || 'Unknown Invention'
+            topic: renderParams.story?.topic || renderParams.story?.title || 'Inovasi Sejarah Tersembunyi',
+            treatment_b64: treatmentB64
           }
         })
       });
@@ -153,11 +176,26 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
         </div>
 
         {/* Selected Specs Summary */}
-        <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 mb-5 text-xs grid grid-cols-2 gap-2 text-slate-300">
-          <div><span className="text-slate-500">Style:</span> <b className="text-amber-400">{renderParams.style}</b></div>
-          <div><span className="text-slate-500">Rasio:</span> <b>{renderParams.aspectRatio}</b></div>
-          <div><span className="text-slate-500">Bahasa:</span> <b>{renderParams.language.toUpperCase()}</b></div>
-          <div><span className="text-slate-500">Cloud Worker:</span> <b className="text-emerald-400">Ubuntu Linux (4 vCPU)</b></div>
+        <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 mb-4 text-xs space-y-2 text-slate-300">
+          <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
+            <span className="text-slate-400 font-semibold">Proyek Aktif:</span>
+            <span className="text-amber-400 font-bold truncate max-w-xs">
+              {renderParams.story?.title || 'Belum Ada Cerita Dipilih'}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><span className="text-slate-500">Style:</span> <b className="text-amber-400">{renderParams.style}</b></div>
+            <div><span className="text-slate-500">Rasio:</span> <b>{renderParams.aspectRatio}</b></div>
+            <div><span className="text-slate-500">Bahasa:</span> <b>{renderParams.language.toUpperCase()}</b></div>
+            <div>
+              <span className="text-slate-500">AI Treatment:</span>{' '}
+              {renderParams.treatment?.shots?.length > 0 ? (
+                <b className="text-emerald-400">{renderParams.treatment.shots.length} Micro-Shots</b>
+              ) : (
+                <b className="text-purple-400">Topik Dinamis</b>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* RUNNING STATE */}
@@ -271,10 +309,10 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
               <div className="p-3 bg-red-950/40 border border-red-800/80 rounded-xl text-xs text-red-300 space-y-1">
                 <div className="flex items-center gap-2 font-semibold text-red-400">
                   <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>Autentikasi GitHub Ditolak (Status 401)</span>
+                  <span>Gagal Mengirim ke GitHub</span>
                 </div>
                 <p className="text-[11px] leading-relaxed text-slate-300">
-                  Token Anda tidak valid atau belum memiliki izin <b>'repo'</b> dan <b>'workflow'</b>. Pastikan Anda menyalin token yang memiliki kedua izin tersebut untuk repositori <code className="text-amber-400 font-mono">ikyonly12/lemo-opuscar-studio</code>.
+                  {message || "Token Anda tidak valid atau belum memiliki izin 'repo' dan 'workflow'."}
                 </p>
               </div>
             )}
@@ -282,8 +320,8 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={status === 'DISPATCHING'}
-                className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                disabled={status === 'DISPATCHING' || !renderParams.story}
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 disabled:opacity-40 text-black font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 {status === 'DISPATCHING' ? (
                   <>
@@ -292,7 +330,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
                   </>
                 ) : (
                   <>
-                    <CloudLightning className="w-4 h-4" />
+                    <CloudLightning className="w-4 h-4 fill-current" />
                     Mulai Render di Cloud (0% Beban Laptop)
                   </>
                 )}
