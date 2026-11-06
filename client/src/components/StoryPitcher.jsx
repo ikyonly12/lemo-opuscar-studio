@@ -1,25 +1,53 @@
 import React, { useState } from 'react';
 import { Lightbulb, RefreshCw, CheckCircle2, Wand2 } from 'lucide-react';
 
+const CANDIDATE_STORIES = [
+  {
+    id: 'traffic-light-yellow-physics',
+    title: 'The Dilemma Zone: The Mathematical Trap Behind Yellow Traffic Lights',
+    topic: 'The 1960s Gazis-Herman-Maradudin mathematical proof demonstrating the physical impossibility of stopping or clearing an intersection at certain speeds, giving birth to the universal yellow-light timing standard.',
+    rationale: 'Clean typographic diagrams and vector road layout vectors match mathematical kinematic formulas perfectly.'
+  },
+  {
+    id: 'keyboard-qwerty-typewriter-jam',
+    title: 'The Slowdown Myth: How Telegraph Morsecodes Built QWERTY',
+    topic: 'Why the myth of slowing down fast typists is false, and how E. Remington & Sons designed the 1873 Sholes layout to optimize acoustic decoding of high-speed transatlantic Morse code telegrams.',
+    rationale: 'Exploded mechanical linkages and archival telegraph papers capture 19th century industrial engineering.'
+  },
+  {
+    id: 'barcode-bullseye-scanner-laser',
+    title: 'From Sand Dunes to Supermarkets: The Laser That Saved Retail',
+    topic: 'How Norman Joseph Woodland drew Morse code in Miami sand in 1948, creating the bullseye circular barcode that failed under hot incandescent bulbs until helium-neon lasers unlocked the 1974 Wrigley gum pack scan.',
+    rationale: 'Retro optical scans and precision line grids reflect the dawn of modern laser automation.'
+  },
+  {
+    id: 'airplane-black-box-orange',
+    title: 'The Flight Recorder Mystery: Why the Black Box is Painted Dayglo Orange',
+    topic: 'David Warren 1953 Aeronautical Research Laboratories invention of the magnetic wire crash recorder, the aviation establishment skepticism, and the optical contrast physics dictating bright orange paint.',
+    rationale: 'Aeronautical CAD diagrams and military briefing boards ground the investigation in real aircraft telemetry.'
+  },
+  {
+    id: 'ballpoint-pen-high-altitude-war',
+    title: 'The 30,000-Foot Ball: How WWII Bombers Made the Biro Pen Immortal',
+    topic: 'Why Laszlo Biro fountain pen alternative was ignored until RAF pilots found fountain pens burst under unpressurized bomber cockpits, turning capillary ink tubes into critical wartime equipment.',
+    rationale: 'Capillary ink fluid dynamics and brass ball-bearing tolerances shine in exploded macro visuals.'
+  },
+  {
+    id: 'escalator-curved-step-geometry',
+    title: 'The Invisible Hinge: How Escalator Steps Disappear Into Geometry',
+    topic: 'Jesse Reno 1892 inclined elevator versus Charles Seeberger cleated step patent, solving the dangerous pinch point where mechanical stairs level out into comb plates.',
+    rationale: 'CAD cross-sections and synchronized gear tracks visualize internal escalator kinetics.'
+  }
+];
+
 export default function StoryPitcher({ onSelectStory, currentStory }) {
-  const [pitching, setPitching] = useState(false);
   const [candidates, setCandidates] = useState([]);
   const [customTopic, setCustomTopic] = useState('');
 
   const fetchPitches = () => {
-    setPitching(true);
-    fetch('/api/story/pitch', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setCandidates(data.stories);
-        }
-        setPitching(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setPitching(false);
-      });
+    // Shuffle and pick 3 stories (100% client-side serverless!)
+    const shuffled = [...CANDIDATE_STORIES].sort(() => 0.5 - Math.random());
+    setCandidates(shuffled.slice(0, 3));
   };
 
   const handleCustomSubmit = (e) => {
@@ -48,10 +76,9 @@ export default function StoryPitcher({ onSelectStory, currentStory }) {
 
         <button
           onClick={fetchPitches}
-          disabled={pitching}
-          className="flex items-center gap-2 px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition cursor-pointer"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${pitching ? 'animate-spin' : ''}`} />
+          <RefreshCw className="w-3.5 h-3.5" />
           {candidates.length > 0 ? 'Acak 3 Ide Baru' : 'Generate 3 Ide Cerita'}
         </button>
       </div>
@@ -116,4 +143,3 @@ export default function StoryPitcher({ onSelectStory, currentStory }) {
     </div>
   );
 }
-

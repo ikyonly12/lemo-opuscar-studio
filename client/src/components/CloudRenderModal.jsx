@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
-import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CloudLightning, X, ExternalLink, CheckCircle, AlertCircle, Loader2, Key } from 'lucide-react';
 
 export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
   const [token, setToken] = useState('');
-  const [owner, setOwner] = useState('');
+  const [owner, setOwner] = useState('ikyonly12');
   const [repo, setRepo] = useState('lemo-opuscar-studio');
   const [status, setStatus] = useState('IDLE'); // IDLE, DISPATCHING, SUCCESS, ERROR
   const [message, setMessage] = useState('');
   const [actionUrl, setActionUrl] = useState('');
 
+  // Load saved token from localStorage
+  useEffect(() => {
+    const savedToken = localStorage.getItem('GITHUB_STUDIO_PAT');
+    if (savedToken) setToken(savedToken);
+  }, []);
+
   if (!isOpen) return null;
 
   const handleDispatch = async (e) => {
     e.preventDefault();
-    if (!token || !owner || !repo) {
-      alert('Harap isi GitHub Token, Username (Owner), dan Nama Repository!');
+    if (!token.trim()) {
+      alert('Harap masukkan Personal Access Token (PAT) GitHub Anda!');
       return;
     }
 
@@ -22,30 +28,39 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
     setMessage('Menghubungkan ke GitHub Actions Cloud Runner...');
 
     try {
-      const res = await fetch('/api/render/cloud-dispatch', {
+      // Save token locally for convenience
+      localStorage.setItem('GITHUB_STUDIO_PAT', token.trim());
+
+      // Direct Client-to-GitHub REST API dispatch (100% Serverless!)
+      const targetUrl = `https://api.github.com/repos/${owner.trim()}/${repo.trim()}/actions/workflows/render.yml/dispatches`;
+
+      const response = await fetch(targetUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${token.trim()}`,
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          github_token: token,
-          owner: owner.trim(),
-          repo: repo.trim(),
+          ref: 'main',
           inputs: {
-            style: renderParams.style,
-            aspect_ratio: renderParams.aspectRatio,
-            language: renderParams.language,
-            topic: renderParams.story?.topic || 'Unknown Invention'
+            style: renderParams.style || 'paper-popup',
+            aspect_ratio: renderParams.aspectRatio || '16:9',
+            language: renderParams.language || 'id',
+            topic: renderParams.story?.topic || renderParams.story?.title || 'Unknown Invention'
           }
         })
       });
 
-      const data = await res.json();
-      if (data.success) {
+      if (response.status === 204 || response.status === 200) {
         setStatus('SUCCESS');
         setMessage('Job rendering berhasil dikirim ke Cloud Runner GitHub Actions!');
-        setActionUrl(data.workflow_url);
+        setActionUrl(`https://github.com/${owner.trim()}/${repo.trim()}/actions`);
       } else {
+        const errText = await response.text();
         setStatus('ERROR');
-        setMessage(data.error || 'Gagal mengirim job render.');
+        setMessage(`Gagal mengirim ke GitHub (Status ${response.status}): Pastikan Token memiliki izin 'repo' dan 'workflow'.`);
       }
     } catch (err) {
       setStatus('ERROR');
@@ -72,7 +87,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
               Cloud Render Farm (GitHub Actions)
             </h2>
             <p className="text-xs text-slate-400">
-              Render film di cloud server Linux 4 vCPU 16GB RAM tanpa membebani laptop
+              Serverless: Menjalankan Playwright & FFmpeg langsung di Cloud Linux 4 vCPU 16GB
             </p>
           </div>
         </div>
@@ -82,7 +97,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
           <div><span className="text-slate-500">Style:</span> <b className="text-amber-400">{renderParams.style}</b></div>
           <div><span className="text-slate-500">Rasio:</span> <b>{renderParams.aspectRatio}</b></div>
           <div><span className="text-slate-500">Bahasa:</span> <b>{renderParams.language.toUpperCase()}</b></div>
-          <div><span className="text-slate-500">Worker:</span> <b className="text-emerald-400">Ubuntu Latest (4 vCPU)</b></div>
+          <div><span className="text-slate-500">Cloud Worker:</span> <b className="text-emerald-400">Ubuntu 24.04 (4 vCPU)</b></div>
         </div>
 
         {status === 'SUCCESS' ? (
@@ -91,9 +106,9 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
               <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-100 text-sm">Rendering Sedang Berjalan di Cloud!</h3>
+              <h3 className="font-bold text-slate-100 text-sm">Rendering Berhasil Dimulai di Cloud!</h3>
               <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-                Playwright, Three.js, dan FFmpeg sedang memproses frame di server cloud GitHub Actions.
+                GitHub Actions sedang merender animasi Three.js/Canvas frame demi frame dan menyatukan audio menjadi MP4.
               </p>
             </div>
             {actionUrl && (
@@ -103,7 +118,7 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs rounded-xl shadow transition"
               >
-                Lihat Live Progress di GitHub
+                Lihat Progress di GitHub Actions
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
@@ -111,46 +126,32 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
         ) : (
           <form onSubmit={handleDispatch} className="space-y-4">
             <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                GitHub Username / Organization
-              </label>
-              <input
-                type="text"
-                placeholder="misal: kenziekafi"
-                value={owner}
-                onChange={(e) => setOwner(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-xs px-3.5 py-2.5 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Repository Name
-              </label>
-              <input
-                type="text"
-                placeholder="lemo-opuscar-studio"
-                value={repo}
-                onChange={(e) => setRepo(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-xs px-3.5 py-2.5 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500"
-                required
-              />
-            </div>
-
-            <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1 flex items-center justify-between">
-                <span>Personal Access Token (PAT)</span>
-                <span className="text-[10px] text-slate-500">Izin: repo / workflow</span>
+                <span className="flex items-center gap-1.5">
+                  <Key className="w-3 h-3 text-amber-400" />
+                  GitHub Personal Access Token (PAT)
+                </span>
+                <a
+                  href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=Lemo-Opuscar-Studio-Cloud-Renderer"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[10px] text-amber-400 hover:underline flex items-center gap-0.5"
+                >
+                  Buat Token Baru (1 Klik)
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
               </label>
               <input
                 type="password"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 text-xs px-3.5 py-2.5 rounded-xl text-slate-200 focus:outline-none focus:border-amber-500 font-mono"
                 required
               />
+              <p className="text-[10px] text-slate-500 mt-1">
+                Token disimpan aman di browser lokal Anda untuk memicu Cloud Runner secara langsung.
+              </p>
             </div>
 
             {status === 'ERROR' && (
@@ -185,4 +186,3 @@ export default function CloudRenderModal({ isOpen, onClose, renderParams }) {
     </div>
   );
 }
-

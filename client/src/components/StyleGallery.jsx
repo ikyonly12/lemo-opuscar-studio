@@ -8,19 +8,34 @@ export default function StyleGallery({ selectedStyle, onSelectStyle }) {
   const [filter, setFilter] = useState('ALL');
 
   useEffect(() => {
-    fetch('/api/styles')
+    // Load directly from static public asset (Zero Backend dependency!)
+    fetch('./data/catalog.json')
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          setStyles(data.styles);
-        }
+        const enriched = data.map(item => ({
+          ...item,
+          posterUrl: `./posters/${item.slug}.jpg`,
+          engine: getEngineType(item.slug, item.cat_en)
+        }));
+        setStyles(enriched);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching styles:', err);
+        console.error('Error fetching catalog:', err);
         setLoading(false);
       });
   }, []);
+
+  function getEngineType(slug, category) {
+    const threeDStyles = ['brick-toy', 'paper-popup', 'exploded-teardown', 'isometric-infographic', 'backrooms', 'liminal-space'];
+    const shaderStyles = ['crt-terminal', 'ascii-crt', 'thermal-camera', 'night-vision'];
+    const vectorStyles = ['swiss-motion', 'transit-map', 'blueprint', 'chalkboard'];
+    
+    if (threeDStyles.includes(slug)) return 'Three.js 3D PBR';
+    if (shaderStyles.includes(slug)) return 'WebGL2 Shaders';
+    if (vectorStyles.includes(slug)) return 'Vector SVG / DOM';
+    return 'HTML5 Canvas 2D';
+  }
 
   const filteredStyles = styles.filter(s => {
     const matchesSearch = s.en.toLowerCase().includes(search.toLowerCase()) || 
@@ -108,18 +123,15 @@ export default function StyleGallery({ selectedStyle, onSelectStyle }) {
               >
                 <div>
                   <div className="aspect-video w-full rounded-lg bg-slate-900 overflow-hidden relative mb-2 flex items-center justify-center border border-slate-800/80">
-                    {item.posterUrl ? (
-                      <img
-                        src={item.posterUrl}
-                        alt={item.en}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="text-[10px] text-slate-600 font-mono text-center p-2">
-                        {item.engine}
-                      </div>
-                    )}
+                    <img
+                      src={item.posterUrl}
+                      alt={item.en}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
                     {isSelected && (
                       <div className="absolute top-1 right-1 bg-amber-500 text-black p-0.5 rounded-full shadow">
                         <Check className="w-3 h-3 stroke-[3]" />
@@ -148,4 +160,3 @@ export default function StyleGallery({ selectedStyle, onSelectStyle }) {
     </div>
   );
 }
-
