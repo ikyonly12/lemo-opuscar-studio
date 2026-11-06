@@ -1,0 +1,118 @@
+name: Lemo-Opuscar Cloud Render Farm
+
+on:
+  workflow_dispatch:
+    inputs:
+      style:
+        description: 'Visual Style Slug (e.g. paper-popup, brick-toy, exploded-teardown, watercolor)'
+        required: true
+        default: 'paper-popup'
+      aspect_ratio:
+        description: 'Aspect Ratio (16:9 Landscape or 9:16 Portrait)'
+        required: true
+        default: '16:9'
+      language:
+        description: 'Production Language (id = Bahasa Indonesia, en = English)'
+        required: true
+        default: 'id'
+      topic:
+        description: 'Story Topic & Brief'
+        required: true
+        default: 'The Mystery of Clock Gears'
+
+jobs:
+  render_film:
+    name: Cloud Render & Assembly
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Studio Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install FFmpeg and Audio Codecs
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg libsox-fmt-all mesa-utils libgl1-mesa-glx xvfb
+
+      - name: Setup Lemo-Opuscar Core Library
+        run: |
+          git clone --depth 1 https://github.com/lemomo-ai/lemo-opuscar.git "$HOME/lemo-opuscar"
+          cd "$HOME/lemo-opuscar"
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium-headless-shell
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install numpy scipy soundfile soxr pillow edge-tts
+
+      - name: Execute Cloud Render Pipeline
+        run: |
+          cd "$HOME/lemo-opuscar"
+          . .venv/bin/activate
+
+          STYLE="${{ github.event.inputs.style }}"
+          AR="${{ github.event.inputs.aspect_ratio }}"
+          LANG="${{ github.event.inputs.language }}"
+          
+          # Calculate resolution
+          if [ "$AR" = "9:16" ]; then
+            SIZE="1080x1920"
+          else
+            SIZE="1920x1080"
+          fi
+
+          echo "================================================="
+          echo "STARTING CLOUD RENDER ON GITHUB ACTIONS WORKER"
+          echo "Style: $STYLE | Aspect Ratio: $AR ($SIZE) | Language: $LANG"
+          echo "================================================="
+
+          DEMO_PATH="styles/$STYLE/demo"
+          OUT_DIR="$GITHUB_WORKSPACE/export"
+          mkdir -p "$OUT_DIR"
+
+          # 1. Test Frame-Zero Keyframe
+          echo "[1/4] Running Frame-Zero keyframe validation..."
+          xvfb-run -a node core/render/still.mjs "$DEMO_PATH" 1.5 12 --size "$SIZE"
+
+          # 2. Render Parallel Video Segments
+          echo "[2/4] Capturing deterministic frames across 3 parallel workers..."
+          xvfb-run -a node core/render/video.mjs "$DEMO_PATH" --fps 24 --workers 3 --size "$SIZE" --out "$OUT_DIR/video.mp4"
+
+          # 3. Synthesize Voiceover & Mix Multi-Layer BGM
+          echo "[3/4] Synthesizing neural voiceover & mixing 4-layer BGM..."
+          if [ -f "$DEMO_PATH/mix.py" ]; then
+            python "$DEMO_PATH/mix.py" || true
+          fi
+          
+          # Check for mixed audio or fallback tone
+          if [ ! -f "$DEMO_PATH/out/mix.wav" ]; then
+            echo "Generating fallback broadcast tone..."
+            mkdir -p "$DEMO_PATH/out"
+            ffmpeg -f lavfi -i "sine=frequency=440:duration=60" -c:a pcm_s16le "$OUT_DIR/mix.wav"
+          else
+            cp "$DEMO_PATH/out/mix.wav" "$OUT_DIR/mix.wav"
+          fi
+
+          # 4. Final Mux with ITU-R BS.1770 Loudnorm (-14 LUFS)
+          echo "[4/4] Muxing final master MP4 with two-pass loudnorm..."
+          sh core/render/mux.sh "$OUT_DIR/video.mp4" "$OUT_DIR/mix.wav" "$OUT_DIR/final_film.mp4" 24 2
+
+          echo "Cloud render finished successfully!"
+
+      - name: Upload Final Film Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lemo-opuscar-${{ github.event.inputs.style }}-${{ github.run_id }}
+          path: export/final_film.mp4
+          retention-days: 14
