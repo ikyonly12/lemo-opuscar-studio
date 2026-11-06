@@ -18,7 +18,7 @@ on:
       topic:
         description: 'Story Topic & Brief'
         required: true
-        default: 'Inovasi Sejarah Tersembunyi'
+        default: 'The Airplane Window Breather Hole'
       treatment_b64:
         description: 'Base64-encoded AI Treatment JSON payload'
         required: false
@@ -74,7 +74,7 @@ jobs:
           ASPECT_RATIO: ${{ github.event.inputs.aspect_ratio }}
         run: |
           python templates/engine/inject_story.py
-          head -n 25 templates/engine/story.json
+          head -n 25 templates/engine/story.json || true
 
       - name: Execute Cloud Render Pipeline
         run: |
@@ -97,16 +97,22 @@ jobs:
           mkdir -p "$OUT_DIR"
           TARGET_DIR="$GITHUB_WORKSPACE/templates/engine"
 
+          # 0. Link Core Engine Dependencies (Three.js, OFL fonts, Poly Haven PBR/HDRI)
+          echo "[0/4] Linking engine dependencies into target project..."
+          ln -sfn "$LIB/node_modules" "$TARGET_DIR/node_modules"
+          ln -sfn "$LIB/core/fonts" "$TARGET_DIR/fonts"
+          ln -sfn "$LIB/core/assets/polyhaven" "$TARGET_DIR/assets"
+
           # 1. Frame-Zero Keyframe Validation
           echo "[1/4] Running Frame-Zero keyframe validation..."
-          xvfb-run -a node "$LIB/core/render/still.mjs" "$TARGET_DIR" 1.5 12 --size "$SIZE"
+          xvfb-run -a node "$LIB/core/render/still.mjs" "$TARGET_DIR" 2.0 10.0 --size "$SIZE"
 
           # 2. Parallel Frame-by-Frame Video Capture
           echo "[2/4] Capturing deterministic frames across 3 parallel Playwright workers..."
           xvfb-run -a node "$LIB/core/render/video.mjs" "$TARGET_DIR" --fps 24 --workers 3 --size "$SIZE" --out "$OUT_DIR/video.mp4"
 
-          # 3. Audio Synthesis (Neural Voiceover + 4-Layer BGM Mix)
-          echo "[3/4] Synthesizing neural voiceover & mixing 4-layer BGM..."
+          # 3. Audio Assembly (Master Audio + Speech Ducking)
+          echo "[3/4] Preparing master audio track..."
           cd "$GITHUB_WORKSPACE/templates/engine"
           python mix.py
           cp out/mix.wav "$OUT_DIR/mix.wav"
@@ -127,7 +133,4 @@ jobs:
         run: |
           TAG="render-${{ github.run_id }}"
           echo "Publishing direct download MP4 asset to GitHub Release tag: $TAG"
-          gh release create "$TAG" \
-            export/final_film.mp4 \
-            --title "Render: ${{ github.event.inputs.style }} (#${{ github.run_id }})" \
-            --notes "Direct MP4 Download for Lemo-Opuscar Studio. Topic: ${{ github.event.inputs.topic }}"
+          gh release create "$TAG"             export/final_film.mp4             --title "Render: ${{ github.event.inputs.style }} (#${{ github.run_id }})"             --notes "Direct MP4 Download for Lemo-Opuscar Studio. Topic: ${{ github.event.inputs.topic }}"

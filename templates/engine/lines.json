@@ -1,0 +1,100 @@
+[
+  {
+    "id": "v01",
+    "text": "Pernahkah Anda memperhatikan lubang jarum mungil di bagian bawah jendela pesawat saat terbang?",
+    "say": "Pernahkah Anda memperhatikan lubang jarum mungil di bagian bawah jendela pesawat saat terbang?",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "curious"
+  },
+  {
+    "id": "v02",
+    "text": "Banyak penumpang cemas mengira jendela retak, atau kabin mengalami kebocoran udara berbahaya.",
+    "say": "Banyak penumpang cemas mengira jendela retak, atau kabin mengalami kebocoran udara berbahaya.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "dramatic"
+  },
+  {
+    "id": "v03",
+    "text": "Padahal, lubang sekecil ini memikul rahasia keselamatan terbesar dalam sejarah kedirgantaraan.",
+    "say": "Padahal, lubang sekecil ini memikul rahasia keselamatan terbesar dalam sejarah kedirgantaraan.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "curious"
+  },
+  {
+    "id": "v04",
+    "text": "Semua bermula dari tragedi kelam tahun 1954 pada pesawat jet komersial pertama di dunia, de Havilland Comet.",
+    "say": "Semua bermula dari tragedi kelam tahun 1954 pada pesawat jet komersial pertama di dunia, de Havilland Comet.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "storyteller"
+  },
+  {
+    "id": "v05",
+    "text": "Pesawat jet tersebut tiba-tiba hancur berkeping-keping di angkasa tanpa peringatan apa pun.",
+    "say": "Pesawat jet tersebut tiba-tiba hancur berkeping-keping di angkasa tanpa peringatan apa pun.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "dramatic"
+  },
+  {
+    "id": "v06",
+    "text": "Penyelidikan membuktikan: jendela persegi menciptakan konsentrasi tegangan dahsyat di sudut-sudutnya hingga badan pesawat robek.",
+    "say": "Penyelidikan membuktikan: jendela persegi menciptakan konsentrasi tegangan dahsyat di sudut-sudutnya hingga badan pesawat robek.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "serious"
+  },
+  {
+    "id": "v07",
+    "text": "Sejak itu, seluruh jendela pesawat diubah menjadi oval dan dirancang dengan tiga lapisan akrilik berteknologi tinggi.",
+    "say": "Sejak itu, seluruh jendela pesawat diubah menjadi oval dan dirancang dengan tiga lapisan akrilik berteknologi tinggi.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "storyteller"
+  },
+  {
+    "id": "v08",
+    "text": "Lubang jarum ini dinamakan breather hole, berada persis di lapisan kaca tengah untuk mengalirkan tekanan udara.",
+    "say": "Lubang jarum ini dinamakan breather hole, berada persis di lapisan kaca tengah untuk mengalirkan tekanan udara.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "curious"
+  },
+  {
+    "id": "v09",
+    "text": "Dengan lubang ini, perbedaan tekanan udara raksasa ditanggung aman oleh kaca terluar yang paling tebal.",
+    "say": "Dengan lubang ini, perbedaan tekanan udara raksasa ditanggung aman oleh kaca terluar yang paling tebal.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "serious"
+  },
+  {
+    "id": "v10",
+    "text": "Selain menjaga tekanan, sirkulasi lubang ini juga membuang kelembapan udara kabin agar kaca tidak membeku pada suhu minus lima puluh derajat.",
+    "say": "Selain menjaga tekanan, sirkulasi lubang ini juga membuang kelembapan udara kabin agar kaca tidak membeku pada suhu minus lima puluh derajat.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "reassuring"
+  },
+  {
+    "id": "v11",
+    "text": "Sebuah lubang jarum sederhana, penjaga nyawa jutaan manusia yang melayang di angkasa.",
+    "say": "Sebuah lubang jarum sederhana, penjaga nyawa jutaan manusia yang melayang di angkasa.",
+    "voice": "JBFqnCBsd6RMkjVDRZzb",
+    "emotion": "storyteller"
+  },
+  {
+    "id": "b01",
+    "text": "Tunggu, apa jendela ini retak?!",
+    "say": "Tunggu, apa jendela ini retak?!",
+    "voice": "bIHbv24MWmeRgasZH58o",
+    "emotion": "dramatic"
+  },
+  {
+    "id": "b02",
+    "text": "Sudut tajam jendela merobek logam!",
+    "say": "Sudut tajam jendela merobek logam!",
+    "voice": "nPczCjzI2devNBz1zQrb",
+    "emotion": "serious"
+  },
+  {
+    "id": "b03",
+    "text": "Pemandangannya sungguh menakjubkan.",
+    "say": "Pemandangannya sungguh menakjubkan.",
+    "voice": "bIHbv24MWmeRgasZH58o",
+    "emotion": "cheerful"
+  }
+]

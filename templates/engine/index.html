@@ -1,361 +1,41 @@
 <!doctype html>
-<html lang="id">
+<html>
 <head>
   <meta charset="utf-8">
-  <title>Lemo-Opuscar Studio Dynamic Cinema Engine</title>
+  <title>The Airplane Window Breather Hole</title>
+  <link rel="stylesheet" href="fonts.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #06070a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    canvas { display: block; width: 100%; height: 100%; }
-    
-    #subtitle-layer {
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0d0e12;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    #stage, #ov {
       position: absolute;
       left: 0;
-      right: 0;
-      bottom: 72px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      pointer-events: none;
-      z-index: 100;
+      top: 0;
+      width: 100%;
+      height: 100%;
     }
-
-    /* Portrait 9:16 Safe Area Adjustment */
-    @media (max-aspect-ratio: 1/1) {
-      #subtitle-layer {
-        bottom: 180px;
-      }
-    }
-    
-    /* Strict Single-Line Word-Chunk Subtitle Mandate (2-5 words max, clean contrast) */
-    .chunk-badge {
-      background: rgba(6, 7, 10, 0.90);
-      color: #fde047;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      padding: 10px 26px;
-      border-radius: 12px;
-      border: 1px solid rgba(253, 224, 71, 0.4);
-      box-shadow: 0 12px 36px rgba(0,0,0,0.75);
-      text-align: center;
-      max-width: 820px;
-      backdrop-filter: blur(10px);
-      white-space: nowrap;
-      transition: opacity 0.15s ease;
-    }
-    
-    #hud-overlay {
-      position: absolute;
-      top: 24px;
-      left: 28px;
-      color: rgba(56, 189, 248, 0.90);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
-      pointer-events: none;
-      letter-spacing: 0.5px;
-      z-index: 50;
-      background: rgba(6, 7, 10, 0.7);
-      padding: 6px 14px;
-      border-radius: 8px;
-      border: 1px solid rgba(56, 189, 248, 0.25);
+    canvas {
+      display: block;
     }
   </style>
-<script>window.STORY_DATA = {"title": "Inovasi Sejarah Tersembunyi", "topic": "Inovasi Sejarah Tersembunyi", "style": "paper-popup", "language": "id", "aspectRatio": "16:9", "shots": [], "subtitles": [], "voiceLines": [{"t": 1.0, "text": "Inovasi Sejarah Tersembunyi"}]};</script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./node_modules/three/build/three.module.js",
+      "three/addons/": "./node_modules/three/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
-  <div id="hud-overlay">
-    <span id="hud-shot">SHOT 01/18</span> | <span id="hud-time">0.00s</span>
-  </div>
-  <canvas id="stage"></canvas>
-  <div id="subtitle-layer">
-    <div id="sub-chunk" class="chunk-badge" style="opacity: 0;"></div>
-  </div>
-
-  <script type="module">
-    const canvas = document.getElementById('stage');
-    const ctx = canvas.getContext('2d');
-    const subEl = document.getElementById('sub-chunk');
-    const hudShotEl = document.getElementById('hud-shot');
-    const hudTimeEl = document.getElementById('hud-time');
-
-    // Total Duration: Exactly 60.0 Seconds
-    window.DUR = 60.0;
-
-    // Load Dynamic Story Data (Zero Dummy Data)
-    const storyData = window.STORY_DATA || {};
-    const storyTitle = storyData.title || "Inovasi Sains & Peradaban";
-    const storyTopic = storyData.topic || "";
-    const storyStyle = storyData.style || "paper-popup";
-
-    // 1. Parse Dynamic Subtitles (2 to 5 words max per chunk)
-    let SUB_CHUNKS = [];
-    if (Array.isArray(storyData.subtitles) && storyData.subtitles.length > 0) {
-      SUB_CHUNKS = storyData.subtitles.map(s => ({
-        t0: parseFloat(s.start ?? s.t0 ?? 0),
-        t1: parseFloat(s.end ?? s.t1 ?? 0),
-        text: String(s.text || '').trim()
-      })).filter(s => s.text && s.t1 > s.t0);
-    }
-
-    // 2. Parse Dynamic Micro-Shots (15 to 25 shots, ASL 2.2s - 3.8s)
-    let SHOTS = [];
-    if (Array.isArray(storyData.shots) && storyData.shots.length > 0) {
-      SHOTS = storyData.shots.map((s, idx) => {
-        const typeLower = (s.type || '').toLowerCase();
-        const isMacro = typeLower.includes('macro') || typeLower.includes('close');
-        const isDiagram = typeLower.includes('diagram') || typeLower.includes('isometric') || typeLower.includes('blueprint');
-        const isExploded = typeLower.includes('explode') || typeLower.includes('teardown');
-        const isWide = typeLower.includes('wide') || typeLower.includes('establish') || typeLower.includes('pullback');
-
-        return {
-          id: s.id || idx + 1,
-          t0: parseFloat(s.start ?? (idx * (60.0 / storyData.shots.length))),
-          t1: parseFloat(s.end ?? ((idx + 1) * (60.0 / storyData.shots.length))),
-          type: (s.type || 'CINEMATIC SHOT').toUpperCase(),
-          desc: s.description || s.camera || '',
-          scale: isMacro ? 2.3 : isWide ? 0.78 : isExploded ? 1.1 : isDiagram ? 1.2 : 1.4,
-          panX: isMacro ? ((idx % 2 === 0 ? 1 : -1) * 90) : 0,
-          panY: isMacro ? ((idx % 3 === 0 ? 1 : -1) * 50) : 0,
-          rot: isDiagram ? 0.08 : (idx % 2 === 0 ? 0.02 : -0.02),
-          exploded: isExploded ? 1.0 : (idx === 8 || idx === 9 ? 0.8 : 0.0),
-          diagram: isDiagram ? 1 : (isExploded ? 1 : 0)
-        };
-      });
-    }
-
-    // If no shots supplied, generate 18 structured micro-shots
-    if (SHOTS.length === 0) {
-      const shotCount = 18;
-      const shotDur = 60.0 / shotCount;
-      const shotTypes = [
-        { type: 'WIDE ESTABLISHING', scale: 0.75, panX: 0, panY: 10, rot: 0, exploded: 0, diagram: 0 },
-        { type: 'EXTREME MACRO DETAIL', scale: 2.35, panX: -80, panY: 30, rot: -0.04, exploded: 0, diagram: 0 },
-        { type: 'SUBJECT TRACKING FOLLOW', scale: 1.55, panX: 60, panY: -40, rot: 0.03, exploded: 0, diagram: 0 },
-        { type: 'ISOMETRIC BLUEPRINT CUT', scale: 1.15, panX: -30, panY: 20, rot: 0.10, exploded: 0, diagram: 1 },
-        { type: 'DUTCH TILT TENSION PUSH', scale: 1.90, panX: 110, panY: -20, rot: -0.15, exploded: 0, diagram: 0 },
-        { type: 'TOP-DOWN RADIAL VIEW', scale: 0.95, panX: 0, panY: 0, rot: 0, exploded: 0, diagram: 1 },
-        { type: 'EXTREME CLOSE-UP CORE', scale: 2.70, panX: 40, panY: 120, rot: 0.05, exploded: 0, diagram: 0 },
-        { type: 'REVERSE TRACKING SWEEP', scale: 1.45, panX: -120, panY: -50, rot: -0.05, exploded: 0, diagram: 0 },
-        { type: 'EXPLODED TEARDOWN VIEW', scale: 1.05, panX: 0, panY: 0, rot: 0.06, exploded: 1.0, diagram: 1 },
-        { type: 'SNAP RE-ASSEMBLY IMPACT', scale: 1.35, panX: 20, panY: -10, rot: 0, exploded: 0.2, diagram: 0 },
-        { type: 'MACRO COMPONENT ENGRAVING', scale: 2.20, panX: -160, panY: -100, rot: -0.03, exploded: 0, diagram: 0 },
-        { type: 'DRAMATIC SILHOUETTE GLIDE', scale: 1.25, panX: 80, panY: 40, rot: 0.05, exploded: 0, diagram: 0 },
-        { type: 'ROTATIONAL ORBIT GLIDE', scale: 1.65, panX: -60, panY: 30, rot: 0.12, exploded: 0, diagram: 0 },
-        { type: 'VELOCITY CAM FOLLOW', scale: 2.05, panX: 140, panY: -70, rot: -0.04, exploded: 0, diagram: 0 },
-        { type: 'KINETIC CROSS-SECTION', scale: 1.10, panX: 0, panY: 20, rot: 0, exploded: 0, diagram: 2 },
-        { type: 'CLIMACTIC LOCK NOTCH', scale: 2.80, panX: 120, panY: -30, rot: 0.04, exploded: 0, diagram: 0 },
-        { type: 'EXPANSIVE CRANE PULLBACK', scale: 0.80, panX: 0, panY: 10, rot: -0.02, exploded: 0, diagram: 0 },
-        { type: 'THEMATIC RESOLUTION', scale: 1.00, panX: 0, panY: 0, rot: 0, exploded: 0, diagram: 0 }
-      ];
-
-      SHOTS = shotTypes.map((st, i) => ({
-        id: i + 1,
-        t0: i * shotDur,
-        t1: (i + 1) * shotDur,
-        ...st
-      }));
-    }
-
-    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-    const ss = (e0, e1, x) => {
-      const t = clamp((x - e0) / (e1 - e0), 0, 1);
-      return t * t * (3 - 2 * t);
-    };
-
-    // Deterministic Render Function
-    window.render = function(t) {
-      const W = canvas.width = window.innerWidth || 1920;
-      const H = canvas.height = window.innerHeight || 1080;
-      const cx = W / 2, cy = H / 2;
-      const isPortrait = H > W;
-
-      // 1. Identify Active Micro-Shot
-      const activeShot = SHOTS.find(s => t >= s.t0 && t < s.t1) || SHOTS[SHOTS.length - 1];
-      const shotElapsed = t - activeShot.t0;
-      const shotDur = Math.max(0.1, activeShot.t1 - activeShot.t0);
-      const u = shotElapsed / shotDur;
-
-      hudShotEl.innerText = `SHOT ${String(activeShot.id).padStart(2, '0')}/${SHOTS.length} · ${activeShot.type}`;
-      hudTimeEl.innerText = `${t.toFixed(2)}s`;
-
-      // 2. Active Subtitle Word-Chunk (Strict Single-Line 2-5 words)
-      const activeChunk = SUB_CHUNKS.find(c => t >= c.t0 && t < c.t1);
-      if (activeChunk && activeChunk.text) {
-        subEl.innerText = activeChunk.text;
-        subEl.style.opacity = '1';
-      } else {
-        subEl.style.opacity = '0';
-      }
-
-      // 3. Cinematic Background Grading
-      const bgGrad = ctx.createRadialGradient(cx, cy, 60, cx, cy, Math.max(W, H) * 0.95);
-      if (activeShot.diagram > 0) {
-        // Technical Blueprint Dark Slate/Navy
-        bgGrad.addColorStop(0, '#0f172a');
-        bgGrad.addColorStop(0.5, '#090d16');
-        bgGrad.addColorStop(1, '#020617');
-      } else if (activeShot.id % 4 === 0) {
-        // Dramatic Warm Amber Ambience
-        bgGrad.addColorStop(0, '#1c150c');
-        bgGrad.addColorStop(0.5, '#0e0b07');
-        bgGrad.addColorStop(1, '#050403');
-      } else {
-        // Deep Cinematic Noir Charcoal
-        bgGrad.addColorStop(0, '#18181b');
-        bgGrad.addColorStop(0.5, '#09090b');
-        bgGrad.addColorStop(1, '#020202');
-      }
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
-
-      // 4. Camera Spline & Cut Logic
-      ctx.save();
-
-      // Portrait FOV adaptation compensation (scale out ~1.4x so horizontal elements fit)
-      const aspectScale = isPortrait ? 0.72 : 1.0;
-      const shotZoom = activeShot.scale * aspectScale * (1.0 + 0.04 * ss(0, 1, u));
-      const shotPanX = (activeShot.panX + Math.sin(shotElapsed * 0.8) * 12) * aspectScale;
-      const shotPanY = (activeShot.panY + Math.cos(shotElapsed * 0.6) * 8) * aspectScale;
-      const shotTilt = activeShot.rot + Math.sin(shotElapsed * 0.5) * 0.012;
-
-      ctx.translate(cx, cy);
-      ctx.rotate(shotTilt);
-      ctx.scale(shotZoom, shotZoom);
-      ctx.translate(-cx - shotPanX, -cy - shotPanY);
-
-      // 5. Technical Grid & CAD Vector Layers
-      if (activeShot.diagram > 0 || activeShot.id === 1) {
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-        ctx.lineWidth = 1.0;
-        const grid = 60;
-        for (let x = -W; x < W * 2; x += grid) {
-          ctx.beginPath(); ctx.moveTo(x, -H); ctx.lineTo(x, H * 2); ctx.stroke();
-        }
-        for (let y = -H; y < H * 2; y += grid) {
-          ctx.beginPath(); ctx.moveTo(-W, y); ctx.lineTo(W * 2, y); ctx.stroke();
-        }
-
-        // Concentric Schematics Circles
-        ctx.strokeStyle = 'rgba(253, 224, 71, 0.20)';
-        ctx.beginPath(); ctx.arc(cx, cy, 260, 0, Math.PI * 2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, 180, 0, Math.PI * 2); ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx, cy, 340, 0, Math.PI * 2); ctx.stroke();
-      }
-
-      // 6. Dynamic Multi-Layer Kinetic Mechanism (Reacts to Exploded and Shot)
-      const explodeOffset = activeShot.exploded * (120 + 30 * Math.sin(t * 1.5));
-
-      // Layer A: Base Structural Chassis
-      ctx.save();
-      ctx.translate(cx - explodeOffset * 0.6, cy - explodeOffset * 0.3);
-      ctx.beginPath();
-      ctx.arc(0, 0, 240, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(20, 24, 33, 0.95)';
-      ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#38bdf8';
-      ctx.stroke();
-      ctx.restore();
-
-      // Layer B: Rotating Kinetic Ring
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(t * 0.45);
-      ctx.beginPath();
-      for (let i = 0; i < 24; i++) {
-        const ang = (i / 24) * Math.PI * 2;
-        const r1 = 170, r2 = 195;
-        ctx.moveTo(Math.cos(ang) * r1, Math.sin(ang) * r1);
-        ctx.lineTo(Math.cos(ang) * r2, Math.sin(ang) * r2);
-      }
-      ctx.strokeStyle = '#fde047';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      ctx.restore();
-
-      // Layer C: High-Precision Core Hub (Exploded Forward)
-      ctx.save();
-      ctx.translate(cx + explodeOffset * 0.8, cy + explodeOffset * 0.4);
-      ctx.rotate(-t * 0.7);
-
-      // Contact Shadow
-      ctx.beginPath();
-      ctx.arc(14, 18, 120, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.fill();
-
-      // Metallic Gradient Core
-      const coreGrad = ctx.createRadialGradient(0, 0, 20, 0, 0, 120);
-      coreGrad.addColorStop(0, '#fef08a');
-      coreGrad.addColorStop(0.4, '#eab308');
-      coreGrad.addColorStop(0.85, '#78350f');
-      coreGrad.addColorStop(1, '#451a03');
-      ctx.beginPath();
-      ctx.arc(0, 0, 110, 0, Math.PI * 2);
-      ctx.fillStyle = coreGrad;
-      ctx.fill();
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // Precision Spokes & Aperture
-      ctx.beginPath();
-      ctx.arc(0, 0, 48, 0, Math.PI * 2);
-      ctx.fillStyle = '#090d16';
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-
-      // 7. Exploded Callout Annotation Lines
-      if (activeShot.exploded > 0.1) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(253, 224, 71, 0.7)';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([6, 4]);
-
-        // Leader line
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + explodeOffset * 0.8, cy + explodeOffset * 0.4);
-        ctx.lineTo(cx + explodeOffset * 0.8 + 60, cy + explodeOffset * 0.4 - 40);
-        ctx.stroke();
-
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#fde047';
-        ctx.font = 'bold 12px ui-monospace, monospace';
-        ctx.fillText(`AXIS DISPLACEMENT: +${explodeOffset.toFixed(1)}mm`, cx + explodeOffset * 0.8 + 70, cy + explodeOffset * 0.4 - 36);
-        ctx.restore();
-      }
-
-      ctx.restore(); // Restore Camera Transform
-
-      // 8. On-Screen Film Title Plaque (First 4 seconds / Establishing)
-      if (t < 4.5) {
-        const titleAlpha = t < 3.5 ? ss(0, 1, t) : ss(4.5, 3.5, t);
-        ctx.save();
-        ctx.globalAlpha = titleAlpha;
-        ctx.fillStyle = 'rgba(6, 7, 10, 0.85)';
-        ctx.fillRect(0, cy - 60, W, 120);
-        ctx.strokeStyle = 'rgba(253, 224, 71, 0.35)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, cy - 60, W, 120);
-
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fde047';
-        ctx.font = `bold ${isPortrait ? '22px' : '32px'} -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-        ctx.fillText(storyTitle, cx, cy + 4);
-
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.85)';
-        ctx.font = `500 ${isPortrait ? '11px' : '13px'} ui-monospace, monospace`;
-        ctx.fillText(`LEMO-OPUSCAR · STYLE: ${storyStyle.toUpperCase()} · 60s BROADCAST`, cx, cy + 30);
-        ctx.restore();
-      }
-    };
-
-    // Broadcast Engine Ready Handshake for Lemo-Opuscar Frame Capture
-    window.READY = true;
-    console.log('[*] Lemo-Opuscar Cinema Engine initialized and READY = true');
-  </script>
+  <div id="stage"></div>
+  <canvas id="ov" width="1920" height="1080"></canvas>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
