@@ -50,7 +50,7 @@ jobs:
       - name: Install System Codecs & Headless Display
         run: |
           sudo apt-get update -qq || true
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb libgl1 mesa-utils || true
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ffmpeg xvfb libgl1 mesa-utils
 
       - name: Install Python Audio & Voice Dependencies
         run: |
