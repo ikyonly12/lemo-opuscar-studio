@@ -66,60 +66,15 @@ jobs:
           node node_modules/playwright-core/cli.js install chromium-headless-shell
 
       - name: Inject Dynamic Story Treatment (Zero Dummy Data)
+        env:
+          TREATMENT_B64: ${{ github.event.inputs.treatment_b64 }}
+          TOPIC: ${{ github.event.inputs.topic }}
+          STYLE: ${{ github.event.inputs.style }}
+          LANGUAGE: ${{ github.event.inputs.language }}
+          ASPECT_RATIO: ${{ github.event.inputs.aspect_ratio }}
         run: |
-          B64="${{ github.event.inputs.treatment_b64 }}"
-          TOPIC="${{ github.event.inputs.topic }}"
-          STYLE="${{ github.event.inputs.style }}"
-          LANG="${{ github.event.inputs.language }}"
-          AR="${{ github.event.inputs.aspect_ratio }}"
-
-          mkdir -p "$GITHUB_WORKSPACE/templates/engine"
-
-          if [ -n "$B64" ]; then
-            echo "[*] Decoding Base64 dynamic AI Treatment payload..."
-            echo "$B64" | base64 -d > "$GITHUB_WORKSPACE/templates/engine/story.json"
-          else
-            echo "[*] Constructing dynamic story.json from workflow inputs..."
-            python3 -c "
-import json
-payload = {
-    'title': '''$TOPIC''',
-    'topic': '''$TOPIC''',
-    'style': '$STYLE',
-    'language': '$LANG',
-    'aspectRatio': '$AR',
-    'shots': [],
-    'subtitles': [],
-    'voiceLines': [{'t': 1.0, 'text': '''$TOPIC'''}]
-}
-with open('$GITHUB_WORKSPACE/templates/engine/story.json', 'w', encoding='utf-8') as f:
-    json.dump(payload, f, ensure_ascii=False)
-"
-          fi
-
-          echo "[*] Story payload verified:"
-          head -n 25 "$GITHUB_WORKSPACE/templates/engine/story.json"
-
-          # Inject STORY_DATA directly into templates/engine/index.html
-          python3 -c "
-import json, re
-
-with open('$GITHUB_WORKSPACE/templates/engine/story.json', 'r', encoding='utf-8') as sf:
-    data = json.load(sf)
-
-with open('$GITHUB_WORKSPACE/templates/engine/index.html', 'r', encoding='utf-8') as hf:
-    html = hf.read()
-
-injection = f'<script>window.STORY_DATA = {json.dumps(data, ensure_ascii=False)};</script>'
-if 'window.STORY_DATA =' in html:
-    html = re.sub(r'<script>window\.STORY_DATA = .*?;</script>', injection, html, flags=re.DOTALL)
-else:
-    html = html.replace('</head>', f'{injection}\n</head>')
-
-with open('$GITHUB_WORKSPACE/templates/engine/index.html', 'w', encoding='utf-8') as hf:
-    hf.write(html)
-print('[OK] Dynamic story injected directly into index.html!')
-"
+          python templates/engine/inject_story.py
+          head -n 25 templates/engine/story.json
 
       - name: Execute Cloud Render Pipeline
         run: |
