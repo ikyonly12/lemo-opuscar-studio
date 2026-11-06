@@ -1,664 +1,1549 @@
-// All paper-cut illustrations for The Airplane Window Breather Hole
+// All paper-cut illustrations for The Hidden Geometry of QWERTY
 import { mulberry, TAU, clamp, lerp } from './lib.js';
-import { cv, sh, blob, smoothClosed, smoothOpen, crescent, paperFill, INK, GRAIN, rr } from './paper.js';
+import { cv, finishCut, sh, blob, smoothClosed, smoothOpen, paperFill, INK, GRAIN } from './paper.js';
 
 const LW = 6;
 const LW2 = 3.5;
 
 // ============================================================================
-// 1. Passenger Character (Multi-layer Papercraft Rig)
+// 1. Modern Smartphone Pop-Up Asset (Spread 0)
 // ============================================================================
-export const PASS_W = 600, PASS_H = 800;
-export function drawPassenger(x, p = {}) {
-  const { lean = 0, look = [0, 0], blink = 0, arm = 'point', mouth = 'o' } = p;
-  x.clearRect(0, 0, PASS_W, PASS_H);
+export function makeSmartphone(w = 520, h = 900) {
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Outer phone chassis (dark titanium/obsidian with subtle metallic sheen)
+  x.fillStyle = '#0f172a';
+  x.beginPath();
+  x.roundRect(40, 30, w - 80, h - 60, 54);
+  x.fill();
+  x.lineWidth = 8;
+  x.strokeStyle = '#334155';
+  x.stroke();
+
+  // Screen glass bezel
+  x.fillStyle = '#020617';
+  x.beginPath();
+  x.roundRect(55, 48, w - 110, h - 96, 42);
+  x.fill();
+
+  // Dynamic Island / Speaker notch
+  x.fillStyle = '#000000';
+  x.beginPath();
+  x.roundRect(w / 2 - 60, 65, 120, 28, 14);
+  x.fill();
+  // Front camera lens glint
+  x.fillStyle = '#1e3a8a';
+  x.beginPath(); x.arc(w / 2 + 35, 79, 6, 0, TAU); x.fill();
+  x.fillStyle = '#38bdf8';
+  x.beginPath(); x.arc(w / 2 + 36, 78, 2.5, 0, TAU); x.fill();
+
+  // Screen Wallpaper Gradient (Deep violet / indigo glow)
+  const scrGrad = x.createLinearGradient(0, 110, 0, h - 70);
+  scrGrad.addColorStop(0, '#1e1b4b');
+  scrGrad.addColorStop(0.45, '#0f172a');
+  scrGrad.addColorStop(1, '#020617');
+  x.fillStyle = scrGrad;
+  x.beginPath();
+  x.roundRect(65, 110, w - 130, h - 170, 32);
+  x.fill();
+
+  // Chat Bubble at top
+  x.fillStyle = '#1e293b';
+  x.beginPath();
+  x.roundRect(90, 150, w - 210, 75, 20);
+  x.fill();
+  x.fillStyle = '#94a3b8';
+  x.font = '500 24px "Fredoka", sans-serif';
+  x.fillText('Mengapa huruf di keyboard', 115, 185);
+  x.fillText('disusun seperti ini? 🤔', 115, 212);
+
+  // Virtual Keyboard Container
+  const kTop = 440, kW = w - 160, kH = 340;
+  x.fillStyle = '#1e293b';
+  x.beginPath();
+  x.roundRect(80, kTop, w - 160, kH, 24);
+  x.fill();
+  x.lineWidth = 3;
+  x.strokeStyle = '#334155';
+  x.stroke();
+
+  // Render 3 Keyboard Rows: QWERTYUIOP / ASDFGHJKL / ZXCVBNM
+  const r1 = ['Q','W','E','R','T','Y','U','I','O','P'];
+  const r2 = ['A','S','D','F','G','H','J','K','L'];
+  const r3 = ['Z','X','C','V','B','N','M'];
+
+  function drawRow(letters, y, xOff, keyW = 30, keyH = 46) {
+    letters.forEach((l, i) => {
+      const kx = xOff + i * (keyW + 5);
+      const isA = (l === 'A');
+      
+      // Key background
+      if (isA) {
+        // Highlight letter A with amber warning pulse
+        x.fillStyle = '#f59e0b';
+        x.beginPath(); x.roundRect(kx, y, keyW, keyH, 8); x.fill();
+        x.lineWidth = 3; x.strokeStyle = '#ef4444'; x.stroke();
+        x.fillStyle = '#000000';
+      } else {
+        x.fillStyle = '#334155';
+        x.beginPath(); x.roundRect(kx, y, keyW, keyH, 8); x.fill();
+        x.fillStyle = '#f8fafc';
+      }
+
+      x.font = '700 22px "Lilita One", sans-serif';
+      x.textAlign = 'center';
+      x.textBaseline = 'middle';
+      x.fillText(l, kx + keyW / 2, y + keyH / 2 + 1);
+    });
+  }
+
+  drawRow(r1, kTop + 35, 95, 31, 48);
+  drawRow(r2, kTop + 95, 112, 31, 48);
+  drawRow(r3, kTop + 155, 147, 31, 48);
+
+  // Spacebar
+  x.fillStyle = '#475569';
+  x.beginPath();
+  x.roundRect(175, kTop + 220, 170, 42, 10);
+  x.fill();
+  x.fillStyle = '#cbd5e1';
+  x.font = '600 18px "Fredoka", sans-serif';
+  x.fillText('spasi', 260, kTop + 242);
+
+  // Red callout circle around letter A
+  x.strokeStyle = '#ef4444';
+  x.lineWidth = 4;
+  x.setLineDash([6, 4]);
+  x.beginPath();
+  x.arc(128, kTop + 119, 32, 0, TAU);
+  x.stroke();
+  x.setLineDash([]);
+
+  // Callout pointer badge: "Kelingking Kiri" (Weakest Pinky)
+  x.fillStyle = '#ef4444';
+  x.beginPath();
+  x.roundRect(85, kTop + 300, 190, 40, 12);
+  x.fill();
+  x.fillStyle = '#ffffff';
+  x.font = '700 18px "Fredoka", sans-serif';
+  x.fillText('⚠ Jari Kelingking Kiri', 180, kTop + 322);
+
+  return finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+}
+
+
+// ============================================================================
+// 2. Modern Tech Typist Character (Spread 0)
+// ============================================================================
+export const USER_W = 600, USER_H = 800;
+export function drawUserCharacter(outCtx, p = {}) {
+  const { lean = 0, look = [0, 0], blink = 0, puzzled = false } = p;
+  outCtx.clearRect(0, 0, USER_W, USER_H);
+  const W = cv(USER_W, USER_H), x = W.getContext('2d');
+  
   x.save();
   x.translate(300, 760);
   x.rotate(lean);
   x.translate(-300, -760);
 
-  // Drop shadow behind body cutout for paper depth
-  x.fillStyle = 'rgba(0,0,0,0.06)';
+  // Torso: Emerald Green Casual Hoodie
+  x.fillStyle = '#065f46';
   x.beginPath();
-  x.roundRect(195, 465, 210, 270, 28);
-  x.fill();
-
-  // 1. Torso: Navy Travel Jacket (Wool Texture)
-  x.fillStyle = '#1e293b';
-  x.beginPath();
-  x.roundRect(200, 470, 200, 260, 26);
+  x.roundRect(190, 470, 220, 270, 28);
   x.fill();
   x.lineWidth = LW;
   x.strokeStyle = INK;
   x.stroke();
 
-  // Jacket Lapels (Layered paper flaps)
-  x.fillStyle = '#334155';
+  // Hoodie Pocket
+  x.fillStyle = '#047857';
   x.beginPath();
-  x.moveTo(230, 470);
-  x.lineTo(270, 560);
-  x.lineTo(250, 570);
-  x.lineTo(220, 500);
-  x.closePath();
+  x.roundRect(220, 600, 160, 90, 18);
   x.fill();
-  x.lineWidth = 3;
-  x.strokeStyle = INK;
+  x.lineWidth = LW2;
   x.stroke();
 
-  x.beginPath();
-  x.moveTo(370, 470);
-  x.lineTo(330, 560);
-  x.lineTo(350, 570);
-  x.lineTo(380, 500);
-  x.closePath();
-  x.fill();
-  x.stroke();
+  // Draw Hoodie Drawstrings
+  x.strokeStyle = '#d1fae5';
+  x.lineWidth = 4;
+  x.beginPath(); x.moveTo(275, 470); x.lineTo(270, 560); x.stroke();
+  x.beginPath(); x.moveTo(325, 470); x.lineTo(330, 560); x.stroke();
 
-  // Breast pocket + pocket square
-  x.fillStyle = '#334155';
-  x.fillRect(230, 580, 45, 8);
-  x.fillStyle = '#f8fafc';
-  x.beginPath();
-  x.moveTo(240, 580); x.lineTo(252, 566); x.lineTo(262, 580);
-  x.closePath();
-  x.fill();
-
-  // Brass buttons
-  x.fillStyle = '#d97706';
-  x.beginPath(); x.arc(300, 610, 5, 0, TAU); x.fill();
-  x.beginPath(); x.arc(300, 660, 5, 0, TAU); x.fill();
-
-  // 2. Shirt Collar & Crimson Tie
-  x.fillStyle = '#f8fafc';
-  x.beginPath();
-  x.moveTo(270, 470); x.lineTo(300, 530); x.lineTo(330, 470);
-  x.closePath();
-  x.fill();
-  x.lineWidth = 3;
-  x.strokeStyle = INK;
-  x.stroke();
-
-  x.fillStyle = '#991b1b';
-  x.beginPath();
-  x.moveTo(292, 520); x.lineTo(308, 520); x.lineTo(314, 630); x.lineTo(300, 650); x.lineTo(286, 630);
-  x.closePath();
-  x.fill();
-  x.lineWidth = 2.5;
-  x.stroke();
-
-  // 3. Neck
+  // Neck
   x.fillStyle = '#fcd3a7';
   x.beginPath();
   x.roundRect(275, 430, 50, 55, 10);
   x.fill();
   x.lineWidth = 3;
-  x.strokeStyle = INK;
   x.stroke();
 
-  // 4. Head
+  // Head Oval
   x.fillStyle = '#fde2c7';
   x.beginPath();
-  x.ellipse(300, 345, 96, 112, 0, 0, TAU);
+  x.ellipse(300 + look[0] * 12, 330 + look[1] * 8, 95, 115, 0, 0, TAU);
   x.fill();
   x.lineWidth = LW;
-  x.strokeStyle = INK;
   x.stroke();
 
-  // Cheeks (blush)
-  x.fillStyle = 'rgba(239, 68, 68, 0.16)';
-  x.beginPath(); x.ellipse(245, 375, 18, 10, 0, 0, TAU); x.fill();
-  x.beginPath(); x.ellipse(355, 375, 18, 10, 0, 0, TAU); x.fill();
+  // Ears
+  x.fillStyle = '#fcd3a7';
+  x.beginPath(); x.arc(205 + look[0] * 10, 335, 20, 0, TAU); x.fill(); x.lineWidth = 3; x.stroke();
+  x.beginPath(); x.arc(395 + look[0] * 10, 335, 20, 0, TAU); x.fill(); x.stroke();
 
-  // 5. Hair (Multi-layer dimensional cutouts, 100% solid seamless mass, zero gaps)
-  // Layer 5A: Full Solid Base Hair Silhouette (covers top dome and side locks down to sideburns)
-  x.fillStyle = '#2d1810';
+  // Modern Styled Hair (Curved dark brown quiff)
+  x.fillStyle = '#292524';
   x.beginPath();
-  x.moveTo(200, 340);
-  x.quadraticCurveTo(192, 280, 196, 240);
-  x.quadraticCurveTo(210, 195, 300, 195);
-  x.quadraticCurveTo(390, 195, 404, 240);
-  x.quadraticCurveTo(408, 280, 400, 340);
-  x.quadraticCurveTo(390, 320, 385, 275);
-  x.quadraticCurveTo(300, 250, 215, 275);
-  x.quadraticCurveTo(210, 320, 200, 340);
+  x.moveTo(205 + look[0] * 10, 310);
+  x.quadraticCurveTo(200, 200, 300, 190);
+  x.quadraticCurveTo(400, 195, 400 + look[0] * 10, 310);
+  x.quadraticCurveTo(370, 240, 300, 235);
+  x.quadraticCurveTo(230, 240, 205 + look[0] * 10, 310);
   x.closePath();
   x.fill();
   x.lineWidth = LW;
-  x.strokeStyle = INK;
   x.stroke();
 
-  // Layer 5B: Forelock Paper Swatches (Neat stylish bangs well above eyebrows)
-  x.fillStyle = '#452317';
-  x.beginPath();
-  x.moveTo(198, 270);
-  x.quadraticCurveTo(245, 305, 290, 280);
-  x.quadraticCurveTo(335, 310, 402, 270);
-  x.quadraticCurveTo(300, 230, 198, 270);
-  x.closePath();
-  x.fill();
-  x.lineWidth = 3.5;
-  x.strokeStyle = '#2d1810';
-  x.stroke();
+  // Eyes (Paper cut layers with pupils)
+  const eyeY = 325 + look[1] * 6;
+  const lx = 265 + look[0] * 14, rx = 335 + look[0] * 14;
 
-  // Layer 5C: Hair Highlight Fringe Strands
-  x.fillStyle = '#633924';
-  x.beginPath();
-  x.moveTo(245, 248);
-  x.quadraticCurveTo(290, 266, 335, 245);
-  x.quadraticCurveTo(290, 234, 245, 248);
-  x.closePath();
-  x.fill();
+  if (blink > 0.6) {
+    // Blinking
+    x.strokeStyle = INK;
+    x.lineWidth = 4;
+    x.beginPath(); x.moveTo(lx - 16, eyeY); x.lineTo(lx + 16, eyeY); x.stroke();
+    x.beginPath(); x.moveTo(rx - 16, eyeY); x.lineTo(rx + 16, eyeY); x.stroke();
+  } else {
+    // Open eyes
+    x.fillStyle = '#ffffff';
+    x.beginPath(); x.ellipse(lx, eyeY, 18, 14, 0, 0, TAU); x.fill(); x.lineWidth = 3; x.stroke();
+    x.beginPath(); x.ellipse(rx, eyeY, 18, 14, 0, 0, TAU); x.fill(); x.stroke();
 
-  // 6. Eyes (Expressive Paper Cut with Catchlights & Blinking)
-  const exL = 265 + look[0] * 8, exR = 335 + look[0] * 8;
-  const ey = 345 + look[1] * 8;
-  const b = clamp(blink, 0, 1);
-  const ry = Math.max(1.5, 15 * (1 - b));
+    // Dark Pupils
+    x.fillStyle = '#1c1917';
+    x.beginPath(); x.arc(lx + look[0] * 5, eyeY + look[1] * 4, 8, 0, TAU); x.fill();
+    x.beginPath(); x.arc(rx + look[0] * 5, eyeY + look[1] * 4, 8, 0, TAU); x.fill();
+
+    // Catchlight dots
+    x.fillStyle = '#ffffff';
+    x.beginPath(); x.arc(lx + look[0] * 5 - 3, eyeY + look[1] * 4 - 3, 2.5, 0, TAU); x.fill();
+    x.beginPath(); x.arc(rx + look[0] * 5 - 3, eyeY + look[1] * 4 - 3, 2.5, 0, TAU); x.fill();
+  }
 
   // Eyebrows
-  x.lineWidth = 4;
-  x.strokeStyle = '#2d1810';
-  x.beginPath();
-  if (mouth === 'o') {
-    // Worried raised arch
-    x.moveTo(245, 315); x.quadraticCurveTo(265, 305, 285, 318);
-    x.moveTo(355, 315); x.quadraticCurveTo(335, 305, 315, 318);
+  x.strokeStyle = '#292524';
+  x.lineWidth = 4.5;
+  if (puzzled) {
+    // Asymmetric curious / puzzled eyebrows
+    x.beginPath(); x.moveTo(lx - 16, eyeY - 20); x.lineTo(lx + 16, eyeY - 28); x.stroke();
+    x.beginPath(); x.moveTo(rx - 16, eyeY - 24); x.lineTo(rx + 16, eyeY - 18); x.stroke();
   } else {
-    x.moveTo(248, 322); x.quadraticCurveTo(268, 318, 285, 324);
-    x.moveTo(352, 322); x.quadraticCurveTo(332, 318, 315, 324);
-  }
-  x.stroke();
-
-  if (ry > 3) {
-    // Sclera
-    x.fillStyle = '#ffffff';
-    x.beginPath(); x.ellipse(exL, ey, 14, ry, 0, 0, TAU); x.fill();
-    x.beginPath(); x.ellipse(exR, ey, 14, ry, 0, 0, TAU); x.fill();
-    x.lineWidth = 2; x.strokeStyle = INK;
-    x.beginPath(); x.ellipse(exL, ey, 14, ry, 0, 0, TAU); x.stroke();
-    x.beginPath(); x.ellipse(exR, ey, 14, ry, 0, 0, TAU); x.stroke();
-
-    // Hazel Iris
-    x.fillStyle = '#78350f';
-    x.beginPath(); x.arc(exL, ey, 8 * (1 - b * 0.3), 0, TAU); x.fill();
-    x.beginPath(); x.arc(exR, ey, 8 * (1 - b * 0.3), 0, TAU); x.fill();
-
-    // Dark Pupil
-    x.fillStyle = INK;
-    x.beginPath(); x.arc(exL, ey, 5, 0, TAU); x.fill();
-    x.beginPath(); x.arc(exR, ey, 5, 0, TAU); x.fill();
-
-    // Catchlight Glints
-    x.fillStyle = '#ffffff';
-    x.beginPath(); x.arc(exL - 3, ey - 3, 2.5, 0, TAU); x.fill();
-    x.beginPath(); x.arc(exR - 3, ey - 3, 2.5, 0, TAU); x.fill();
-  } else {
-    // Closed eye line
-    x.lineWidth = 3;
-    x.strokeStyle = INK;
-    x.beginPath();
-    x.moveTo(exL - 12, ey); x.quadraticCurveTo(exL, ey + 4, exL + 12, ey);
-    x.moveTo(exR - 12, ey); x.quadraticCurveTo(exR, ey + 4, exR + 12, ey);
-    x.stroke();
+    x.beginPath(); x.moveTo(lx - 16, eyeY - 22); x.lineTo(lx + 16, eyeY - 22); x.stroke();
+    x.beginPath(); x.moveTo(rx - 16, eyeY - 22); x.lineTo(rx + 16, eyeY - 22); x.stroke();
   }
 
-  // Nose
-  x.lineWidth = 3;
-  x.strokeStyle = '#c28859';
-  x.beginPath();
-  x.moveTo(300, 345);
-  x.quadraticCurveTo(308, 368, 296, 372);
-  x.stroke();
-
-  // 7. Mouth
-  x.lineWidth = 4;
+  // Mouth
   x.strokeStyle = INK;
-  x.beginPath();
-  if (mouth === 'o') {
-    x.fillStyle = '#7f1d1d';
-    x.ellipse(300, 405, 14, 18, 0, 0, TAU);
-    x.fill();
-    x.stroke();
-  } else if (mouth === 'smile') {
-    x.arc(300, 395, 24, 0.2, Math.PI - 0.2);
-    x.stroke();
+  x.lineWidth = 3.5;
+  if (puzzled) {
+    // Slightly open curious 'o'
+    x.fillStyle = '#991b1b';
+    x.beginPath(); x.ellipse(300 + look[0] * 12, 385, 10, 14, 0, 0, TAU); x.fill(); x.stroke();
   } else {
-    x.moveTo(285, 405); x.lineTo(315, 405);
-    x.stroke();
+    // Gentle smile
+    x.beginPath(); x.arc(300 + look[0] * 12, 375, 20, 0.2, Math.PI - 0.2); x.stroke();
   }
 
-  // 8. Articulated Paper Arm (Pointing towards window or resting)
-  if (arm === 'point') {
-    // Sleeve
-    x.lineWidth = 32;
-    x.strokeStyle = '#1e293b';
-    x.beginPath();
-    x.moveTo(380, 520);
-    x.quadraticCurveTo(460, 480, 520, 435);
-    x.stroke();
-
-    // White shirt cuff
-    x.lineWidth = 34;
-    x.strokeStyle = '#f8fafc';
-    x.beginPath();
-    x.moveTo(512, 440);
-    x.lineTo(522, 432);
-    x.stroke();
-
-    // Hand & Index Finger Pointing
-    x.lineWidth = 3;
-    x.strokeStyle = INK;
-    x.fillStyle = '#fde2c7';
-    // Palm
-    x.beginPath(); x.arc(532, 428, 14, 0, TAU); x.fill(); x.stroke();
-    // Index finger extending
-    x.beginPath();
-    x.roundRect(535, 416, 26, 12, 6);
-    x.fill(); x.stroke();
-  } else {
-    // Resting arm
-    x.lineWidth = 28;
-    x.strokeStyle = '#1e293b';
-    x.beginPath();
-    x.moveTo(380, 520);
-    x.quadraticCurveTo(410, 600, 390, 680);
-    x.stroke();
-  }
+  // Hands holding phone (resting at bottom)
+  x.fillStyle = '#fcd3a7';
+  x.beginPath(); x.ellipse(210, 680, 28, 22, -0.3, 0, TAU); x.fill(); x.lineWidth = 3; x.stroke();
+  x.beginPath(); x.ellipse(390, 680, 28, 22, 0.3, 0, TAU); x.fill(); x.stroke();
 
   x.restore();
+  outCtx.drawImage(finishCut(W, 14, { paper: '#fffdf7', edge: '#b9ad9c' }), 0, 0);
 }
 
 // ============================================================================
-// 2. Oval Airplane Passenger Window with Breather Hole
+// 3. Christopher Latham Sholes 1873 Character (Spread 1)
 // ============================================================================
-export const WIN_W = 800, WIN_H = 1000;
-export function drawCabinWindow(x, p = {}) {
-  const { holeZoom = 1.0, showFlow = false, glowHole = false } = p;
-  x.clearRect(0, 0, WIN_W, WIN_H);
+export const SHOLES_W = 600, SHOLES_H = 800;
+export function drawSholesCharacter(outCtx, p = {}) {
+  const { lean = 0, look = [0, 0], frustrated = false } = p;
+  outCtx.clearRect(0, 0, SHOLES_W, SHOLES_H);
+  const W = cv(SHOLES_W, SHOLES_H), x = W.getContext('2d');
 
-  // Outer Aircraft Fuselage Wall (Warm Off-white Cabin Plastic Panel)
-  x.fillStyle = '#f1f5f9';
+  x.save();
+  x.translate(300, 760);
+  x.rotate(lean);
+  x.translate(-300, -760);
+
+  // Victorian Tweed Frock Coat
+  x.fillStyle = '#3f3f46';
   x.beginPath();
-  x.roundRect(40, 40, WIN_W - 80, WIN_H - 80, 60);
+  x.roundRect(190, 460, 220, 280, 24);
   x.fill();
   x.lineWidth = LW;
-  x.strokeStyle = '#94a3b8';
-  x.stroke();
-
-  // Molded Bevel Ring
-  x.fillStyle = '#e2e8f0';
-  x.beginPath();
-  x.roundRect(140, 120, WIN_W - 280, WIN_H - 240, 190);
-  x.fill();
-  x.lineWidth = 4;
-  x.strokeStyle = '#cbd5e1';
-  x.stroke();
-
-  // Oval Window Inner Reveal
-  x.fillStyle = '#cbd5e1';
-  x.beginPath();
-  x.roundRect(170, 150, WIN_W - 340, WIN_H - 300, 160);
-  x.fill();
-  x.lineWidth = 5;
   x.strokeStyle = INK;
   x.stroke();
 
-  // Glass Pane: Sky View
-  const g = x.createLinearGradient(0, 180, 0, WIN_H - 180);
-  g.addColorStop(0, '#1d4ed8');
-  g.addColorStop(0.55, '#60a5fa');
-  g.addColorStop(1, '#dbeafe');
-  x.fillStyle = g;
+  // Waistcoat / Vest
+  x.fillStyle = '#713f12';
   x.beginPath();
-  x.roundRect(190, 170, WIN_W - 380, WIN_H - 340, 140);
-  x.fill();
-
-  // Cloud layers outside window
-  x.fillStyle = 'rgba(255, 255, 255, 0.85)';
-  x.beginPath();
-  x.arc(310, 470, 75, 0, TAU);
-  x.arc(380, 440, 95, 0, TAU);
-  x.arc(470, 470, 70, 0, TAU);
-  x.fill();
-
-  // Glass Diagonal Glare Reflection
-  x.fillStyle = 'rgba(255, 255, 255, 0.18)';
-  x.beginPath();
-  x.moveTo(260, 180);
-  x.lineTo(330, 180);
-  x.lineTo(220, WIN_H - 200);
-  x.lineTo(190, WIN_H - 200);
+  x.moveTo(230, 460); x.lineTo(300, 540); x.lineTo(370, 460);
+  x.lineTo(370, 720); x.lineTo(230, 720);
   x.closePath();
   x.fill();
+  x.lineWidth = 3;
+  x.stroke();
 
-  // THE BREATHER HOLE (Perspex middle pane, bottom center)
-  const hx = WIN_W / 2, hy = WIN_H - 250;
-  const hr = 12 * holeZoom;
+  // White Victorian Collar & Black Bow Tie
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(260, 460); x.lineTo(300, 510); x.lineTo(340, 460);
+  x.closePath();
+  x.fill();
+  x.stroke();
 
-  if (glowHole) {
-    x.fillStyle = 'rgba(251, 191, 36, 0.4)';
+  x.fillStyle = '#18181b';
+  x.beginPath();
+  x.ellipse(285, 495, 18, 10, -0.2, 0, TAU); x.fill();
+  x.beginPath();
+  x.ellipse(315, 495, 18, 10, 0.2, 0, TAU); x.fill();
+  x.beginPath(); x.arc(300, 495, 8, 0, TAU); x.fill();
+
+  // Watch Chain (Brass chain curve across vest)
+  x.strokeStyle = '#d97706';
+  x.lineWidth = 3;
+  x.beginPath();
+  x.arc(300, 610, 45, 0.3, Math.PI - 0.3);
+  x.stroke();
+
+  // Neck
+  x.fillStyle = '#fcd3a7';
+  x.beginPath();
+  x.roundRect(275, 420, 50, 50, 8);
+  x.fill(); x.lineWidth = 3; x.stroke();
+
+  // Head Oval
+  x.fillStyle = '#fde2c7';
+  x.beginPath();
+  x.ellipse(300 + look[0] * 10, 320 + look[1] * 8, 95, 115, 0, 0, TAU);
+  x.fill();
+  x.lineWidth = LW;
+  x.stroke();
+
+  // 1870s Victorian White/Silver Beard & Sideburns
+  x.fillStyle = '#e4e4e7';
+  x.beginPath();
+  x.moveTo(205, 300);
+  x.quadraticCurveTo(210, 440, 300, 445);
+  x.quadraticCurveTo(390, 440, 395, 300);
+  x.quadraticCurveTo(360, 390, 300, 390);
+  x.quadraticCurveTo(240, 390, 205, 300);
+  x.closePath();
+  x.fill();
+  x.lineWidth = LW2;
+  x.stroke();
+
+  // Silver Hair
+  x.fillStyle = '#d4d4d8';
+  x.beginPath();
+  x.moveTo(205, 300);
+  x.quadraticCurveTo(195, 190, 300, 185);
+  x.quadraticCurveTo(405, 190, 395, 300);
+  x.quadraticCurveTo(370, 240, 300, 235);
+  x.quadraticCurveTo(230, 240, 205, 300);
+  x.closePath();
+  x.fill();
+  x.lineWidth = LW;
+  x.stroke();
+
+  // Wire Spectacles
+  const eyeY = 315 + look[1] * 6;
+  const lx = 265 + look[0] * 12, rx = 335 + look[0] * 12;
+
+  x.fillStyle = '#ffffff';
+  x.beginPath(); x.arc(lx, eyeY, 18, 0, TAU); x.fill();
+  x.beginPath(); x.arc(rx, eyeY, 18, 0, TAU); x.fill();
+
+  x.strokeStyle = '#d97706'; // Gold wire rims
+  x.lineWidth = 4;
+  x.beginPath(); x.arc(lx, eyeY, 18, 0, TAU); x.stroke();
+  x.beginPath(); x.arc(rx, eyeY, 18, 0, TAU); x.stroke();
+  x.beginPath(); x.moveTo(lx + 18, eyeY); x.lineTo(rx - 18, eyeY); x.stroke(); // Bridge
+
+  // Pupils
+  x.fillStyle = '#1c1917';
+  x.beginPath(); x.arc(lx + look[0] * 4, eyeY + look[1] * 4, 7, 0, TAU); x.fill();
+  x.beginPath(); x.arc(rx + look[0] * 4, eyeY + look[1] * 4, 7, 0, TAU); x.fill();
+
+  // Bushy Victorian Mustache
+  x.fillStyle = '#e4e4e7';
+  x.beginPath();
+  x.ellipse(280, 370, 24, 12, 0.2, 0, TAU); x.fill(); x.lineWidth = 3; x.stroke();
+  x.beginPath();
+  x.ellipse(320, 370, 24, 12, -0.2, 0, TAU); x.fill(); x.stroke();
+
+  // Arms holding mechanical tool / pointing
+  x.fillStyle = '#3f3f46';
+  x.beginPath();
+  x.roundRect(140, 520, 60, 150, 20); x.fill(); x.stroke();
+  x.beginPath();
+  x.roundRect(400, 520, 60, 150, 20); x.fill(); x.stroke();
+
+  // Hands
+  x.fillStyle = '#fcd3a7';
+  x.beginPath(); x.ellipse(170, 680, 22, 18, 0, 0, TAU); x.fill(); x.stroke();
+  x.beginPath(); x.ellipse(430, 680, 22, 18, 0, 0, TAU); x.fill(); x.stroke();
+
+  x.restore();
+  outCtx.drawImage(finishCut(W, 14, { paper: '#fffdf7', edge: '#b9ad9c' }), 0, 0);
+}
+
+// ============================================================================
+// 4. 1873 Sholes Machine & Circular Typebar Basket (Spread 1)
+// ============================================================================
+export function makeTypewriterBasket(w = 640, h = 600) {
+  const c = cv(w, h), x = c.getContext('2d');
+  const cx = w / 2, cy = h / 2 - 30;
+
+  // Victorian Machine Stand / Frame (Heavy cast iron)
+  x.fillStyle = '#18181b';
+  x.beginPath();
+  x.roundRect(80, h - 140, w - 160, 90, 16);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = '#3f3f46';
+  x.stroke();
+
+  // Gold filigree border on cast iron
+  x.strokeStyle = '#f59e0b';
+  x.lineWidth = 3;
+  x.strokeRect(95, h - 125, w - 190, 60);
+
+  // Label badge: "THE MILWAUKEE TYPE-WRITER - 1873"
+  x.fillStyle = '#f59e0b';
+  x.font = '700 20px "Lilita One", sans-serif';
+  x.textAlign = 'center';
+  x.fillText('THE SHOLES TYPE-WRITER · 1873', cx, h - 90);
+
+  // Circular Basket Rim ("The Birdcage")
+  const R_out = 190, R_in = 140;
+  x.fillStyle = '#27272a';
+  x.beginPath();
+  x.arc(cx, cy, R_out, 0, TAU);
+  x.fill();
+  x.lineWidth = 6;
+  x.strokeStyle = '#52525b';
+  x.stroke();
+
+  x.fillStyle = '#09090b';
+  x.beginPath();
+  x.arc(cx, cy, R_in, 0, TAU);
+  x.fill();
+  x.stroke();
+
+  // Central Strike Target Platen Hole
+  x.fillStyle = '#3f3f46';
+  x.beginPath(); x.arc(cx, cy, 32, 0, TAU); x.fill();
+  x.fillStyle = '#ef4444'; // Red paper strike point
+  x.beginPath(); x.arc(cx, cy, 14, 0, TAU); x.fill();
+
+  // Radial Typebar Levers converging to center
+  const nBars = 24;
+  for (let i = 0; i < nBars; i++) {
+    const a = (i / nBars) * TAU;
+    const x1 = cx + Math.cos(a) * (R_in - 5);
+    const y1 = cy + Math.sin(a) * (R_in - 5);
+    const x2 = cx + Math.cos(a) * 36;
+    const y2 = cy + Math.sin(a) * 36;
+
+    x.strokeStyle = (i === 4 || i === 5) ? '#ef4444' : '#a1a1aa'; // 2 colliding bars highlighted
+    x.lineWidth = (i === 4 || i === 5) ? 6 : 3.5;
     x.beginPath();
-    x.arc(hx, hy, hr * 2.8, 0, TAU);
+    x.moveTo(x1, y1);
+    x.lineTo(x2, y2);
+    x.stroke();
+
+    // Typehead slug at inner tip
+    x.fillStyle = (i === 4 || i === 5) ? '#f87171' : '#e4e4e7';
+    x.beginPath();
+    x.arc(x2, y2, 6, 0, TAU);
     x.fill();
   }
 
-  // Dark circular pinhole
-  x.fillStyle = '#0f172a';
+  // Tangled Collision Jam Effect at 1 o'clock
+  const jx = cx + 32, jy = cy - 22;
+  // Spark starburst
+  x.fillStyle = '#f59e0b';
   x.beginPath();
-  x.arc(hx, hy, hr, 0, TAU);
+  for (let s = 0; s < 8; s++) {
+    const sa = (s / 8) * TAU;
+    const r1 = 28, r2 = 12;
+    x.lineTo(jx + Math.cos(sa) * r1, jy + Math.sin(sa) * r1);
+    x.lineTo(jx + Math.cos(sa + Math.PI / 8) * r2, jy + Math.sin(sa + Math.PI / 8) * r2);
+  }
+  x.closePath();
   x.fill();
-  x.lineWidth = 3.5;
-  x.strokeStyle = 'rgba(255,255,255,0.9)';
+  x.lineWidth = 2; x.strokeStyle = '#ef4444'; x.stroke();
+
+  // Red Jam Callout Tag
+  x.fillStyle = '#ef4444';
+  x.beginPath();
+  x.roundRect(jx + 35, jy - 35, 160, 42, 10);
+  x.fill();
+  x.fillStyle = '#ffffff';
+  x.font = '700 18px "Fredoka", sans-serif';
+  x.textAlign = 'left';
+  x.fillText('⚡ MACET / JAMMED', jx + 48, jy - 8);
+
+  return finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+}
+
+
+// ============================================================================
+// 5. English Digraph Frequency Matrix Board (Spread 2)
+// ============================================================================
+export function makeDigraphMatrix(w = 640, h = 600) {
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Blueprint / Chalkboard background
+  x.fillStyle = '#1e3a8a';
+  x.beginPath();
+  x.roundRect(40, 30, w - 80, h - 60, 24);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = '#93c5fd';
   x.stroke();
 
-  // Callout ring around breather hole
-  x.lineWidth = 3.5;
-  x.strokeStyle = '#ef4444';
+  // Grid lines
+  x.strokeStyle = 'rgba(255,255,255,0.12)';
+  x.lineWidth = 1.5;
+  for (let gx = 60; gx < w - 60; gx += 40) {
+    x.beginPath(); x.moveTo(gx, 50); x.lineTo(gx, h - 50); x.stroke();
+  }
+  for (let gy = 50; gy < h - 50; gy += 40) {
+    x.beginPath(); x.moveTo(60, gy); x.lineTo(w - 60, gy); x.stroke();
+  }
+
+  // Header Title
+  x.fillStyle = '#fef08a';
+  x.font = '700 28px "Lilita One", sans-serif';
+  x.textAlign = 'center';
+  x.fillText('ANALISIS FREKUENSI PASANGAN HURUF', w / 2, 85);
+  x.fillStyle = '#bfdbfe';
+  x.font = '500 18px "Fredoka", sans-serif';
+  x.fillText('Amos Densmore & Christopher Sholes (1873)', w / 2, 115);
+
+  // Digraph frequency bars table
+  const digraphs = [
+    { pair: 'T - H', pct: '3.56%', wBar: 260, col: '#ef4444', note: 'Terpisah 180°' },
+    { pair: 'H - E', pct: '3.07%', wBar: 230, col: '#f97316', note: 'Terpisah 160°' },
+    { pair: 'I - N', pct: '2.43%', wBar: 185, col: '#eab308', note: 'Sisi Berlawanan' },
+    { pair: 'E - R', pct: '2.05%', wBar: 160, col: '#10b981', note: 'Anti-Benturan' },
+    { pair: 'A - N', pct: '1.99%', wBar: 150, col: '#06b6d4', note: 'Terdistribusi' },
+    { pair: 'S - T', pct: '1.54%', wBar: 125, col: '#8b5cf6', note: 'Jalur Bebas' },
+  ];
+
+  const startY = 160;
+  digraphs.forEach((d, i) => {
+    const y = startY + i * 55;
+    
+    // Label
+    x.fillStyle = '#ffffff';
+    x.font = '700 22px "Lilita One", sans-serif';
+    x.textAlign = 'left';
+    x.fillText(d.pair, 70, y + 24);
+
+    // Percentage
+    x.fillStyle = '#93c5fd';
+    x.font = '600 18px "Fredoka", sans-serif';
+    x.fillText(d.pct, 150, y + 24);
+
+    // Bar background
+    x.fillStyle = '#172554';
+    x.beginPath(); x.roundRect(230, y + 4, 270, 26, 6); x.fill();
+
+    // Active Bar
+    x.fillStyle = d.col;
+    x.beginPath(); x.roundRect(230, y + 4, d.wBar, 26, 6); x.fill();
+
+    // Clearance note badge
+    x.fillStyle = '#ffffff';
+    x.font = '600 14px "Fredoka", sans-serif';
+    x.fillText(d.note, 240 + d.wBar + 12, y + 22);
+  });
+
+  // Footer summary badge
+  x.fillStyle = '#10b981';
+  x.beginPath();
+  x.roundRect(70, h - 95, w - 140, 42, 12);
+  x.fill();
+  x.fillStyle = '#ffffff';
+  x.font = '700 18px "Fredoka", sans-serif';
+  x.textAlign = 'center';
+  x.fillText('✓ Solusi: Pisahkan Tuas Sering Berpasangan ke Sisi Berseberangan', w / 2, h - 68);
+
+  return finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+}
+
+
+// ============================================================================
+// 6. 1870s Morse Telegraph Station & Operator (Spread 2)
+// ============================================================================
+export const TELE_W = 600, TELE_H = 750;
+export function drawTelegraphOperator(outCtx, p = {}) {
+  const { tap = 0 } = p;
+  outCtx.clearRect(0, 0, TELE_W, TELE_H);
+  const W = cv(TELE_W, TELE_H), x = W.getContext('2d');
+
+  // Oak Desk Surface
+  x.fillStyle = '#78350f';
+  x.beginPath();
+  x.roundRect(40, 520, TELE_W - 80, 180, 16);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = INK;
+  x.stroke();
+
+  // Brass Telegraph Key & Sounder
+  x.fillStyle = '#f59e0b';
+  x.beginPath();
+  x.roundRect(100, 500, 140, 35, 8);
+  x.fill();
+  x.stroke();
+
+  // Telegraph Lever arm with dynamic tap offset
+  const tY = 475 + tap * 10;
+  x.strokeStyle = '#d97706';
+  x.lineWidth = 6;
+  x.beginPath();
+  x.moveTo(110, 500); x.lineTo(210, tY); x.stroke();
+  // Knob
+  x.fillStyle = '#18181b';
+  x.beginPath(); x.arc(210, tY, 14, 0, TAU); x.fill(); x.stroke();
+
+  // Sounder Solenoid Coils
+  x.fillStyle = '#991b1b';
+  x.beginPath(); x.roundRect(250, 460, 30, 55, 6); x.fill(); x.stroke();
+  x.beginPath(); x.roundRect(290, 460, 30, 55, 6); x.fill(); x.stroke();
+
+  // Operator Torso: Pinstripe Vest & Rolled White Sleeves
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.roundRect(320, 320, 180, 240, 24);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = INK;
+  x.stroke();
+
+  // Vest
+  x.fillStyle = '#1e293b';
+  x.beginPath();
+  x.roundRect(330, 340, 160, 200, 16);
+  x.fill();
+  x.stroke();
+
+  // Green Visor / Cap
+  x.fillStyle = '#15803d';
+  x.beginPath();
+  x.ellipse(410, 180, 75, 24, 0.1, 0, TAU);
+  x.fill();
+  x.stroke();
+
+  // Head
+  x.fillStyle = '#fde2c7';
+  x.beginPath();
+  x.ellipse(410, 230, 60, 70, 0, 0, TAU);
+  x.fill();
+  x.stroke();
+
+  // Eye & Pencil behind ear
+  x.fillStyle = '#18181b';
+  x.beginPath(); x.arc(385, 230, 6, 0, TAU); x.fill();
+  x.fillStyle = '#f59e0b';
+  x.lineWidth = 4;
+  x.beginPath(); x.moveTo(440, 200); x.lineTo(480, 185); x.stroke();
+
+  // Arm reaching to telegraph key
+  x.strokeStyle = '#f8fafc';
+  x.lineWidth = 26;
+  x.lineCap = 'round';
+  x.beginPath();
+  x.moveTo(350, 400);
+  x.quadraticCurveTo(280, 430, 215, tY + 4);
+  x.stroke();
+  x.strokeStyle = INK;
+  x.lineWidth = 3;
+  x.stroke();
+
+  // Hand
+  x.fillStyle = '#fcd3a7';
+  x.beginPath(); x.ellipse(215, tY + 4, 16, 12, 0, 0, TAU); x.fill(); x.stroke();
+
+  // Morse Tape Spool
+  x.fillStyle = '#fef08a';
+  x.beginPath();
+  x.moveTo(280, 520);
+  x.lineTo(380, 530);
+  x.lineTo(460, 515);
+  x.lineWidth = 6;
+  x.strokeStyle = '#fef08a';
+  x.stroke();
+
+  outCtx.drawImage(finishCut(W, 14, { paper: '#fffdf7', edge: '#b9ad9c' }), 0, 0);
+}
+
+// ============================================================================
+// 7. QWERTY vs Dvorak Comparison Plaque with Lock (Spread 3)
+// ============================================================================
+export function makeDvorakComparison(w = 640, h = 600) {
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Parchment base
+  x.fillStyle = '#fef3c7';
+  x.beginPath();
+  x.roundRect(40, 30, w - 80, h - 60, 24);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = '#92400e';
+  x.stroke();
+
+  // Title
+  x.fillStyle = '#78350f';
+  x.font = '700 28px "Lilita One", sans-serif';
+  x.textAlign = 'center';
+  x.fillText('PERANG TATA LETAK KEYBOARD', w / 2, 80);
+
+  // Section 1: QWERTY (1873)
+  x.fillStyle = '#f8fafc';
+  x.beginPath(); x.roundRect(65, 115, w - 130, 140, 16); x.fill();
+  x.lineWidth = 3; x.strokeStyle = '#cbd5e1'; x.stroke();
+
+  x.fillStyle = '#0f172a';
+  x.font = '700 22px "Lilita One", sans-serif';
+  x.textAlign = 'left';
+  x.fillText('QWERTY (1873)', 90, 150);
+
+  x.fillStyle = '#ef4444';
+  x.font = '700 18px "Fredoka", sans-serif';
+  x.fillText('Hanya 32% ketikan di Baris Rumah (Home Row)', 90, 185);
+  x.fillStyle = '#64748b';
+  x.font = '500 16px "Fredoka", sans-serif';
+  x.fillText('Dirancang menghindari tubrukan tuas mekanis kuno.', 90, 215);
+
+  // Section 2: DVORAK (1936)
+  x.fillStyle = '#f0fdf4';
+  x.beginPath(); x.roundRect(65, 275, w - 130, 140, 16); x.fill();
+  x.lineWidth = 3; x.strokeStyle = '#86efac'; x.stroke();
+
+  x.fillStyle = '#166534';
+  x.font = '700 22px "Lilita One", sans-serif';
+  x.fillText('DVORAK SIMPLIFIED (1936)', 90, 310);
+
+  x.fillStyle = '#15803d';
+  x.font = '700 18px "Fredoka", sans-serif';
+  x.fillText('70% ketikan di Baris Rumah · Jauh Lebih Cepat!', 90, 345);
+  x.fillStyle = '#64748b';
+  x.font = '500 16px "Fredoka", sans-serif';
+  x.fillText('Gagal total menggantikan QWERTY di seluruh dunia.', 90, 375);
+
+  // Lock Icon & Inevitability Badge at bottom
+  x.fillStyle = '#b45309';
+  x.beginPath();
+  x.roundRect(70, 440, w - 140, 85, 18);
+  x.fill();
+
+  // Brass Padlock
+  const lx = 120, ly = 482;
+  // Shackle
+  x.strokeStyle = '#fbbf24';
+  x.lineWidth = 6;
+  x.beginPath();
+  x.arc(lx, ly - 14, 16, Math.PI, 0);
+  x.stroke();
+  // Body
+  x.fillStyle = '#f59e0b';
+  x.beginPath(); x.roundRect(lx - 22, ly - 12, 44, 38, 8); x.fill();
+  x.fillStyle = '#78350f';
+  x.beginPath(); x.arc(lx, ly + 4, 4, 0, TAU); x.fill();
+
+  // Lock Text
+  x.fillStyle = '#ffffff';
+  x.font = '700 22px "Lilita One", sans-serif';
+  x.textAlign = 'left';
+  x.fillText('KUTUKAN MEMORI OTOT (PATH DEPENDENCY)', 160, 475);
+  x.font = '500 16px "Fredoka", sans-serif';
+  x.fillText('Miliaran jari sudah terprogram permanen sejak lahir.', 160, 502);
+
+  return finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+}
+
+
+// ============================================================================
+// 8. Global Fingers Collage (Spread 3 Epilogue)
+// ============================================================================
+export function makeGlobalFingers(w = 640, h = 400) {
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Modern minimalist warm wood backing
+  x.fillStyle = '#1c1917';
+  x.beginPath();
+  x.roundRect(40, 30, w - 80, h - 60, 24);
+  x.fill();
+  x.lineWidth = LW;
+  x.strokeStyle = '#78716c';
+  x.stroke();
+
+  // Glowing silhouettes of modern devices
+  // Laptop keyboard
+  x.fillStyle = '#292524';
+  x.beginPath(); x.roundRect(70, 160, 220, 140, 12); x.fill();
+  x.strokeStyle = '#38bdf8'; x.lineWidth = 2; x.stroke();
+  x.fillStyle = '#38bdf8';
+  x.font = '700 18px "Lilita One", sans-serif';
+  x.textAlign = 'center';
+  x.fillText('LAPTOP', 180, 240);
+
+  // Tablet
+  x.fillStyle = '#292524';
+  x.beginPath(); x.roundRect(320, 130, 140, 180, 14); x.fill();
+  x.strokeStyle = '#a855f7'; x.lineWidth = 2; x.stroke();
+  x.fillStyle = '#a855f7';
+  x.fillText('TABLET', 390, 225);
+
+  // Smartphone
+  x.fillStyle = '#292524';
+  x.beginPath(); x.roundRect(485, 170, 85, 150, 14); x.fill();
+  x.strokeStyle = '#34d399'; x.lineWidth = 2; x.stroke();
+  x.fillStyle = '#34d399';
+  x.fillText('HP', 527, 250);
+
+  // Connecting gold pulse arcs
+  x.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+  x.lineWidth = 3;
   x.setLineDash([8, 6]);
   x.beginPath();
-  x.arc(hx, hy, hr * 2.4, 0, TAU);
+  x.moveTo(180, 160);
+  x.quadraticCurveTo(300, 80, 390, 130);
+  x.quadraticCurveTo(460, 80, 527, 170);
   x.stroke();
   x.setLineDash([]);
 
-  // Label banner
-  x.fillStyle = '#ef4444';
-  x.font = '700 24px Fredoka, sans-serif';
+  // Epilogue Banner
+  x.fillStyle = '#f59e0b';
+  x.font = '700 24px "Lilita One", sans-serif';
   x.textAlign = 'center';
-  x.fillText('BREATHER HOLE (LUBANG NAPAS)', hx, hy + hr * 2.4 + 34);
+  x.fillText('150 TAHUN GEOMETRI MEKANIS QWERTY', w / 2, 75);
+  x.fillStyle = '#e7e5e4';
+  x.font = '500 16px "Fredoka", sans-serif';
+  x.fillText('Dari Solusi Macet 1873 Menjadi Bahasa Digital Manusia', w / 2, 105);
+
+  return finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
 }
 
-// ============================================================================
-// 3. 1954 de Havilland Comet Fuselage with Square Windows
-// ============================================================================
-export const COMET_W = 1000, COMET_H = 650;
-export function drawCometFuselage(x, p = {}) {
-  const { stressAlpha = 1.0, crackProgress = 0 } = p;
-  x.clearRect(0, 0, COMET_W, COMET_H);
 
-  // Fuselage body (Aluminium silver cylinder slice)
-  const g = x.createLinearGradient(0, 50, 0, COMET_H - 50);
-  g.addColorStop(0, '#f1f5f9');
-  g.addColorStop(0.5, '#cbd5e1');
-  g.addColorStop(1, '#94a3b8');
-  x.fillStyle = g;
-  x.beginPath();
-  x.roundRect(40, 80, COMET_W - 80, COMET_H - 160, 36);
-  x.fill();
-  x.lineWidth = LW;
-  x.strokeStyle = '#334155';
-  x.stroke();
+// ============================================================================
+// Multi-Tiered Papercraft World Building Assets & Props (PPM = 2000)
+// ============================================================================
+export const PPM = 2000;
 
-  // Rivet lines
-  x.fillStyle = '#64748b';
-  for (let i = 80; i < COMET_W - 80; i += 36) {
-    x.beginPath(); x.arc(i, 110, 3.5, 0, TAU); x.fill();
-    x.beginPath(); x.arc(i, COMET_H - 110, 3.5, 0, TAU); x.fill();
+// 9. Modern Studio Bookshelf (Spread 0 Background)
+export function makeStudioBookshelf(hm = 0.22) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.85);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Walnut outer bookcase
+  x.fillStyle = '#1e293b';
+  x.beginPath(); x.roundRect(20, 20, w - 40, h - 40, 16); x.fill();
+  x.lineWidth = 6; x.strokeStyle = '#0f172a'; x.stroke();
+
+  // 3 Shelf compartments
+  const shY = [h * 0.35, h * 0.65, h - 40];
+  x.strokeStyle = '#334155'; x.lineWidth = 8;
+  for (let i = 0; i < 2; i++) {
+    x.beginPath(); x.moveTo(25, shY[i]); x.lineTo(w - 25, shY[i]); x.stroke();
   }
 
-  // 3 Retro Square Windows (1950s square design)
-  const wins = [200, 500, 800];
-  for (const cx of wins) {
-    const wx = cx - 90, wy = 200, ww = 180, wh = 180;
-    // Window frame
-    x.fillStyle = '#334155';
-    x.beginPath();
-    x.rect(wx - 8, wy - 8, ww + 16, wh + 16);
-    x.fill();
-
-    // Dark cabin glass
-    x.fillStyle = '#0f172a';
-    x.beginPath();
-    x.rect(wx, wy, ww, wh);
-    x.fill();
-    x.lineWidth = 3.5;
-    x.strokeStyle = '#e2e8f0';
-    x.stroke();
-
-    // Red Stress Concentration Lines at sharp 90-degree corners!
-    if (stressAlpha > 0) {
-      x.save();
-      x.globalAlpha = stressAlpha;
-      x.lineWidth = 4;
-      x.strokeStyle = '#ef4444';
-      const corners = [
-        [wx, wy, -1, -1],
-        [wx + ww, wy, 1, -1],
-        [wx, wy + wh, -1, 1],
-        [wx + ww, wy + wh, 1, 1]
-      ];
-      for (const [kx, ky, dx, dy] of corners) {
-        x.beginPath();
-        x.arc(kx, ky, 22, 0, TAU);
-        x.stroke();
-        x.beginPath();
-        x.moveTo(kx, ky);
-        x.lineTo(kx + dx * 36, ky + dy * 36);
-        x.stroke();
-      }
-      x.restore();
-    }
-
-    // Dynamic Metal Fatigue Crack on middle window
-    if (crackProgress > 0 && cx === 500) {
-      x.save();
-      x.lineWidth = 6;
-      x.strokeStyle = '#dc2626';
-      x.beginPath();
-      x.moveTo(wx, wy);
-      const len = crackProgress * 130;
-      x.lineTo(wx - len * 0.45, wy - len * 0.35);
-      x.lineTo(wx - len * 0.7, wy - len * 0.55);
-      x.lineTo(wx - len * 0.95, wy - len * 0.75);
-      x.stroke();
-      x.restore();
-    }
+  // Top shelf: colorful books + mini succulent plant
+  const bookCols = ['#f43f5e', '#38bdf8', '#10b981', '#f59e0b', '#8b5cf6', '#e2e8f0'];
+  let bx = 45;
+  for (let i = 0; i < 6; i++) {
+    const bw = 22 + (i % 3) * 6, bh = 80 + (i % 4) * 12;
+    x.fillStyle = bookCols[i];
+    x.beginPath(); x.roundRect(bx, shY[0] - bh, bw, bh, 4); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,0.25)'; x.lineWidth = 2; x.stroke();
+    // Gold spine text line
+    x.fillStyle = 'rgba(255,255,255,0.4)'; x.fillRect(bx + 4, shY[0] - bh + 15, bw - 8, 3);
+    bx += bw + 6;
+  }
+  // Plant pot
+  const px = w - 85, py = shY[0] - 65;
+  x.fillStyle = '#f97316'; x.beginPath(); x.roundRect(px, py + 25, 45, 40, 6); x.fill();
+  x.fillStyle = '#22c55e';
+  for (let a = 0; a < 5; a++) {
+    x.beginPath(); x.ellipse(px + 22 + (a - 2) * 8, py + 15 - Math.abs(a - 2) * 6, 8, 18, (a - 2) * 0.25, 0, TAU); x.fill();
   }
 
-  // BOAC / Speedbird livery stripe
-  x.fillStyle = '#1e3a8a';
-  x.fillRect(40, 420, COMET_W - 80, 24);
-  x.font = '700 26px "Space Grotesk", sans-serif';
-  x.fillStyle = '#1e3a8a';
-  x.fillText('DE HAVILLAND COMET (1954)', 60, 480);
-}
-
-// ============================================================================
-// 4. British Aerospace Engineer / Accident Investigator Character
-// ============================================================================
-export const ENG_W = 600, ENG_H = 800;
-export function drawEngineer(x, p = {}) {
-  const { headShake = 0 } = p;
-  x.clearRect(0, 0, ENG_W, ENG_H);
-  x.save();
-
-  // Torso / British Laboratory Dust Coat
-  x.fillStyle = '#f1f5f9';
-  x.beginPath();
-  x.roundRect(190, 430, 220, 290, 24);
-  x.fill();
-  x.lineWidth = LW;
-  x.strokeStyle = INK;
-  x.stroke();
-
-  // Tweed Waistcoat underneath
-  x.fillStyle = '#475569';
-  x.beginPath();
-  x.moveTo(260, 470); x.lineTo(300, 520); x.lineTo(340, 470);
-  x.lineTo(330, 680); x.lineTo(270, 680);
-  x.closePath();
-  x.fill();
-
-  // Vintage Brass Watch Chain
-  x.lineWidth = 3;
-  x.strokeStyle = '#d97706';
-  x.beginPath();
-  x.arc(300, 600, 22, 0.2, Math.PI - 0.2);
-  x.stroke();
-
-  // Pen pocket with vintage drafting pens
+  // Middle shelf: typewriter history binder & framed icon
   x.fillStyle = '#cbd5e1';
-  x.fillRect(225, 520, 42, 45);
-  x.lineWidth = 2.5; x.strokeStyle = INK; x.strokeRect(225, 520, 42, 45);
-  x.fillStyle = '#dc2626'; x.fillRect(234, 502, 6, 22);
-  x.fillStyle = '#2563eb'; x.fillRect(246, 498, 6, 26);
+  x.beginPath(); x.roundRect(45, shY[1] - 95, 65, 95, 6); x.fill();
+  x.fillStyle = '#1e3a8a'; x.font = '700 16px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('1873', 77, shY[1] - 50);
 
-  // Head with shake rotation
-  x.translate(300, 315);
-  x.rotate(headShake);
-  x.translate(-300, -315);
+  // Framed patent badge
+  x.fillStyle = '#fef08a';
+  x.beginPath(); x.roundRect(140, shY[1] - 85, 75, 85, 6); x.fill();
+  x.strokeStyle = '#ca8a04'; x.lineWidth = 4; x.stroke();
+  x.fillStyle = '#854d0e'; x.font = '700 24px "Lilita One"'; x.fillText('Q', 177, shY[1] - 40);
 
-  // Neck
-  x.fillStyle = '#fed7aa';
-  x.fillRect(280, 385, 40, 50);
+  // Bottom shelf: horizontal stacked thick textbooks
+  const stCols = ['#0284c7', '#059669', '#d97706'];
+  let sy = shY[2] - 15;
+  for (let i = 0; i < 3; i++) {
+    x.fillStyle = stCols[i];
+    x.beginPath(); x.roundRect(50, sy - 24, 160, 24, 4); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,0.3)'; x.lineWidth = 2; x.stroke();
+    sy -= 28;
+  }
 
-  // Head oval
-  x.fillStyle = '#fde2c7';
-  x.beginPath();
-  x.ellipse(300, 315, 92, 108, 0, 0, TAU);
-  x.fill();
-  x.lineWidth = LW;
-  x.strokeStyle = INK;
-  x.stroke();
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
 
-  // Distinguished Silver Hair (100% solid continuous mass, zero gaps)
-  x.fillStyle = '#64748b';
-  x.beginPath();
-  x.moveTo(200, 310);
-  x.quadraticCurveTo(192, 260, 196, 220);
-  x.quadraticCurveTo(210, 180, 300, 180);
-  x.quadraticCurveTo(390, 180, 404, 220);
-  x.quadraticCurveTo(408, 260, 400, 310);
-  x.quadraticCurveTo(390, 290, 385, 250);
-  x.quadraticCurveTo(300, 230, 215, 250);
-  x.quadraticCurveTo(210, 290, 200, 310);
-  x.closePath();
-  x.fill();
-  x.lineWidth = LW;
-  x.strokeStyle = INK;
-  x.stroke();
+// 10. Modern Drafting Anglepoise Lamp (Spread 0 Midground)
+export function makeDraftingLamp(hm = 0.18) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.65);
+  const c = cv(w, h), x = c.getContext('2d');
 
-  x.fillStyle = '#94a3b8';
-  x.beginPath();
-  x.moveTo(198, 245);
-  x.quadraticCurveTo(245, 275, 290, 245);
-  x.quadraticCurveTo(335, 280, 402, 245);
-  x.quadraticCurveTo(300, 205, 198, 245);
-  x.closePath();
-  x.fill();
-  x.lineWidth = 3;
-  x.strokeStyle = '#475569';
-  x.stroke();
+  // Heavy stepped circular base
+  const bx = w * 0.35, by = h - 35;
+  x.fillStyle = '#0f172a';
+  x.beginPath(); x.roundRect(bx - 40, by, 80, 25, 8); x.fill();
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.arc(bx, by, 12, 0, TAU); x.fill();
 
-  // Tortoiseshell Wireframe Glasses
-  x.lineWidth = 4.5;
-  x.strokeStyle = '#78350f';
-  x.fillStyle = 'rgba(191, 219, 254, 0.25)';
-  x.beginPath(); x.arc(265, 315, 26, 0, TAU); x.fill(); x.stroke();
-  x.beginPath(); x.arc(335, 315, 26, 0, TAU); x.fill(); x.stroke();
-  x.beginPath(); x.moveTo(291, 315); x.lineTo(309, 315); x.stroke();
+  // Dual scissor cantilever arms (graphite with brass pivot pins)
+  const j1x = bx + 40, j1y = h * 0.52;
+  const j2x = bx + 10, j2y = h * 0.22;
 
-  // Worried Eyes & Furrowed Brows
-  x.fillStyle = INK;
-  x.beginPath(); x.arc(265, 315, 6, 0, TAU); x.fill();
-  x.beginPath(); x.arc(335, 315, 6, 0, TAU); x.fill();
-  x.lineWidth = 4;
-  x.strokeStyle = INK;
-  x.beginPath();
-  x.moveTo(242, 280); x.lineTo(285, 294);
-  x.moveTo(358, 280); x.lineTo(315, 294);
-  x.stroke();
+  x.strokeStyle = '#1e293b'; x.lineWidth = 8; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(bx, by); x.lineTo(j1x, j1y); x.lineTo(j2x, j2y); x.stroke();
 
-  // Worried mouth
-  x.beginPath();
-  x.arc(300, 390, 18, Math.PI * 1.15, Math.PI * 1.85);
-  x.stroke();
+  // Tension springs
+  x.strokeStyle = '#94a3b8'; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(bx + 10, by - 10); x.lineTo(j1x - 5, j1y + 10); x.stroke();
 
-  // Hand holding engineering clipboard
-  x.restore();
+  // Brass joint pivots
+  x.fillStyle = '#f59e0b';
+  x.beginPath(); x.arc(j1x, j1y, 9, 0, TAU); x.fill();
+  x.beginPath(); x.arc(j2x, j2y, 8, 0, TAU); x.fill();
+
+  // Conical lampshade
+  const headX = j2x + 45, headY = j2y + 30;
   x.save();
-  x.translate(430, 560);
-  x.rotate(-0.35);
-  x.fillStyle = '#b45309'; // Masonite clipboard
-  x.roundRect(-25, -90, 70, 150, 8);
+  x.translate(j2x, j2y);
+  x.rotate(0.45);
+  x.fillStyle = '#0f172a';
+  x.beginPath();
+  x.moveTo(0, -15); x.lineTo(70, -35); x.lineTo(75, 35); x.lineTo(0, 15);
+  x.closePath(); x.fill();
+  x.strokeStyle = '#334155'; x.lineWidth = 4; x.stroke();
+
+  // Inner warm lamp glow
+  const glow = x.createRadialGradient(50, 0, 5, 50, 0, 50);
+  glow.addColorStop(0, '#ffffff');
+  glow.addColorStop(0.4, '#fef08a');
+  glow.addColorStop(1, 'rgba(250, 204, 21, 0)');
+  x.fillStyle = glow;
+  x.beginPath(); x.ellipse(72, 0, 14, 32, 0, 0, TAU); x.fill();
+  x.restore();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.35, ay: 0.98 };
+}
+
+// 11. Cork Pinboard with Sticky Notes (Spread 0 Midground)
+export function makeStickyNotesBoard(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Pine wood frame
+  x.fillStyle = '#b45309';
+  x.beginPath(); x.roundRect(15, 15, w - 30, h - 30, 12); x.fill();
+
+  // Cork bulletin surface
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.roundRect(28, 28, w - 56, h - 56, 8); x.fill();
+
+  // Yellow sticky note
+  x.save(); x.translate(55, 50); x.rotate(-0.06);
+  x.fillStyle = '#fef08a'; x.fillRect(0, 0, 110, 105);
+  x.fillStyle = '#ef4444'; x.beginPath(); x.arc(55, 10, 6, 0, TAU); x.fill(); // pin
+  x.fillStyle = '#1e293b'; x.font = '700 15px "Fredoka"';
+  x.fillText('Kenapa Huruf', 12, 45);
+  x.fillText('Acak? 🤔', 12, 70);
+  x.restore();
+
+  // Cyan sticky note
+  x.save(); x.translate(195, 60); x.rotate(0.08);
+  x.fillStyle = '#a5f3fc'; x.fillRect(0, 0, 115, 110);
+  x.fillStyle = '#3b82f6'; x.beginPath(); x.arc(58, 10, 6, 0, TAU); x.fill(); // pin
+  x.fillStyle = '#0f172a'; x.font = '700 14px "Fredoka"';
+  x.fillText('Bukan Mitos!', 10, 45);
+  x.fillText('Tapi Solusi Macet', 10, 70);
+  x.fillText('1873', 10, 92);
+  x.restore();
+
+  // Diagram sketch note
+  x.save(); x.translate(110, 160); x.rotate(0.02);
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, 130, 95);
+  x.strokeStyle = '#ef4444'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(25, 45); x.lineTo(55, 65); x.lineTo(25, 85); x.stroke(); // clash icon
+  x.beginPath(); x.moveTo(105, 45); x.lineTo(75, 65); x.lineTo(105, 85); x.stroke();
+  x.fillStyle = '#ef4444'; x.font = '700 13px "Lilita One"'; x.fillText('JAM!', 50, 30);
+  x.restore();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 12. Hanging Edison Idea Bulb (Spread 0 Suspended on Thread)
+export function makeIdeaBulb(hm = 0.11) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.65);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const cx = w / 2, cy = h * 0.58, r = w * 0.36;
+
+  // Brass screw cap at top
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.roundRect(cx - 20, 20, 40, 35, 6); x.fill();
+  x.strokeStyle = '#78350f'; x.lineWidth = 3;
+  for (let i = 28; i < 50; i += 7) { x.beginPath(); x.moveTo(cx - 18, i); x.lineTo(cx + 18, i); x.stroke(); }
+
+  // Glass bulb teardrop
+  x.fillStyle = 'rgba(254, 240, 138, 0.45)';
+  x.beginPath();
+  x.arc(cx, cy, r, -0.4, Math.PI + 0.4);
+  x.lineTo(cx - 18, 55);
+  x.lineTo(cx + 18, 55);
+  x.closePath();
   x.fill();
-  x.fillStyle = '#fef08a'; // Blueprint paper
-  x.fillRect(-18, -80, 56, 130);
-  x.fillStyle = '#2563eb';
-  x.lineWidth = 1.5;
-  x.strokeRect(-18, -80, 56, 130);
-  // Grid lines
-  for (let y = -70; y < 40; y += 15) {
-    x.beginPath(); x.moveTo(-15, y); x.lineTo(35, y); x.stroke();
+  x.lineWidth = 5; x.strokeStyle = '#ca8a04'; x.stroke();
+
+  // Glowing amber tungsten squirrel-cage filament
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 4;
+  x.beginPath();
+  x.moveTo(cx - 10, 65); x.lineTo(cx - 10, cy - 10);
+  x.lineTo(cx - 18, cy + 15); x.lineTo(cx, cy - 5);
+  x.lineTo(cx + 18, cy + 15); x.lineTo(cx + 10, cy - 10);
+  x.lineTo(cx + 10, 65);
+  x.stroke();
+
+  // Core radial filament glow
+  const g = x.createRadialGradient(cx, cy, 5, cx, cy, 65);
+  g.addColorStop(0, '#ffffff');
+  g.addColorStop(0.3, '#fef08a');
+  g.addColorStop(1, 'rgba(254, 240, 138, 0)');
+  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, 65, 0, TAU); x.fill();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.2 }; // hanging anchor near top
+}
+
+// 13. Modern Paper Coffee Cup & Drafting Tools (Spread 0 Foreground)
+export function makeDeskCoffeeAndTools(hm = 0.075) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.8);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Coffee cup with sleeve
+  const cx = 65, cy = h - 20;
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(cx - 32, cy - 90); x.lineTo(cx + 32, cy - 90);
+  x.lineTo(cx + 24, cy); x.lineTo(cx - 24, cy);
+  x.closePath(); x.fill();
+  x.strokeStyle = '#cbd5e1'; x.lineWidth = 3; x.stroke();
+
+  // Ribbed kraft cardboard sleeve
+  x.fillStyle = '#b45309';
+  x.beginPath();
+  x.moveTo(cx - 29, cy - 65); x.lineTo(cx + 29, cy - 65);
+  x.lineTo(cx + 25, cy - 25); x.lineTo(cx - 25, cy - 25);
+  x.closePath(); x.fill();
+
+  // Plastic sipping lid
+  x.fillStyle = '#e2e8f0';
+  x.beginPath(); x.roundRect(cx - 35, cy - 98, 70, 12, 4); x.fill();
+
+  // Drafting pencil (yellow hexagonal HB)
+  x.save();
+  x.translate(cx + 70, cy - 15);
+  x.rotate(-0.15);
+  x.fillStyle = '#eab308'; x.fillRect(0, -6, 120, 12); // body
+  x.fillStyle = '#cbd5e1'; x.fillRect(120, -6, 15, 12); // ferrule
+  x.fillStyle = '#f43f5e'; x.fillRect(135, -6, 18, 12); // pink eraser
+  // Sharpened wood tip + graphite
+  x.fillStyle = '#fed7aa';
+  x.beginPath(); x.moveTo(0, -6); x.lineTo(-24, 0); x.lineTo(0, 6); x.closePath(); x.fill();
+  x.fillStyle = '#1e293b';
+  x.beginPath(); x.moveTo(-14, -3.5); x.lineTo(-24, 0); x.lineTo(-14, 3.5); x.closePath(); x.fill();
+  x.restore();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.4, ay: 0.98 };
+}
+
+// 14. 1873 Victorian Factory Brick Arch Facade (Spread 1 Background Wall)
+export function makeFactoryBrickArch(hm = 0.26) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.45);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Red-ochre Victorian brick facade
+  x.fillStyle = '#451a03';
+  x.beginPath(); x.roundRect(20, 20, w - 40, h - 35, 18); x.fill();
+
+  // Brick rows
+  const bh = 22, bw = 55;
+  x.strokeStyle = 'rgba(0,0,0,0.35)'; x.lineWidth = 2.5;
+  for (let y = 30; y < h - 40; y += bh) {
+    x.beginPath(); x.moveTo(25, y); x.lineTo(w - 25, y); x.stroke();
+    const off = ((y / bh) % 2) * (bw / 2);
+    for (let bx = 25 + off; bx < w - 25; bx += bw) {
+      x.beginPath(); x.moveTo(bx, y); x.lineTo(bx, y + bh); x.stroke();
+    }
+  }
+
+  // Large arched window cutout in center
+  const wx = w / 2, wy = h * 0.52, ww = w * 0.54, wh = h * 0.65;
+  x.save();
+  x.beginPath();
+  x.moveTo(wx - ww / 2, wy + wh / 2);
+  x.lineTo(wx - ww / 2, wy - wh * 0.2);
+  x.arc(wx, wy - wh * 0.2, ww / 2, Math.PI, 0);
+  x.lineTo(wx + ww / 2, wy + wh / 2);
+  x.closePath();
+  // Daylight sky through window
+  const wGrad = x.createLinearGradient(0, wy - wh / 2, 0, wy + wh / 2);
+  wGrad.addColorStop(0, '#fef08a');
+  wGrad.addColorStop(0.6, '#fed7aa');
+  wGrad.addColorStop(1, '#ffedd5');
+  x.fillStyle = wGrad; x.fill();
+  x.lineWidth = 10; x.strokeStyle = '#1e1b4b'; x.stroke();
+
+  // Window mullions (12-pane industrial glass)
+  x.strokeStyle = '#1e1b4b'; x.lineWidth = 5;
+  // Verticals
+  x.beginPath(); x.moveTo(wx - ww * 0.22, wy - wh * 0.35); x.lineTo(wx - ww * 0.22, wy + wh / 2); x.stroke();
+  x.beginPath(); x.moveTo(wx, wy - wh * 0.48); x.lineTo(wx, wy + wh / 2); x.stroke();
+  x.beginPath(); x.moveTo(wx + ww * 0.22, wy - wh * 0.35); x.lineTo(wx + ww * 0.22, wy + wh / 2); x.stroke();
+  // Horizontals
+  for (let k = -1; k <= 2; k++) {
+    const hy = wy + k * (wh * 0.18);
+    x.beginPath(); x.moveTo(wx - ww / 2 + 5, hy); x.lineTo(wx + ww / 2 - 5, hy); x.stroke();
   }
   x.restore();
+
+  // Steam pipe along top with valve wheel
+  x.fillStyle = '#57534e';
+  x.fillRect(25, 35, w - 50, 16);
+  x.fillStyle = '#b45309';
+  x.beginPath(); x.arc(w * 0.82, 43, 18, 0, TAU); x.fill();
+  x.fillStyle = '#1c1917';
+  x.beginPath(); x.arc(w * 0.82, 43, 6, 0, TAU); x.fill();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
 }
 
-// ============================================================================
-// 5. 3-Layer Exploded Window Assembly
-// ============================================================================
-export const EXP_W = 900, EXP_H = 700;
-export function drawExplodedPane(x, layer = 'middle') {
-  x.clearRect(0, 0, EXP_W, EXP_H);
-  const pw = 480, ph = 620, px = (EXP_W - pw) / 2, py = 40;
+// 15. Heavy Victorian Machinist Workbench with Vise & Tools (Spread 1 Midground)
+export function makeMachinistWorkbench(hm = 0.15) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.55);
+  const c = cv(w, h), x = c.getContext('2d');
 
-  if (layer === 'outer') {
-    // Structural Outer Pane (Thick acrylic, withstands cabin pressure)
-    x.fillStyle = 'rgba(147, 197, 253, 0.45)';
-    x.beginPath();
-    x.roundRect(px, py, pw, ph, 120);
-    x.fill();
-    x.lineWidth = 8;
-    x.strokeStyle = '#2563eb';
-    x.stroke();
+  // Dark timber benchtop
+  x.fillStyle = '#291102';
+  x.beginPath(); x.roundRect(30, h * 0.35, w - 60, 35, 6); x.fill();
+  x.lineWidth = 4; x.strokeStyle = '#180a02'; x.stroke();
 
-    // Label banner
-    x.fillStyle = '#1e40af';
-    x.font = '700 28px Fredoka, sans-serif';
-    x.textAlign = 'center';
-    x.fillText('KACA LUAR (Struktural - 12mm)', EXP_W / 2, py + ph / 2);
-    x.font = '500 22px Fredoka, sans-serif';
-    x.fillText('Menahan 100% Beban Tekanan Kabin', EXP_W / 2, py + ph / 2 + 36);
-  } else if (layer === 'middle') {
-    // Middle Pane with Breather Hole
-    x.fillStyle = 'rgba(191, 219, 254, 0.4)';
-    x.beginPath();
-    x.roundRect(px, py, pw, ph, 120);
-    x.fill();
-    x.lineWidth = 7;
-    x.strokeStyle = '#0284c7';
-    x.stroke();
+  // Heavy cast-iron trestle legs
+  x.fillStyle = '#1c1917';
+  x.fillRect(55, h * 0.35 + 35, 30, h * 0.55);
+  x.fillRect(w - 85, h * 0.35 + 35, 30, h * 0.55);
+  // Cross brace
+  x.fillRect(55, h * 0.72, w - 110, 18);
 
-    // The Hole!
-    const hx = EXP_W / 2, hy = py + ph - 80;
-    x.fillStyle = '#0f172a';
-    x.beginPath();
-    x.arc(hx, hy, 16, 0, TAU);
-    x.fill();
-    x.lineWidth = 4;
-    x.strokeStyle = '#ef4444';
-    x.stroke();
+  // Bench screw vise mounted on left corner
+  const vx = 80, vy = h * 0.35;
+  x.fillStyle = '#3f3f46';
+  x.beginPath(); x.roundRect(vx - 25, vy - 45, 50, 45, 6); x.fill();
+  // Vise jaws
+  x.fillStyle = '#71717a';
+  x.fillRect(vx - 20, vy - 55, 18, 15);
+  x.fillRect(vx + 2, vy - 55, 18, 15);
+  // Screw handle
+  x.fillStyle = '#d4d4d8';
+  x.fillRect(vx - 35, vy - 25, 70, 8);
+  x.beginPath(); x.arc(vx - 35, vy - 21, 8, 0, TAU); x.fill();
+  x.beginPath(); x.arc(vx + 35, vy - 21, 8, 0, TAU); x.fill();
 
-    x.fillStyle = '#0369a1';
-    x.font = '700 28px Fredoka, sans-serif';
-    x.textAlign = 'center';
-    x.fillText('KACA TENGAH (Breather Pane)', EXP_W / 2, py + ph / 2 - 20);
-    x.fillStyle = '#ef4444';
-    x.font = '700 24px Fredoka, sans-serif';
-    x.fillText('LUBANG NAPAS (Breather Hole)', hx, hy - 30);
-  } else if (layer === 'inner') {
-    // Inner Scratch Pane (Thin plastic to protect from passenger scratches)
-    x.fillStyle = 'rgba(224, 231, 255, 0.35)';
+  // Antique brass oil can with long spout on right
+  const ox = w - 90, oy = h * 0.35;
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.ellipse(ox, oy - 18, 22, 18, 0, 0, TAU); x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 3; x.stroke();
+  // Curved spout
+  x.strokeStyle = '#d97706'; x.lineWidth = 5; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(ox, oy - 30); x.quadraticCurveTo(ox - 10, oy - 70, ox - 35, oy - 80); x.stroke();
+
+  // Machinist ball-peen hammer resting on benchtop
+  x.fillStyle = '#78350f';
+  x.fillRect(w * 0.42, vy - 14, 75, 8); // handle
+  x.fillStyle = '#52525b';
+  x.beginPath(); x.roundRect(w * 0.42 - 12, vy - 24, 24, 20, 4); x.fill();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 16. Victorian Brass Gaslight Lantern (Spread 1 Midground / Suspended)
+export function makeGaslightLantern(hm = 0.17) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.55);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const cx = w / 2, cy = h * 0.55;
+
+  // Wrought iron ornate bracket
+  x.strokeStyle = '#18181b'; x.lineWidth = 6; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(20, 30); x.lineTo(cx, 30); x.lineTo(cx, cy - 45); x.stroke();
+  x.beginPath(); x.arc(cx - 20, 50, 16, 0, Math.PI); x.stroke();
+
+  // Brass lantern cap with pointed finial
+  x.fillStyle = '#b45309';
+  x.beginPath();
+  x.moveTo(cx, cy - 65); x.lineTo(cx + 42, cy - 40); x.lineTo(cx - 42, cy - 40);
+  x.closePath(); x.fill();
+  x.strokeStyle = '#78350f'; x.lineWidth = 3; x.stroke();
+
+  // Glass lantern housing (tapering downwards)
+  x.fillStyle = 'rgba(254, 243, 199, 0.45)';
+  x.beginPath();
+  x.moveTo(cx - 40, cy - 40); x.lineTo(cx + 40, cy - 40);
+  x.lineTo(cx + 28, cy + 45); x.lineTo(cx - 28, cy + 45);
+  x.closePath(); x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 4; x.stroke();
+
+  // Flickering yellow fishtail gas flame inside
+  const g = x.createRadialGradient(cx, cy, 3, cx, cy, 35);
+  g.addColorStop(0, '#ffffff');
+  g.addColorStop(0.35, '#f59e0b');
+  g.addColorStop(1, 'rgba(245, 158, 11, 0)');
+  x.fillStyle = g;
+  x.beginPath(); x.arc(cx, cy, 35, 0, TAU); x.fill();
+
+  x.fillStyle = '#fef08a';
+  x.beginPath();
+  x.moveTo(cx - 7, cy + 15);
+  x.quadraticCurveTo(cx - 12, cy - 10, cx, cy - 25);
+  x.quadraticCurveTo(cx + 12, cy - 10, cx + 7, cy + 15);
+  x.closePath(); x.fill();
+
+  // Brass bottom base
+  x.fillStyle = '#b45309';
+  x.beginPath(); x.roundRect(cx - 25, cy + 45, 50, 18, 4); x.fill();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.25 };
+}
+
+// 17. 1873 Typebar Linkage Patent Drafting Scroll (Spread 1 Background)
+export function makePatentScrollWall(hm = 0.20) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.8);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Parchment paper sheet
+  x.fillStyle = '#fef3c7';
+  x.beginPath(); x.roundRect(25, 25, w - 50, h - 50, 10); x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 4; x.stroke();
+
+  // Technical schematic in dark sepia ink
+  x.strokeStyle = '#78350f'; x.lineWidth = 3;
+  // Circular basket radius arc
+  x.beginPath(); x.arc(w / 2, h * 0.45, w * 0.28, Math.PI * 0.2, Math.PI * 0.8); x.stroke();
+  // Radial linkage arms
+  for (let a = 0.3; a <= 0.7; a += 0.08) {
+    const ang = Math.PI * a;
     x.beginPath();
-    x.roundRect(px, py, pw, ph, 120);
-    x.fill();
-    x.lineWidth = 6;
-    x.strokeStyle = '#4f46e5';
+    x.moveTo(w / 2 + Math.cos(ang) * (w * 0.28), h * 0.45 + Math.sin(ang) * (w * 0.28));
+    x.lineTo(w / 2, h * 0.45);
     x.stroke();
-    x.fillStyle = '#3730a3';
-    x.font = '700 28px Fredoka, sans-serif';
-    x.textAlign = 'center';
-    x.fillText('KACA DALAM (Pelindung Antigores)', EXP_W / 2, py + ph / 2);
-    x.font = '500 22px Fredoka, sans-serif';
-    x.fillText('Melindungi dari Sentuhan Penumpang', EXP_W / 2, py + ph / 2 + 36);
   }
+
+  // Clash warning annotation
+  x.fillStyle = '#dc2626';
+  x.font = '700 16px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('CRITICAL JAM POINT!', w / 2, h * 0.78);
+
+  // Red wax seal at bottom
+  x.fillStyle = '#b91c1c';
+  x.beginPath(); x.arc(w * 0.75, h * 0.82, 18, 0, TAU); x.fill();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
 }
+
+// 18. Western Union Telegraph Central Switchboard (Spread 2 Background Wall)
+export function makeTelegraphSwitchboard(hm = 0.24) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.25);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Polished mahogany casing
+  x.fillStyle = '#291102';
+  x.beginPath(); x.roundRect(20, 20, w - 40, h - 40, 16); x.fill();
+  x.lineWidth = 6; x.strokeStyle = '#180a02'; x.stroke();
+
+  // Header brass title plaque
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.roundRect(w / 2 - 130, 35, 260, 32, 6); x.fill();
+  x.fillStyle = '#1c1917'; x.font = '700 16px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('WESTERN UNION TELEGRAPH CO.', w / 2, 57);
+
+  // Large brass galvanometer with glass dial
+  const gx = w * 0.28, gy = h * 0.42;
+  x.fillStyle = '#fef3c7';
+  x.beginPath(); x.arc(gx, gy, 45, 0, TAU); x.fill();
+  x.lineWidth = 6; x.strokeStyle = '#b45309'; x.stroke();
+  // Dial ticks & indicator needle
+  x.strokeStyle = '#1c1917'; x.lineWidth = 2;
+  for (let a = -0.8; a <= 0.8; a += 0.2) {
+    x.beginPath();
+    x.moveTo(gx + Math.sin(a) * 35, gy - Math.cos(a) * 35);
+    x.lineTo(gx + Math.sin(a) * 42, gy - Math.cos(a) * 42);
+    x.stroke();
+  }
+  // Red needle
+  x.strokeStyle = '#dc2626'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(gx, gy); x.lineTo(gx + 22, gy - 28); x.stroke();
+
+  // Jack plug matrix grid on the right
+  const mx = w * 0.52, my = h * 0.25;
+  for (let r = 0; r < 5; r++) {
+    for (let col = 0; col < 6; col++) {
+      const px = mx + col * 26, py = my + r * 28;
+      x.fillStyle = '#b45309';
+      x.beginPath(); x.arc(px, py, 7, 0, TAU); x.fill();
+      x.fillStyle = '#0f172a';
+      x.beginPath(); x.arc(px, py, 3.5, 0, TAU); x.fill();
+    }
+  }
+
+  // Braided colored patch cords connecting jacks
+  x.lineWidth = 4; x.lineCap = 'round';
+  x.strokeStyle = '#ef4444';
+  x.beginPath(); x.moveTo(mx + 26, my + 28); x.quadraticCurveTo(mx + 60, my + 130, mx + 104, my + 84); x.stroke();
+  x.strokeStyle = '#eab308';
+  x.beginPath(); x.moveTo(mx + 52, my); x.quadraticCurveTo(mx + 10, my + 110, mx + 78, my + 112); x.stroke();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 19. Cedar Telegraph Pole with Insulator Crossbars (Spread 2 Midground)
+export function makeTelegraphPole(hm = 0.26) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.55);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const cx = w / 2;
+
+  // Wooden cedar pole trunk
+  x.fillStyle = '#451a03';
+  x.fillRect(cx - 14, 40, 28, h - 50);
+  x.strokeStyle = '#291102'; x.lineWidth = 3;
+  x.strokeRect(cx - 14, 40, 28, h - 50);
+
+  // Two horizontal cross-arms
+  const armsY = [80, 140];
+  for (const ay of armsY) {
+    x.fillStyle = '#78350f';
+    x.fillRect(cx - 65, ay, 130, 16);
+    x.strokeStyle = '#291102'; x.lineWidth = 2.5; x.strokeRect(cx - 65, ay, 130, 16);
+
+    // Green glass bell insulators
+    const insX = [cx - 52, cx - 22, cx + 22, cx + 52];
+    for (const ix of insX) {
+      x.fillStyle = '#059669';
+      x.beginPath(); x.roundRect(ix - 7, ay - 14, 14, 14, 4); x.fill();
+      x.strokeStyle = '#047857'; x.lineWidth = 1.5; x.stroke();
+    }
+  }
+
+  // Hanging wire loops
+  x.strokeStyle = '#1c1917'; x.lineWidth = 2.5;
+  x.beginPath(); x.moveTo(cx - 52, 66); x.quadraticCurveTo(cx - 37, 76, cx - 22, 66); x.stroke();
+  x.beginPath(); x.moveTo(cx + 22, 66); x.quadraticCurveTo(cx + 37, 76, cx + 52, 66); x.stroke();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 20. Antique Telegraph Sounder Desk with Ticker Tape (Spread 2 Midground)
+export function makeMorseTickerDesk(hm = 0.14) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.5);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Green felt mahogany desk
+  x.fillStyle = '#064e3b';
+  x.beginPath(); x.roundRect(25, h * 0.42, w - 50, 30, 6); x.fill();
+  x.lineWidth = 5; x.strokeStyle = '#291102'; x.stroke();
+
+  // Brass Morse sounder on mahogany sounding base
+  const sx = 95, sy = h * 0.42;
+  x.fillStyle = '#451a03';
+  x.beginPath(); x.roundRect(sx - 35, sy - 14, 70, 14, 4); x.fill();
+  // Twin brass electromagnet coils
+  x.fillStyle = '#b45309';
+  x.fillRect(sx - 24, sy - 42, 18, 28);
+  x.fillRect(sx + 6, sy - 42, 18, 28);
+  // Sounder anvil arm
+  x.fillStyle = '#d97706';
+  x.fillRect(sx - 28, sy - 48, 56, 8);
+
+  // Spilling white ticker-tape ribbon across the desk
+  x.strokeStyle = '#f8fafc'; x.lineWidth = 12; x.lineCap = 'round';
+  x.beginPath();
+  x.moveTo(sx + 35, sy - 20);
+  x.quadraticCurveTo(w * 0.55, sy - 5, w * 0.72, sy + 15);
+  x.quadraticCurveTo(w * 0.88, sy + 35, w - 25, sy + 45);
+  x.stroke();
+
+  // Printed dots and dashes on tape
+  x.strokeStyle = '#1e293b'; x.lineWidth = 3;
+  x.beginPath();
+  x.moveTo(w * 0.60, sy + 2); x.lineTo(w * 0.65, sy + 7);
+  x.moveTo(w * 0.75, sy + 20); x.lineTo(w * 0.82, sy + 28);
+  x.stroke();
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 21. Statistical Letter Digraph Blackboard (Spread 2 Midground / Background)
+export function makeDigraphBlackboard(hm = 0.18) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Oak frame
+  x.fillStyle = '#78350f';
+  x.beginPath(); x.roundRect(15, 15, w - 30, h - 30, 10); x.fill();
+
+  // Dark slate blackboard surface
+  x.fillStyle = '#1e293b';
+  x.beginPath(); x.roundRect(26, 26, w - 52, h - 52, 6); x.fill();
+
+  // White chalk title
+  x.fillStyle = '#f8fafc';
+  x.font = '700 16px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('MATRIKS FREKUENSI PASANGAN HURUF', w / 2, 55);
+
+  // Digraph frequency bars (TH, ER, IN, HE)
+  const pairs = [
+    { p: 'T - H', pct: 90, col: '#ef4444' },
+    { p: 'E - R', pct: 75, col: '#f59e0b' },
+    { p: 'I - N', pct: 65, col: '#38bdf8' },
+    { p: 'H - E', pct: 60, col: '#10b981' }
+  ];
+
+  let py = 85;
+  for (const item of pairs) {
+    x.fillStyle = '#f8fafc'; x.font = '700 14px "Fredoka"'; x.textAlign = 'left';
+    x.fillText(item.p, 42, py + 12);
+
+    // Chalk bar
+    x.fillStyle = item.col;
+    x.beginPath(); x.roundRect(95, py, (w - 150) * (item.pct / 100), 16, 4); x.fill();
+    py += 26;
+  }
+
+  // Chalk separation formula
+  x.fillStyle = '#fef08a'; x.font = 'italic 14px "IM Fell English"'; x.textAlign = 'center';
+  x.fillText('Pemisahan Sudut Tuas: Δθ >= 90° (Anti-Jam)', w / 2, h - 42);
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 22. 1878 Remington Typewriter Display Pedestal (Spread 3 Midground)
+export function makeRemingtonPedestal(hm = 0.18) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.25);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Fluted mahogany pedestal column
+  x.fillStyle = '#291102';
+  x.beginPath(); x.roundRect(40, h * 0.35, w - 80, h * 0.6, 10); x.fill();
+  x.lineWidth = 5; x.strokeStyle = '#180a02'; x.stroke();
+
+  // Crimson velvet runner draped over top
+  x.fillStyle = '#881337';
+  x.beginPath();
+  x.moveTo(25, h * 0.35); x.lineTo(w - 25, h * 0.35);
+  x.lineTo(w - 35, h * 0.58); x.lineTo(w - 55, h * 0.50);
+  x.lineTo(55, h * 0.50); x.lineTo(35, h * 0.58);
+  x.closePath(); x.fill();
+
+  // Gold fringes on velvet
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 4;
+  x.beginPath(); x.moveTo(35, h * 0.58); x.lineTo(w - 35, h * 0.58); x.stroke();
+
+  // Brass commemorative plaque in center
+  const px = w / 2, py = h * 0.72;
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.roundRect(px - 95, py - 24, 190, 48, 6); x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 3; x.stroke();
+
+  x.fillStyle = '#1c1917'; x.font = '700 13px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('E. REMINGTON & SONS', px, py - 4);
+  x.font = '500 11px "Fredoka"';
+  x.fillText('Standard No. 2 (1878) - QWERTY', px, py + 14);
+
+  const out = finishCut(c, 14, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 23. Individual 3D Typewriter / Keyboard Key (Foreground Tactile Element)
+export function makeScatteredKeycap(letter = 'Q', hm = 0.032, isVintage = true) {
+  const h = Math.round(hm * PPM), w = h;
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const cx = w / 2, cy = h / 2, r = w * 0.42;
+
+  if (isVintage) {
+    // Polished brass outer rim
+    x.fillStyle = '#d97706';
+    x.beginPath(); x.arc(cx, cy, r, 0, TAU); x.fill();
+    x.lineWidth = 4; x.strokeStyle = '#b45309'; x.stroke();
+
+    // Ivory celluloid center
+    x.fillStyle = '#fefce8';
+    x.beginPath(); x.arc(cx, cy, r - 6, 0, TAU); x.fill();
+
+    // Bold serif letter
+    x.fillStyle = '#1c1917';
+    x.font = '700 28px "Lilita One"';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(letter, cx, cy + 1);
+  } else {
+    // Modern sleek chiclet key
+    x.fillStyle = '#1e293b';
+    x.beginPath(); x.roundRect(6, 6, w - 12, h - 12, 10); x.fill();
+    x.strokeStyle = '#334155'; x.lineWidth = 2.5; x.stroke();
+
+    x.fillStyle = '#f8fafc';
+    x.font = '700 24px "Fredoka"';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(letter, cx, cy);
+  }
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.95 };
+}
+

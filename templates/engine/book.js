@@ -22,17 +22,17 @@ function edgeCanvas() {
 }
 
 // cloth cover + gold-foil title; also generates the roughness(g)/metalness(b) map
-export function coverCanvases(drawPipIcon) {
+export function coverCanvases() {
   const w = 2048, h = Math.round(2048 * BD / BW), c = cv(w, h), x = c.getContext('2d'), m = cv(w, h), y = m.getContext('2d');
   
-  // Luxury Midnight Navy cloth weave
-  x.fillStyle = '#0f172a'; x.fillRect(0, 0, w, h);
-  const R = mulberry(5);
+  // Luxury Deep Antique Burgundy cloth weave
+  x.fillStyle = '#2a0d12'; x.fillRect(0, 0, w, h);
+  const R = mulberry(8);
   for (let i = 0; i < h; i += 3) { x.fillStyle = `rgba(0,0,0,${.06 + R() * .08})`; x.fillRect(0, i, w, 1.2); }
   for (let i = 0; i < w; i += 3) { x.fillStyle = `rgba(255,255,255,${.03 + R() * .05})`; x.fillRect(i, 0, 1.2, h); }
   for (let i = 0; i < 90; i++) {
     const px = R() * w, py = R() * h, r = 60 + R() * 300, g = x.createRadialGradient(px, py, 0, px, py, r);
-    g.addColorStop(0, `rgba(${R() < .5 ? '0,0,0' : '30,58,138'},${.08 * R()})`);
+    g.addColorStop(0, `rgba(${R() < .5 ? '0,0,0' : '70,20,30'},${.08 * R()})`);
     g.addColorStop(1, 'rgba(0,0,0,0)');
     x.fillStyle = g; x.fillRect(px - r, py - r, 2 * r, 2 * r);
   }
@@ -51,14 +51,13 @@ export function coverCanvases(drawPipIcon) {
     }
   });
 
-  // Authentic Documentary Gold Title on Right Side
+  // Authentic Gold Title on Right Side
   const tx = w * .655;
   both((k, col) => {
     k.fillStyle = col; k.textAlign = 'center'; k.textBaseline = 'alphabetic';
-    // Perfectly stacked 7-letter words: RAHASIA / JENDELA / PESAWAT
-    k.font = '700 110px "Lilita One"'; k.fillText('RAHASIA', tx, h * .30);
-    k.font = '700 135px "Lilita One"'; k.fillText('JENDELA', tx, h * .43);
-    k.font = '700 135px "Lilita One"'; k.fillText('PESAWAT', tx, h * .56);
+    k.font = '700 115px "Lilita One"'; k.fillText('MISTERI', tx, h * .29);
+    k.font = '700 130px "Lilita One"'; k.fillText('KEYBOARD', tx, h * .42);
+    k.font = '700 145px "Lilita One"'; k.fillText('QWERTY', tx, h * .56);
     
     // Thin gold decorative divider line
     k.beginPath();
@@ -75,43 +74,44 @@ export function coverCanvases(drawPipIcon) {
     k.closePath();
     k.fill();
 
-    k.font = '500 42px "Fredoka", sans-serif'; k.fillText('The Airplane Window Breather Hole', tx, h * .70);
-    k.font = 'italic 34px "Fredoka", sans-serif'; k.fillText('~ Sejarah, Tekanan Udara & Lubang Napas ~', tx, h * .78);
+    k.font = '500 42px "Fredoka", sans-serif'; k.fillText('The 1873 Anti-Jam Mechanical Bottleneck', tx, h * .70);
+    k.font = 'italic 34px "Fredoka", sans-serif'; k.fillText('~ Sejarah Tuas Tik, Kemacetan & Takdir Layar Kaca ~', tx, h * .78);
   });
 
-  // Round Aviation Emblem on Left Side (re-proportioned & repositioned with ample clearance)
+  // Round Mechanical Seal on Left Side
   const cx = w * .22, cy = h * .50, r = 260;
   both((k, col) => {
     k.beginPath(); k.arc(cx, cy, r + 20, 0, Math.PI * 2); k.lineWidth = 12; k.strokeStyle = col; k.stroke();
   });
 
   x.save(); x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.clip();
-  // Deep blue gradient sky
-  const skyGrad = x.createLinearGradient(cx, cy - r, cx, cy + r);
-  skyGrad.addColorStop(0, '#1e3a8a');
-  skyGrad.addColorStop(1, '#3b82f6');
-  x.fillStyle = skyGrad; x.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+  // Deep warm bronze gradient
+  const bgGrad = x.createLinearGradient(cx, cy - r, cx, cy + r);
+  bgGrad.addColorStop(0, '#1c1917');
+  bgGrad.addColorStop(1, '#441a1a');
+  x.fillStyle = bgGrad; x.fillRect(cx - r, cy - r, 2 * r, 2 * r);
 
-  // Stylized golden sunset clouds
-  x.fillStyle = 'rgba(253, 224, 71, 0.45)';
-  x.beginPath(); x.arc(cx - 55, cy + 105, 105, 0, Math.PI * 2); x.fill();
-  x.beginPath(); x.arc(cx + 65, cy + 90, 120, 0, Math.PI * 2); x.fill();
+  // Radial typewriter typebar lines
+  x.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+  x.lineWidth = 3;
+  for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+    x.beginPath();
+    x.moveTo(cx + Math.cos(a) * 45, cy + Math.sin(a) * 45);
+    x.lineTo(cx + Math.cos(a) * (r - 30), cy + Math.sin(a) * (r - 30));
+    x.stroke();
+  }
 
-  // White paper oval airplane window silhouette
+  // Vintage Typewriter Key Icon in Center ("Q")
   x.fillStyle = '#fffdf7';
-  x.beginPath(); x.roundRect(cx - 75, cy - 110, 150, 200, 68); x.fill();
-  x.lineWidth = 7; x.strokeStyle = '#f59e0b'; x.stroke();
+  x.beginPath(); x.arc(cx, cy, 95, 0, Math.PI * 2); x.fill();
+  x.lineWidth = 9; x.strokeStyle = '#f59e0b'; x.stroke();
 
-  // Inner oval reveal
-  x.fillStyle = '#93c5fd';
-  x.beginPath(); x.roundRect(cx - 60, cy - 95, 120, 170, 52); x.fill();
+  x.fillStyle = '#1c1917';
+  x.font = '900 110px "Lilita One"';
+  x.textAlign = 'center';
+  x.textBaseline = 'middle';
+  x.fillText('Q', cx, cy - 2);
 
-  // Dark circular breather hole with red dashed callout ring
-  x.fillStyle = '#0f172a'; x.beginPath(); x.arc(cx, cy + 38, 10, 0, Math.PI * 2); x.fill();
-  x.lineWidth = 3; x.strokeStyle = '#ef4444';
-  x.setLineDash([5, 4]);
-  x.beginPath(); x.arc(cx, cy + 38, 22, 0, Math.PI * 2); x.stroke();
-  x.setLineDash([]);
   x.restore();
 
   y.save(); y.beginPath(); y.arc(cx, cy, r, 0, Math.PI * 2); y.fillStyle = 'rgb(0,180,0)'; y.fill(); y.restore();
@@ -120,7 +120,7 @@ export function coverCanvases(drawPipIcon) {
 
 export function makeBook(cover) {
   const root = new THREE.Group();
-  const cloth = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: .85 });
+  const cloth = new THREE.MeshStandardMaterial({ color: '#2a0d12', roughness: .85 });
   const edge = texOf(edgeCanvas()); edge.wrapS = edge.wrapT = THREE.RepeatWrapping;
   const edgeMat = new THREE.MeshStandardMaterial({ map: edge, roughness: .95 });
   const pageTop = new THREE.MeshStandardMaterial({ color: '#f3ead6', roughness: .95 });
@@ -136,7 +136,7 @@ export function makeBook(cover) {
   const hinge = new THREE.Group(); hinge.position.set(0, PG, 0); root.add(hinge);
   const upper = new THREE.Group(); hinge.add(upper);
   const open = new THREE.Group(); open.rotation.x = Math.PI / 2; upper.add(open);
-  // open-state coordinates (open frame = world orientation when standing up): backdrop page at z=0 facing +z, page block at z<0
+  
   const up = new THREE.Mesh(new THREE.BoxGeometry(BW, BD - .002, HB), [edgeMat, edgeMat, edgeMat, edgeMat, pageTop, pageTop]); up.position.set(0, BD / 2, -HB / 2);
   const ub = new THREE.Mesh(new THREE.BoxGeometry(BW + .012, BD + .006, BT), cloth); ub.position.set(0, BD / 2 + .002, -HB - BT / 2);
   const coverTex = texOf(cover.c), mr = texOf(cover.m, { linear: true });
@@ -144,7 +144,6 @@ export function makeBook(cover) {
   const cp = new THREE.Mesh(new THREE.PlaneGeometry(BW + .008, BD + .002), coverMat); cp.rotation.x = Math.PI; cp.position.set(0, BD / 2 + .002, -HB - BT - .0003);
   for (const m of [up, ub, cp]) { m.castShadow = m.receiveShadow = true; open.add(m); }
 
-  // ground page (stage frame) and backdrop page (open frame), with the gutter curve
   const groundGeo = new THREE.PlaneGeometry(BW - .006, BD - .004, 1, 30); groundGeo.rotateX(-Math.PI / 2); groundGeo.translate(0, 0, BD / 2);
   gutter(groundGeo, 'z');
   const groundMat = new THREE.MeshStandardMaterial({ roughness: .92, color: '#ffffff' });
@@ -160,11 +159,12 @@ export function makeBook(cover) {
   const lf = mkLeafGeo(), lb2 = mkLeafGeo();
   const leafFront = new THREE.Mesh(lf, new THREE.MeshStandardMaterial({ roughness: .92, side: THREE.FrontSide }));
   const leafBack = new THREE.Mesh(lb2, new THREE.MeshStandardMaterial({ roughness: .92, side: THREE.BackSide }));
-  // UV: front has v=1 at the gutter; back has v=1 at the free edge (on top once standing)
+  
   const uvF = lf.attributes.uv, uvB = lb2.attributes.uv;
-  for (let i = 0; i < uvF.count; i++) { const v = uvF.getY(i); /* v:1 top row → s=0 */ uvB.setY(i, 1 - v); }
+  for (let i = 0; i < uvF.count; i++) { const v = uvF.getY(i); uvB.setY(i, 1 - v); }
   uvB.needsUpdate = true;
   for (const m of [leafFront, leafBack]) { m.material.emissive = new THREE.Color(.42, .4, .38); m.castShadow = true; m.receiveShadow = true; m.visible = false; stage.add(m); }
+  
   function setLeaf(u, bendAmt = .55) {
     const vis = u > 0 && u < 1; leafFront.visible = leafBack.visible = vis; if (!vis) return;
     const th = Math.PI / 2 * u, L = bendAmt * Math.sin(Math.PI * u);

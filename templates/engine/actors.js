@@ -1,66 +1,125 @@
-// 3D paper actor rigs and choreography for The Airplane Window Breather Hole
+// Dynamic Posable Actors for The Hidden Geometry of QWERTY
 import * as THREE from 'three';
 import * as A from './art.js';
-import { cv, finishCut } from './paper.js';
-import { cutMesh, blobShadow } from './cutmesh.js';
-import { clamp, lerp, seg, ss, eio, eo, back, TAU } from './lib.js';
+import { cv } from './paper.js';
+import { texOf } from './book.js';
+import { blobShadow } from './cutmesh.js';
 
-export function makePassengerActor() {
-  const c = cv(A.PASS_W, A.PASS_H);
-  A.drawPassenger(c.getContext('2d'), { lean: 0, arm: 'point', mouth: 'o' });
-  const cut = finishCut(c, 12);
-  const mesh = cutMesh({ c: cut, w: 0.12, h: 0.16, ax: 0.5, ay: 0.90 });
-  const shadow = blobShadow(0.06, 0.45);
-  shadow.position.set(0, 0.0005, 0);
-
-  const root = new THREE.Group();
-  root.add(mesh);
-  root.add(shadow);
-  return { root, mesh, shadow, canvas: c, cutCanvas: cut };
+function dynPlane(c, h, ax, ay, side) {
+  const t = texOf(c), w = h * c.width / c.height;
+  const g = new THREE.PlaneGeometry(w, h);
+  g.translate(w / 2 - ax * w, ay * h - h / 2, 0);
+  const m = new THREE.MeshStandardMaterial({
+    map: t,
+    alphaTest: 0.5,
+    alphaToCoverage: false,
+    roughness: 0.85,
+    side
+  });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.customDepthMaterial = new THREE.MeshDepthMaterial({
+    depthPacking: THREE.RGBADepthPacking,
+    map: t,
+    alphaTest: 0.5,
+    side: THREE.DoubleSide
+  });
+  return { mesh, t, c };
 }
 
-export function makeEngineerActor() {
-  const c = cv(A.ENG_W, A.ENG_H);
-  A.drawEngineer(c.getContext('2d'), { headShake: 0 });
-  const cut = finishCut(c, 12);
-  const mesh = cutMesh({ c: cut, w: 0.13, h: 0.17, ax: 0.5, ay: 0.90 });
-  const shadow = blobShadow(0.06, 0.45);
-  shadow.position.set(0, 0.0005, 0);
+// 1. Posable Modern Smartphone User Character
+export function makeUserActor(H = 0.16) {
+  const cF = cv(A.USER_W, A.USER_H);
+  A.drawUserCharacter(cF.getContext('2d'), {});
+  const P = dynPlane(cF, H, 0.5, 0.95, THREE.DoubleSide);
 
   const root = new THREE.Group();
-  root.add(mesh);
+  const body = new THREE.Group();
+  body.add(P.mesh);
+  root.add(body);
+
+  const shadow = blobShadow(H * 0.45, 0.4);
   root.add(shadow);
-  return { root, mesh, shadow, canvas: c, cutCanvas: cut };
+
+  let key = '';
+  return {
+    root,
+    body,
+    shadow,
+    H,
+    pose(p) {
+      const k = JSON.stringify(p, (kk, v) => typeof v === 'number' ? Math.round(v * 30) / 30 : v);
+      if (k === key) return;
+      key = k;
+      A.drawUserCharacter(cF.getContext('2d'), p);
+      P.t.needsUpdate = true;
+    },
+    head(v = new THREE.Vector3()) {
+      return v.set(0, H * 0.92, 0).applyMatrix4(body.matrixWorld);
+    }
+  };
 }
 
-export function makeCometFuselageActor() {
-  const c = cv(A.COMET_W, A.COMET_H);
-  A.drawCometFuselage(c.getContext('2d'), { stressAlpha: 1.0, crackProgress: 0 });
-  const cut = finishCut(c, 14);
-  const mesh = cutMesh({ c: cut, w: 0.28, h: 0.18, ax: 0.5, ay: 0.88 });
-  const shadow = blobShadow(0.12, 0.45);
-  shadow.position.set(0, 0.0005, 0);
+// 2. Posable Christopher Latham Sholes (1873)
+export function makeSholesActor(H = 0.17) {
+  const cF = cv(A.SHOLES_W, A.SHOLES_H);
+  A.drawSholesCharacter(cF.getContext('2d'), {});
+  const P = dynPlane(cF, H, 0.5, 0.95, THREE.DoubleSide);
 
   const root = new THREE.Group();
-  root.add(mesh);
+  const body = new THREE.Group();
+  body.add(P.mesh);
+  root.add(body);
+
+  const shadow = blobShadow(H * 0.48, 0.4);
   root.add(shadow);
-  return { root, mesh, shadow, canvas: c, cutCanvas: cut };
+
+  let key = '';
+  return {
+    root,
+    body,
+    shadow,
+    H,
+    pose(p) {
+      const k = JSON.stringify(p, (kk, v) => typeof v === 'number' ? Math.round(v * 30) / 30 : v);
+      if (k === key) return;
+      key = k;
+      A.drawSholesCharacter(cF.getContext('2d'), p);
+      P.t.needsUpdate = true;
+    },
+    head(v = new THREE.Vector3()) {
+      return v.set(0, H * 0.94, 0).applyMatrix4(body.matrixWorld);
+    }
+  };
 }
 
-export function makeExplodedLayers() {
-  const cOut = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cOut.getContext('2d'), 'outer');
-  const cMid = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cMid.getContext('2d'), 'middle');
-  const cInn = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cInn.getContext('2d'), 'inner');
-
-  const cutOut = finishCut(cOut, 10);
-  const cutMid = finishCut(cMid, 10);
-  const cutInn = finishCut(cInn, 10);
-
-  const mOut = cutMesh({ c: cutOut, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
-  const mMid = cutMesh({ c: cutMid, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
-  const mInn = cutMesh({ c: cutInn, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
+// 3. Posable Morse Telegraph Operator
+export function makeTelegraphActor(H = 0.165) {
+  const cF = cv(A.TELE_W, A.TELE_H);
+  A.drawTelegraphOperator(cF.getContext('2d'), {});
+  const P = dynPlane(cF, H, 0.5, 0.95, THREE.DoubleSide);
 
   const root = new THREE.Group();
-  root.add(mOut); root.add(mMid); root.add(mInn);
-  return { root, mOut, mMid, mInn };
+  const body = new THREE.Group();
+  body.add(P.mesh);
+  root.add(body);
+
+  const shadow = blobShadow(H * 0.45, 0.4);
+  root.add(shadow);
+
+  let key = '';
+  return {
+    root,
+    body,
+    shadow,
+    H,
+    pose(p) {
+      const k = JSON.stringify(p, (kk, v) => typeof v === 'number' ? Math.round(v * 30) / 30 : v);
+      if (k === key) return;
+      key = k;
+      A.drawTelegraphOperator(cF.getContext('2d'), p);
+      P.t.needsUpdate = true;
+    }
+  };
 }

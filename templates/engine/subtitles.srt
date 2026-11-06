@@ -1,147 +1,203 @@
 1
-00:00:03,400 --> 00:00:05,107
-Pernahkah Anda memperhatikan lubang jarum
+00:00:02,800 --> 00:00:03,417
+Setiap hari,
 
 2
-00:00:05,107 --> 00:00:06,356
-mungil di bagian bawah jendela
+00:00:03,417 --> 00:00:04,857
+miliaran jari kita menari di
 
 3
-00:00:06,356 --> 00:00:07,230
-pesawat saat terbang?
+00:00:04,857 --> 00:00:06,400
+atas keyboard laptop dan layar
 
 4
-00:00:08,500 --> 00:00:10,696
-Banyak penumpang cemas mengira jendela retak,
+00:00:06,400 --> 00:00:07,377
+kaca ponsel cerdas.
 
 5
-00:00:10,696 --> 00:00:12,990
-atau kabin mengalami kebocoran udara berbahaya.
+00:00:07,800 --> 00:00:09,019
+Namun pernahkah Anda heran,
 
 6
-00:00:17,200 --> 00:00:17,619
-Padahal,
+00:00:09,019 --> 00:00:10,645
+mengapa susunan hurufnya begitu acak
 
 7
-00:00:17,619 --> 00:00:19,400
-lubang sekecil ini memikul rahasia
+00:00:10,645 --> 00:00:11,774
+dan huruf A diletakkan di
 
 8
-00:00:19,400 --> 00:00:22,020
-keselamatan terbesar dalam sejarah kedirgantaraan.
+00:00:11,774 --> 00:00:12,948
+bawah kelingking terlemah?
 
 9
-00:00:26,800 --> 00:00:28,677
-Semua bermula dari tragedi kelam
+00:00:13,400 --> 00:00:18,165
+Kenapa tidak berurutan saja seperti A-B-C-D?
 
 10
-00:00:28,677 --> 00:00:30,261
-tahun 1954 pada pesawat jet
+00:00:18,600 --> 00:00:20,377
+Banyak orang percaya mitos bahwa
 
 11
-00:00:30,261 --> 00:00:31,845
-komersial pertama di dunia,
+00:00:20,377 --> 00:00:22,155
+keyboard sengaja dibuat lambat .
 
 12
-00:00:31,845 --> 00:00:32,960
-de Havilland Comet.
+00:00:22,155 --> 00:00:24,377
+Padahal faktanya justru kebalikan total.
 
 13
-00:00:34,000 --> 00:00:35,609
-Pesawat jet tersebut tiba-tiba hancur
+00:00:27,500 --> 00:00:29,408
+Semua bermula dari krisis mekanis
 
 14
-00:00:35,609 --> 00:00:37,522
-berkeping-keping di angkasa tanpa peringatan
+00:00:29,408 --> 00:00:31,259
+di bengkel Milwaukee tahun 1873,
 
 15
-00:00:37,522 --> 00:00:37,870
-apa pun.
+00:00:31,259 --> 00:00:33,457
+saat Christopher Latham Sholes merakit
 
 16
-00:00:42,500 --> 00:00:44,994
-Penyelidikan membuktikan: jendela persegi menciptakan
+00:00:33,457 --> 00:00:34,498
+mesin tik pertama.
 
 17
-00:00:44,994 --> 00:00:47,159
-konsentrasi tegangan dahsyat di sudut-sudutnya
+00:00:35,000 --> 00:00:35,911
+Pada rancangan awal,
 
 18
-00:00:47,159 --> 00:00:48,430
-hingga badan pesawat robek.
+00:00:35,911 --> 00:00:37,824
+batang-batang huruf dari logam menggantung
 
 19
-00:00:54,500 --> 00:00:55,004
-Sejak itu,
+00:00:37,824 --> 00:00:39,327
+melingkar di dalam keranjang besi
 
 20
-00:00:55,004 --> 00:00:56,921
-seluruh jendela pesawat diubah menjadi
+00:00:39,327 --> 00:00:40,056
+di bawah kertas.
 
 21
-00:00:56,921 --> 00:00:58,434
-oval dan dirancang dengan tiga
+00:00:40,600 --> 00:00:43,217
+Kelemahannya fatal: saat tombol ditekan cepat,
 
 22
-00:00:58,434 --> 00:01:00,250
-lapisan akrilik berteknologi tinggi.
+00:00:43,217 --> 00:00:45,719
+tuas-tuas besi berdekatan berayun bersamaan,
 
 23
-00:01:01,500 --> 00:01:03,490
-Lubang jarum ini dinamakan breather hole,
+00:00:45,719 --> 00:00:46,743
+bertubrukan keras,
 
 24
-00:01:03,490 --> 00:01:04,897
-berada persis di lapisan kaca
+00:00:46,743 --> 00:00:47,653
+dan macet total.
 
 25
-00:01:04,897 --> 00:01:06,790
-tengah untuk mengalirkan tekanan udara.
+00:00:48,000 --> 00:00:49,925
+Tuasnya bertubrukan dan tersangkut lagi!
 
 26
-00:01:08,000 --> 00:01:08,850
-Dengan lubang ini,
+00:00:53,000 --> 00:00:54,449
+Untuk memecahkan kebuntuan ini,
 
 27
-00:01:08,850 --> 00:01:10,832
-perbedaan tekanan udara raksasa ditanggung
+00:00:54,449 --> 00:00:56,320
+Sholes membedah frekuensi pasangan huruf
 
 28
-00:01:10,832 --> 00:01:12,106
-aman oleh kaca terluar yang
+00:00:56,320 --> 00:00:58,050
+yang paling sering diketik berurutan.
 
 29
-00:01:12,106 --> 00:01:12,720
-paling tebal.
+00:00:58,500 --> 00:01:00,263
+Kombinasi umum seperti T-H, S-T,
 
 30
-00:01:18,800 --> 00:01:19,886
-Selain menjaga tekanan,
+00:01:00,263 --> 00:01:02,081
+dan E-R sengaja dipisahkan sejauh
 
 31
-00:01:19,886 --> 00:01:21,492
-sirkulasi lubang ini juga membuang
+00:01:02,081 --> 00:01:04,560
+mungkin ke sisi keranjang yang berseberangan.
 
 32
-00:01:21,492 --> 00:01:23,003
-kelembapan udara kabin agar kaca
+00:01:05,000 --> 00:01:06,768
+Dengan posisi fisik yang berlawanan,
 
 33
-00:01:23,003 --> 00:01:24,373
-tidak membeku pada suhu minus
+00:01:06,768 --> 00:01:08,585
+tuas-tuas besi tidak lagi bertubrukan
 
 34
-00:01:24,373 --> 00:01:25,270
-lima puluh derajat.
+00:01:08,585 --> 00:01:09,910
+saat berayun ke pita tinta.
 
 35
-00:01:29,500 --> 00:01:31,022
-Sebuah lubang jarum sederhana,
+00:01:10,400 --> 00:01:12,089
+Susunan ini langsung diadopsi operator
 
 36
-00:01:31,022 --> 00:01:32,696
-penjaga nyawa jutaan manusia yang
+00:01:12,089 --> 00:01:13,690
+telegraf kode Morse yang membutuhkan
 
 37
-00:01:32,696 --> 00:01:33,710
-melayang di angkasa.
+00:01:13,690 --> 00:01:15,290
+pengetikan kilat tanpa pernah macet.
+
+38
+00:01:18,300 --> 00:01:20,098
+Mesin tik Remington kemudian memproduksi
+
+39
+00:01:20,098 --> 00:01:21,492
+tata letak QWERTY secara massal
+
+40
+00:01:21,492 --> 00:01:22,615
+ke seluruh penjuru dunia.
+
+41
+00:01:23,100 --> 00:01:23,978
+Kini di era modern,
+
+42
+00:01:23,978 --> 00:01:25,086
+tidak ada lagi tuas besi
+
+43
+00:01:25,086 --> 00:01:26,379
+maupun kabel yang bisa macet
+
+44
+00:01:26,379 --> 00:01:27,857
+di balik kaca layar sentuh kita.
+
+45
+00:01:28,300 --> 00:01:29,801
+Namun tata letak alternatif yang
+
+46
+00:01:29,801 --> 00:01:31,067
+lebih efisien selalu gagal,
+
+47
+00:01:31,067 --> 00:01:32,662
+karena miliaran jari manusia telah
+
+48
+00:01:32,662 --> 00:01:34,022
+terikat memori otot permanen.
+
+49
+00:01:34,500 --> 00:01:37,205
+Sebuah solusi kemacetan mekanik tahun 1873,
+
+50
+00:01:37,205 --> 00:01:39,218
+yang kini menjadi takdir digital
+
+51
+00:01:39,218 --> 00:01:40,980
+jemari seluruh umat manusia.
