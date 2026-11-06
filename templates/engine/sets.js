@@ -121,47 +121,51 @@ export function buildSets(book) {
   // 1. Spread 0: Modern Cabin Oval Window
   const cWin0 = cv(A.WIN_W, A.WIN_H);
   A.drawCabinWindow(cWin0.getContext('2d'), { holeZoom: 1.0, glowHole: true });
-  const mWin0 = cutMesh(cWin0, { w: 0.18, h: 0.22, thick: 0.002, crease: 'mid', fold: 0.06 });
+  const mWin0 = cutMesh({ c: cWin0, w: 0.18, h: 0.22, ax: 0.5, ay: 0.96 });
   mWin0.position.set(0.04, 0, 0.16);
+  mWin0.rotation.x = -Math.PI / 2;
   book.stage.add(mWin0);
-  L.push({ spread: 0, mesh: mWin0, riseY: 0.11, baseY: 0, baseRotX: 0 });
+  L.push({ spread: 0, mesh: mWin0 });
 
   // 2. Spread 1: Comet Jet Fuselage & Stress Fracture
   const cComet = cv(A.COMET_W, A.COMET_H);
   A.drawCometFuselage(cComet.getContext('2d'), { stressAlpha: 1.0, crackProgress: 0.5 });
-  const mComet = cutMesh(cComet, { w: 0.32, h: 0.20, thick: 0.002 });
+  const mComet = cutMesh({ c: cComet, w: 0.32, h: 0.20, ax: 0.5, ay: 0.88 });
   mComet.position.set(-0.02, 0, 0.15);
+  mComet.rotation.x = -Math.PI / 2;
   mComet.visible = false;
   book.stage.add(mComet);
-  L.push({ spread: 1, mesh: mComet, riseY: 0.10, baseY: 0, baseRotX: 0 });
+  L.push({ spread: 1, mesh: mComet });
 
   // 3. Spread 2: 3-Layer Exploded Window (Outer, Middle with Breather, Inner)
   const cOut = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cOut.getContext('2d'), 'outer');
   const cMid = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cMid.getContext('2d'), 'middle');
   const cInn = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cInn.getContext('2d'), 'inner');
 
-  const mOut = cutMesh(cOut, { w: 0.18, h: 0.14, thick: 0.0016 });
-  const mMid = cutMesh(cMid, { w: 0.18, h: 0.14, thick: 0.0016 });
-  const mInn = cutMesh(cInn, { w: 0.18, h: 0.14, thick: 0.0016 });
+  const mOut = cutMesh({ c: cOut, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
+  const mMid = cutMesh({ c: cMid, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
+  const mInn = cutMesh({ c: cInn, w: 0.18, h: 0.14, ax: 0.5, ay: 0.94 });
 
   const expGroup = new THREE.Group();
-  mOut.position.set(0, 0, 0.06);
+  mOut.position.set(0, 0, 0.05);
   mMid.position.set(0, 0, 0.0);
-  mInn.position.set(0, 0, -0.06);
+  mInn.position.set(0, 0, -0.05);
   expGroup.add(mOut); expGroup.add(mMid); expGroup.add(mInn);
   expGroup.position.set(0.0, 0, 0.15);
+  expGroup.rotation.x = -Math.PI / 2;
   expGroup.visible = false;
   book.stage.add(expGroup);
-  L.push({ spread: 2, mesh: expGroup, riseY: 0.09, baseY: 0, baseRotX: 0 });
+  L.push({ spread: 2, mesh: expGroup, mOut, mMid, mInn });
 
   // 4. Spread 3: Hero Window with Sunset View
   const cWin3 = cv(A.WIN_W, A.WIN_H);
   A.drawCabinWindow(cWin3.getContext('2d'), { holeZoom: 1.2, glowHole: false });
-  const mWin3 = cutMesh(cWin3, { w: 0.20, h: 0.24, thick: 0.002 });
+  const mWin3 = cutMesh({ c: cWin3, w: 0.20, h: 0.24, ax: 0.5, ay: 0.96 });
   mWin3.position.set(0.02, 0, 0.16);
+  mWin3.rotation.x = -Math.PI / 2;
   mWin3.visible = false;
   book.stage.add(mWin3);
-  L.push({ spread: 3, mesh: mWin3, riseY: 0.12, baseY: 0, baseRotX: 0 });
+  L.push({ spread: 3, mesh: mWin3 });
 
   return { L };
 }
@@ -173,15 +177,11 @@ export function updatePops(L, t, curSpread, turnK = 0) {
     const m = item.mesh;
 
     if (s < curSpread) {
-      // Past spread: completely folded flat and hidden
       m.visible = false;
-      m.position.y = -0.05;
       continue;
     }
     if (s > curSpread) {
-      // Future spread: invisible until leaf clears
       m.visible = false;
-      m.position.y = -0.05;
       continue;
     }
 
@@ -192,7 +192,6 @@ export function updatePops(L, t, curSpread, turnK = 0) {
         // PRE_TURN_FOLD: fold flat into spine
         const foldK = turnK / 0.15;
         m.visible = true;
-        m.position.y = lerp(item.riseY, -0.02, ss(foldK));
         m.rotation.x = -Math.PI / 2 * ss(foldK);
       } else {
         // SWEEP_HIDDEN: hide completely so turning leaf cannot collide!
@@ -203,13 +202,20 @@ export function updatePops(L, t, curSpread, turnK = 0) {
       const riseT = RISE[s];
       if (t < riseT) {
         m.visible = false;
-        m.position.y = -0.05;
+        m.rotation.x = -Math.PI / 2;
       } else {
-        const k = seg(t, riseT, riseT + 0.8);
-        m.visible = true;
-        m.position.y = lerp(0, item.riseY, back(k, 1.3));
-        m.rotation.x = lerp(-Math.PI / 2, item.baseRotX, eo(k));
+        const k = back(seg(t, riseT, riseT + 0.7), 1.3);
+        m.visible = k > 0.002;
+        m.rotation.x = -Math.PI / 2 * (1 - k);
       }
+    }
+
+    // Animate exploded layers pull-apart during Shot 14
+    if (s === 2 && item.mOut && item.mMid && item.mInn) {
+      const sep = lerp(0.02, 0.065, ss(seg(t, 58.5, 63.5)));
+      item.mOut.position.z = sep;
+      item.mMid.position.z = 0;
+      item.mInn.position.z = -sep;
     }
   }
 }

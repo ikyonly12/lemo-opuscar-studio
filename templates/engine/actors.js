@@ -8,33 +8,39 @@ import { clamp, lerp, seg, ss, eio, eo, back, TAU } from './lib.js';
 export function makePassengerActor() {
   const c = cv(A.PASS_W, A.PASS_H);
   A.drawPassenger(c.getContext('2d'), { lean: 0, arm: 'point', mouth: 'o' });
-  const mesh = cutMesh(c, { w: 0.12, h: 0.16, thick: 0.0014, crease: 'mid', fold: 0.05 });
-  const shadow = blobShadow(0.09, 0.06);
+  const mesh = cutMesh({ c, w: 0.12, h: 0.16, ax: 0.5, ay: 0.90 });
+  const shadow = blobShadow(0.06, 0.45);
+  shadow.position.set(0, 0.0005, 0);
 
   const root = new THREE.Group();
   root.add(mesh);
+  root.add(shadow);
   return { root, mesh, shadow, canvas: c };
 }
 
 export function makeEngineerActor() {
   const c = cv(A.ENG_W, A.ENG_H);
   A.drawEngineer(c.getContext('2d'), { headShake: 0 });
-  const mesh = cutMesh(c, { w: 0.13, h: 0.17, thick: 0.0014 });
-  const shadow = blobShadow(0.10, 0.06);
+  const mesh = cutMesh({ c, w: 0.13, h: 0.17, ax: 0.5, ay: 0.90 });
+  const shadow = blobShadow(0.06, 0.45);
+  shadow.position.set(0, 0.0005, 0);
 
   const root = new THREE.Group();
   root.add(mesh);
+  root.add(shadow);
   return { root, mesh, shadow, canvas: c };
 }
 
 export function makeCometFuselageActor() {
   const c = cv(A.COMET_W, A.COMET_H);
   A.drawCometFuselage(c.getContext('2d'), { stressAlpha: 1.0, crackProgress: 0 });
-  const mesh = cutMesh(c, { w: 0.28, h: 0.18, thick: 0.0016 });
-  const shadow = blobShadow(0.24, 0.08);
+  const mesh = cutMesh({ c, w: 0.28, h: 0.18, ax: 0.5, ay: 0.88 });
+  const shadow = blobShadow(0.12, 0.45);
+  shadow.position.set(0, 0.0005, 0);
 
   const root = new THREE.Group();
   root.add(mesh);
+  root.add(shadow);
   return { root, mesh, shadow, canvas: c };
 }
 
@@ -43,9 +49,9 @@ export function makeExplodedLayers() {
   const cMid = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cMid.getContext('2d'), 'middle');
   const cInn = cv(A.EXP_W, A.EXP_H); A.drawExplodedPane(cInn.getContext('2d'), 'inner');
 
-  const mOut = cutMesh(cOut, { w: 0.16, h: 0.13, thick: 0.0012 });
-  const mMid = cutMesh(cMid, { w: 0.16, h: 0.13, thick: 0.0012 });
-  const mInn = cutMesh(cInn, { w: 0.16, h: 0.13, thick: 0.0012 });
+  const mOut = cutMesh({ c: cOut, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
+  const mMid = cutMesh({ c: cMid, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
+  const mInn = cutMesh({ c: cInn, w: 0.16, h: 0.13, ax: 0.5, ay: 0.94 });
 
   const root = new THREE.Group();
   root.add(mOut); root.add(mMid); root.add(mInn);

@@ -126,37 +126,37 @@ const { L: POPS } = buildSets(book);
 // Characters
 const passenger = makePassengerActor();
 passenger.root.position.set(-0.06, 0, 0.16);
+passenger.root.rotation.x = -Math.PI / 2;
 book.stage.add(passenger.root);
-book.stage.add(passenger.shadow);
 
 const engineer = makeEngineerActor();
 engineer.root.position.set(-0.08, 0, 0.15);
+engineer.root.rotation.x = -Math.PI / 2;
 engineer.root.visible = false;
 book.stage.add(engineer.root);
-book.stage.add(engineer.shadow);
 
 // ---------- Lights Hierarchy ----------
 const lampHead = new THREE.Vector3(-0.28, 0.38, 0.44);
-const spot = new THREE.SpotLight('#fff4e2', 2.8, 3.2, 0.72, 0.55, 1.8);
+const spot = new THREE.SpotLight('#fff4e2', 2.0, 3.2, 0.72, 0.55, 1.8);
 spot.position.copy(lampHead);
 spot.target.position.set(0.02, 0, 0.2);
 spot.castShadow = true;
 spot.shadow.mapSize.set(4096, 4096);
 spot.shadow.bias = -0.00006;
 spot.shadow.normalBias = 0.0004;
-spot.shadow.radius = 5;
+spot.shadow.radius = 4;
 scene.add(spot, spot.target);
 
-const sun = new THREE.DirectionalLight('#fff0dd', 1.8);
+const sun = new THREE.DirectionalLight('#fff0dd', 1.2);
 sun.position.set(0.6, 1.2, 0.8);
 sun.castShadow = true;
 sun.shadow.mapSize.set(4096, 4096);
 sun.shadow.bias = -0.00006;
 sun.shadow.normalBias = 0.0003;
-sun.shadow.radius = 4;
+sun.shadow.radius = 3;
 scene.add(sun);
 
-const ambLight = new THREE.AmbientLight('#ffeacc', 0.45);
+const ambLight = new THREE.AmbientLight('#ffeacc', 0.40);
 scene.add(ambLight);
 
 // ---------- 19 Contextual Micro-Shots (ASL ~3.3s) ----------
@@ -165,98 +165,98 @@ const SH = [
   // Shot 01: Desk Establishing & Cover Lifting (0.0s -> 4.5s)
   [
     [0.0, 0.0, 0.38, 0.76,  0.0, 0.05, 0.18, 34, 1.8, 0.62],
-    [4.5, 0.0, 0.22, 0.54,  0.0, 0.04, 0.16, 32, 2.2, 0.44]
+    [4.5, 0.0, 0.24, 0.54,  0.0, 0.07, 0.16, 32, 2.2, 0.44]
   ],
   // Shot 02: Spread 0 - Cabin Overview (4.5s -> 8.0s)
   [
-    [4.5, -0.03, 0.14, 0.40, -0.02, 0.04, 0.15, 30, 2.4, 0.28],
-    [8.0, -0.02, 0.12, 0.36, -0.01, 0.04, 0.15, 30, 2.5, 0.25]
+    [4.5, -0.03, 0.16, 0.42, -0.02, 0.08, 0.15, 30, 2.4, 0.28],
+    [8.0, -0.02, 0.14, 0.38, -0.01, 0.08, 0.15, 30, 2.5, 0.25]
   ],
   // Shot 03: Subject Tracking - Passenger at Window (8.0s -> 11.5s)
   [
-    [8.0, -0.07, 0.09, 0.32, -0.05, 0.04, 0.15, 28, 2.8, 0.20],
-    [11.5, -0.06, 0.08, 0.30, -0.04, 0.04, 0.15, 28, 2.8, 0.19]
+    [8.0, -0.07, 0.12, 0.36, -0.05, 0.09, 0.16, 28, 2.6, 0.21],
+    [11.5, -0.06, 0.11, 0.34, -0.04, 0.09, 0.16, 28, 2.6, 0.20]
   ],
   // Shot 04: Extreme Macro Detail - The Breather Hole (11.5s -> 15.0s)
   [
-    [11.5, 0.04, 0.055, 0.24, 0.04, 0.045, 0.16, 26, 3.5, 0.11],
-    [15.0, 0.04, 0.052, 0.22, 0.04, 0.045, 0.16, 26, 3.8, 0.09]
+    [11.5, 0.04, 0.065, 0.26, 0.04, 0.055, 0.16, 26, 3.2, 0.12],
+    [15.0, 0.04, 0.060, 0.24, 0.04, 0.055, 0.16, 26, 3.4, 0.10]
   ],
   // Shot 05: Reaction / POV Passenger Worried (15.0s -> 18.5s)
   [
-    [15.0, -0.08, 0.085, 0.28, -0.06, 0.045, 0.16, 30, 2.8, 0.16],
-    [18.5, -0.07, 0.082, 0.27, -0.06, 0.045, 0.16, 30, 2.8, 0.15]
+    [15.0, -0.08, 0.11, 0.32, -0.06, 0.10, 0.16, 28, 2.6, 0.18],
+    [18.5, -0.07, 0.10, 0.30, -0.06, 0.10, 0.16, 28, 2.6, 0.16]
   ],
   // Shot 06: Window Cloud Vista (18.5s -> 22.0s)
   [
-    [18.5, 0.02, 0.11, 0.35, 0.03, 0.05, 0.16, 30, 2.4, 0.24],
-    [22.0, 0.03, 0.13, 0.38, 0.03, 0.05, 0.16, 30, 2.2, 0.26]
+    [18.5, 0.02, 0.14, 0.38, 0.03, 0.09, 0.16, 30, 2.2, 0.25],
+    [22.0, 0.03, 0.16, 0.40, 0.03, 0.09, 0.16, 30, 2.0, 0.27]
   ],
   // Shot 07: Page Turn 0 Pullback (22.0s -> 26.2s)
   [
-    [22.0, 0.0, 0.26, 0.54, 0.0, 0.05, 0.16, 32, 1.8, 0.44],
-    [26.2, 0.0, 0.24, 0.50, 0.0, 0.05, 0.16, 32, 1.8, 0.40]
+    [22.0, 0.0, 0.26, 0.54, 0.0, 0.07, 0.16, 32, 1.8, 0.44],
+    [26.2, 0.0, 0.24, 0.50, 0.0, 0.07, 0.16, 32, 1.8, 0.40]
   ],
   // Shot 08: Spread 1 - 1954 Hangar & Comet Jet (26.2s -> 30.5s)
   [
-    [26.2, -0.06, 0.13, 0.38, -0.03, 0.04, 0.14, 30, 2.5, 0.28],
-    [30.5, -0.04, 0.11, 0.35, -0.02, 0.04, 0.14, 30, 2.6, 0.25]
+    [26.2, -0.05, 0.15, 0.40, -0.02, 0.08, 0.14, 30, 2.4, 0.28],
+    [30.5, -0.03, 0.13, 0.36, -0.01, 0.08, 0.14, 30, 2.4, 0.25]
   ],
   // Shot 09: Tracking Comet Fuselage & Square Windows (30.5s -> 34.5s)
   [
-    [30.5, 0.0, 0.08, 0.30, 0.0, 0.04, 0.15, 28, 2.8, 0.19],
-    [34.5, 0.02, 0.075, 0.28, 0.01, 0.04, 0.15, 28, 3.0, 0.17]
+    [30.5, 0.0, 0.11, 0.34, 0.0, 0.08, 0.15, 28, 2.6, 0.21],
+    [34.5, 0.02, 0.10, 0.32, 0.01, 0.08, 0.15, 28, 2.8, 0.19]
   ],
   // Shot 10: Extreme Macro - Square Corner Stress Fractures (34.5s -> 39.0s)
   [
-    [34.5, -0.01, 0.06, 0.24, 0.0, 0.045, 0.15, 26, 3.6, 0.12],
-    [39.0, 0.0, 0.058, 0.22, 0.0, 0.045, 0.15, 26, 3.8, 0.10]
+    [34.5, -0.01, 0.075, 0.26, 0.0, 0.065, 0.15, 26, 3.2, 0.13],
+    [39.0, 0.0, 0.070, 0.24, 0.0, 0.065, 0.15, 26, 3.4, 0.11]
   ],
   // Shot 11: British Engineer Realization (39.0s -> 43.5s)
   [
-    [39.0, -0.10, 0.085, 0.28, -0.08, 0.045, 0.15, 30, 2.8, 0.17],
-    [43.5, -0.09, 0.080, 0.27, -0.08, 0.045, 0.15, 30, 2.8, 0.16]
+    [39.0, -0.10, 0.12, 0.32, -0.08, 0.10, 0.15, 28, 2.6, 0.19],
+    [43.5, -0.09, 0.11, 0.30, -0.08, 0.10, 0.15, 28, 2.6, 0.17]
   ],
   // Shot 12: Drafting Table Wrap & Page Turn 1 (43.5s -> 53.8s)
   [
-    [43.5, 0.0, 0.14, 0.40, 0.0, 0.05, 0.16, 32, 2.2, 0.30],
-    [51.2, 0.0, 0.26, 0.54, 0.0, 0.05, 0.16, 32, 1.8, 0.44],
-    [53.8, 0.0, 0.24, 0.50, 0.0, 0.05, 0.16, 32, 1.8, 0.40]
+    [43.5, 0.0, 0.16, 0.42, 0.0, 0.08, 0.16, 32, 2.0, 0.32],
+    [51.2, 0.0, 0.26, 0.54, 0.0, 0.07, 0.16, 32, 1.8, 0.44],
+    [53.8, 0.0, 0.24, 0.50, 0.0, 0.07, 0.16, 32, 1.8, 0.40]
   ],
   // Shot 13: Spread 2 - Isometric 3-Layer Exploded Window (53.8s -> 58.5s)
   [
-    [53.8, -0.06, 0.14, 0.36, 0.0, 0.04, 0.15, 30, 2.5, 0.26],
-    [58.5, -0.04, 0.12, 0.34, 0.0, 0.04, 0.15, 30, 2.6, 0.24]
+    [53.8, -0.05, 0.15, 0.38, 0.0, 0.08, 0.15, 30, 2.4, 0.26],
+    [58.5, -0.03, 0.13, 0.36, 0.0, 0.08, 0.15, 30, 2.4, 0.24]
   ],
   // Shot 14: Exploded Pull-Apart: Outer, Middle, Inner (58.5s -> 63.5s)
   [
-    [58.5, 0.05, 0.09, 0.30, 0.02, 0.04, 0.15, 28, 2.8, 0.19],
-    [63.5, 0.06, 0.08, 0.28, 0.02, 0.04, 0.15, 28, 3.0, 0.17]
+    [58.5, 0.05, 0.11, 0.32, 0.01, 0.08, 0.15, 28, 2.6, 0.20],
+    [63.5, 0.06, 0.10, 0.30, 0.01, 0.08, 0.15, 28, 2.8, 0.18]
   ],
   // Shot 15: Pressure Particle Flow into Breather Hole (63.5s -> 69.0s)
   [
-    [63.5, 0.0, 0.055, 0.22, 0.0, 0.042, 0.15, 26, 3.6, 0.10],
-    [69.0, 0.0, 0.052, 0.20, 0.0, 0.042, 0.15, 26, 3.8, 0.08]
+    [63.5, 0.0, 0.070, 0.24, 0.0, 0.055, 0.15, 26, 3.2, 0.11],
+    [69.0, 0.0, 0.065, 0.22, 0.0, 0.055, 0.15, 26, 3.4, 0.09]
   ],
   // Shot 16: Diagrammatic Top-Down & Page Turn 2 (69.0s -> 78.4s)
   [
-    [69.0, 0.0, 0.18, 0.44, 0.0, 0.05, 0.16, 32, 2.2, 0.34],
-    [75.8, 0.0, 0.26, 0.54, 0.0, 0.05, 0.16, 32, 1.8, 0.44],
-    [78.4, 0.0, 0.24, 0.50, 0.0, 0.05, 0.16, 32, 1.8, 0.40]
+    [69.0, 0.0, 0.20, 0.46, 0.0, 0.07, 0.16, 32, 2.0, 0.36],
+    [75.8, 0.0, 0.26, 0.54, 0.0, 0.07, 0.16, 32, 1.8, 0.44],
+    [78.4, 0.0, 0.24, 0.50, 0.0, 0.07, 0.16, 32, 1.8, 0.40]
   ],
   // Shot 17: Spread 3 - Sunset Horizon & Golden Light (78.4s -> 85.0s)
   [
-    [78.4, -0.03, 0.11, 0.35, -0.01, 0.04, 0.15, 30, 2.6, 0.24],
-    [85.0, 0.02, 0.09, 0.32, 0.01, 0.04, 0.15, 30, 2.7, 0.21]
+    [78.4, -0.03, 0.14, 0.38, -0.01, 0.09, 0.16, 30, 2.4, 0.26],
+    [85.0, 0.02, 0.12, 0.35, 0.01, 0.09, 0.16, 30, 2.5, 0.23]
   ],
   // Shot 18: Peaceful Passenger & Frost-Free Glass (85.0s -> 92.0s)
   [
-    [85.0, -0.06, 0.08, 0.28, -0.04, 0.04, 0.15, 28, 2.8, 0.17],
-    [92.0, -0.04, 0.075, 0.27, -0.03, 0.04, 0.15, 28, 2.8, 0.16]
+    [85.0, -0.06, 0.11, 0.32, -0.04, 0.09, 0.16, 28, 2.6, 0.19],
+    [92.0, -0.04, 0.10, 0.30, -0.03, 0.09, 0.16, 28, 2.6, 0.18]
   ],
   // Shot 19: Epilogue Pullback & Book Closes (92.0s -> 99.0s)
   [
-    [92.0, 0.0, 0.16, 0.44, 0.0, 0.05, 0.18, 32, 2.2, 0.32],
+    [92.0, 0.0, 0.18, 0.46, 0.0, 0.07, 0.18, 32, 2.0, 0.34],
     [99.0, 0.0, 0.34, 0.72, 0.0, 0.05, 0.20, 34, 1.6, 0.58]
   ]
 ];
@@ -323,26 +323,24 @@ window.render = function(t) {
 
   // 4. Update actors visibility per spread (Zero clipping)
   if (spread === 0 && turning < 0) {
-    passenger.root.visible = t >= RISE[0];
-    passenger.shadow.visible = passenger.root.visible;
+    const k = back(seg(t, RISE[0], RISE[0] + 0.6), 1.3);
+    passenger.root.visible = k > 0.01;
+    passenger.root.rotation.x = -Math.PI / 2 * (1 - k);
     engineer.root.visible = false;
-    engineer.shadow.visible = false;
   } else if (spread === 1 && turning < 0) {
     passenger.root.visible = false;
-    passenger.shadow.visible = false;
-    engineer.root.visible = t >= RISE[1];
-    engineer.shadow.visible = engineer.root.visible;
+    const k = back(seg(t, RISE[1], RISE[1] + 0.6), 1.3);
+    engineer.root.visible = k > 0.01;
+    engineer.root.rotation.x = -Math.PI / 2 * (1 - k);
   } else if (spread === 3 && turning < 0) {
-    passenger.root.visible = t >= RISE[3];
-    passenger.shadow.visible = passenger.root.visible;
+    const k = back(seg(t, RISE[3], RISE[3] + 0.6), 1.3);
+    passenger.root.visible = k > 0.01;
+    passenger.root.rotation.x = -Math.PI / 2 * (1 - k);
     engineer.root.visible = false;
-    engineer.shadow.visible = false;
   } else {
     // Page turning or Spread 2
     passenger.root.visible = false;
-    passenger.shadow.visible = false;
     engineer.root.visible = false;
-    engineer.shadow.visible = false;
   }
 
   // 5. Camera track & DoF
