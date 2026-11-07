@@ -9,16 +9,16 @@
   },
   {
     "id": "v02",
-    "text": "Tahun 1820, saat Gubernur Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan sebagai pusat perbelanjaan paling elite di Hindia Belanda.",
-    "say": "Tahun 1820, saat Gubernur Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan sebagai pusat perbelanjaan paling elite di Hindia Belanda.",
+    "text": "Tahun 1820, saat Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan. Bersanding dengan Toko Kompak megah milik Mayor Tionghoa abad kesembilan belas.",
+    "say": "Tahun 1820, saat Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan. Bersanding dengan Toko Kompak megah milik Mayor Tionghoa abad kesembilan belas.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
   },
   {
     "id": "v03",
-    "text": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay dari India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
-    "say": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay dari India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
+    "text": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
+    "say": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
@@ -33,40 +33,40 @@
   },
   {
     "id": "v05",
-    "text": "Dua abad berlalu. Saat raksasa e-commerce dan mal beton kaca menggulung ratusan toko, Pasar Baru tetap berdiri teguh.",
-    "say": "Dua abad berlalu. Saat raksasa e-commerce dan mal beton kaca menggulung ratusan toko, Pasar Baru tetap berdiri teguh.",
+    "text": "Dua abad berlalu. Saat raksasa e-commerce menggulung ratusan toko, Pasar Baru tetap berdiri teguh menjaga napas pusaka para penjahit jas Bombay dan bursa kamera analog legendaris.",
+    "say": "Dua abad berlalu. Saat raksasa e-commerce menggulung ratusan toko, Pasar Baru tetap berdiri teguh menjaga napas pusaka para penjahit jas Bombay dan bursa kamera analog legendaris.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
   },
   {
     "id": "v06",
-    "text": "Jiwa tempat ini tak bisa digantikan kurir instan: sentuhan jemari penjahit jas pusaka, detak rana kamera analog, hingga kepulan hangat semangkuk bakmi legendaris Gang Kelinci.",
-    "say": "Jiwa tempat ini tak bisa digantikan kurir instan: sentuhan jemari penjahit jas pusaka, detak rana kamera analog, hingga kepulan hangat semangkuk bakmi legendaris Gang Kelinci.",
+    "text": "Dari aroma gurih kuah bakmi Gang Kelinci hingga etalase toko sepatu Bata pertama, Pasar Baru adalah benteng kenangan yang hidup di setiap sudutnya.",
+    "say": "Dari aroma gurih kuah bakmi Gang Kelinci hingga etalase toko sepatu Bata pertama, Pasar Baru adalah benteng kenangan yang hidup di setiap sudutnya.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
   },
   {
     "id": "v07",
-    "text": "Kini, lorong legendaris ini tidak berniat menua. Jakarta merajut wajah baru: pedestrian cagar budaya yang terintegrasi langsung dengan simpul modern MRT.",
-    "say": "Kini, lorong legendaris ini tidak berniat menua. Jakarta merajut wajah baru: pedestrian cagar budaya yang terintegrasi langsung dengan simpul modern MRT.",
+    "text": "Kini, lorong legendaris ini bersiap menyongsong metamorfosis akbar. Gubernur Jakarta merencanakan revitalisasi Pasar Baru menjadi surga pedestrian malam ala Myeongdong, Korea Selatan.",
+    "say": "Kini, lorong legendaris ini bersiap menyongsong metamorfosis akbar. Gubernur Jakarta merencanakan revitalisasi Pasar Baru menjadi surga pedestrian malam ala Myeongdong, Korea Selatan.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
   },
   {
     "id": "v08",
-    "text": "Bukan disulap menjadi mal baru, melainkan bertransformasi menjadi distrik budaya 24 jam yang merawat memori kolektif tanpa kehilangan akar sejarahnya.",
-    "say": "Bukan disulap menjadi mal baru, melainkan bertransformasi menjadi distrik budaya 24 jam yang merawat memori kolektif tanpa kehilangan akar sejarahnya.",
+    "text": "Kawasan rendah emisi 24 jam yang semarak: gerobak street food higienis berpadu kuliner legendaris, butik mode jalanan, alunan musik akustik, hingga akses pejalan kaki mulus ke Stasiun MRT Harmoni.",
+    "say": "Kawasan rendah emisi 24 jam yang semarak: gerobak street food higienis berpadu kuliner legendaris, butik mode jalanan, alunan musik akustik, hingga akses pejalan kaki mulus ke Stasiun MRT Harmoni.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"
   },
   {
     "id": "v09",
-    "text": "Sebuah kota yang hebat tidak pernah meruntuhkan masa lalunya demi masa depan, melainkan menjaga denyutnya tetap hidup abadi.",
-    "say": "Sebuah kota yang hebat tidak pernah meruntuhkan masa lalunya demi masa depan, melainkan menjaga denyutnya tetap hidup abadi.",
+    "text": "Dari tapak kuda Batavia 1820 hingga gemerlap Myeongdong nusantara, Pasar Baru membuktikan: kota berkelas tidak pernah melupakan akar sejarahnya.",
+    "say": "Dari tapak kuda Batavia 1820 hingga gemerlap Myeongdong nusantara, Pasar Baru membuktikan: kota berkelas tidak pernah melupakan akar sejarahnya.",
     "role": "narrator",
     "voice": "id-ID-ArdiNeural",
     "rate": "+6%"

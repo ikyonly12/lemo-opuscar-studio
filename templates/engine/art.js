@@ -2281,3 +2281,520 @@ export function makeSmartKiosk(hm = 0.17) {
   const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
   return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
 }
+
+
+// ============================================================================
+// EXPANDED PASAR BARU & MYEONGDONG REAL-WORLD LANDMARKS (PPM = 2000)
+// ============================================================================
+
+// 11. Toko Kompak: Kediaman Mayor Tionghoa Tio Tek Ho (1800s) (Spread 0)
+export function makeTokoKompak(hm = 0.22) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.25);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const bW = w * 0.85, bH = h * 0.78;
+  const bX = (w - bW) * 0.5, bY = baseY - bH;
+
+  // Two-Story Chinese-Batavian Heritage Shophouse (White lime plaster + terracotta)
+  x.fillStyle = '#f8fafc';
+  x.fillRect(bX, bY + 30, bW, bH - 30);
+  x.strokeStyle = '#475569'; x.lineWidth = 3; x.strokeRect(bX, bY + 30, bW, bH - 30);
+
+  // Traditional Chinese Swallow-Tail Curved Roof Ridge (Langgam Tiongkok Selatan)
+  x.fillStyle = '#b91c1c'; // Chinese lacquer red eave
+  x.beginPath();
+  x.moveTo(bX - 25, bY + 35);
+  x.quadraticCurveTo(bX + bW * 0.5, bY - 25, bX + bW + 25, bY + 35);
+  x.lineTo(bX + bW + 15, bY + 50);
+  x.quadraticCurveTo(bX + bW * 0.5, bY - 10, bX - 15, bY + 50);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#7f1d1d'; x.lineWidth = 3; x.stroke();
+
+  // Terracotta roof tile grooves
+  x.strokeStyle = '#991b1b'; x.lineWidth = 2.5;
+  for (let rx = bX; rx < bX + bW; rx += 18) {
+    x.beginPath(); x.moveTo(rx, bY + 38); x.lineTo(rx + 5, bY + 50); x.stroke();
+  }
+
+  // Second-floor Classical Shuttered Windows (Colonial-Chinese Fusion)
+  [bX + 35, bX + bW * 0.5 - 35, bX + bW - 105].forEach(wx => {
+    x.fillStyle = '#065f46'; // dark Batavia green louvered shutters
+    x.beginPath(); x.roundRect(wx, bY + 65, 70, 85, [8, 8, 0, 0]); x.fill();
+    x.strokeStyle = '#022c22'; x.lineWidth = 2.5; x.strokeRect(wx, bY + 65, 70, 85);
+    // Louver slats
+    x.strokeStyle = '#047857'; x.lineWidth = 2;
+    for (let ly = bY + 75; ly < bY + 145; ly += 10) {
+      x.beginPath(); x.moveTo(wx + 6, ly); x.lineTo(wx + 64, ly); x.stroke();
+    }
+  });
+
+  // Grand 3-Meter Teak Main Entrance with Qilin (Kilin) Carvings
+  const doorW = bW * 0.38, doorH = bH * 0.52;
+  const doorX = bX + (bW - doorW) * 0.5, doorY = baseY - doorH;
+
+  x.fillStyle = '#78350f'; // aged solid teak
+  x.beginPath(); x.roundRect(doorX, doorY, doorW, doorH, [12, 12, 0, 0]); x.fill();
+  x.strokeStyle = '#451a03'; x.lineWidth = 4; x.strokeRect(doorX, doorY, doorW, doorH);
+
+  // Twin door split seam
+  x.strokeStyle = '#291102'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(doorX + doorW * 0.5, doorY); x.lineTo(doorX + doorW * 0.5, baseY); x.stroke();
+
+  // Dual Carved Golden Qilin Medallions on doors
+  [doorX + doorW * 0.25, doorX + doorW * 0.75].forEach(mx => {
+    x.fillStyle = '#d97706';
+    x.beginPath(); x.arc(mx, doorY + doorH * 0.42, 22, 0, TAU); x.fill();
+    x.strokeStyle = '#fef08a'; x.lineWidth = 2; x.stroke();
+    // Brass lion door knocker ring
+    x.strokeStyle = '#f59e0b'; x.lineWidth = 3.5;
+    x.beginPath(); x.arc(mx, doorY + doorH * 0.42 + 15, 14, 0, Math.PI); x.stroke();
+  });
+
+  // Signboard: TOKO KOMPAK (SIN SIONG BOUW)
+  x.fillStyle = '#7f1d1d';
+  x.fillRect(bX + bW * 0.5 - 110, doorY - 42, 220, 36);
+  x.strokeStyle = '#fbbf24'; x.lineWidth = 2.5; x.strokeRect(bX + bW * 0.5 - 110, doorY - 42, 220, 36);
+  x.fillStyle = '#fef08a';
+  x.font = '700 18px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('TOKO KOMPAK  18A', bX + bW * 0.5, doorY - 24);
+
+  const out = finishCut(c, 10, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 12. Biola W.R. Soepratman & Partitur Indonesia Raya 1927 (Spread 1)
+export function makeViolinAndSheetMusic(hm = 0.14) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  // Red Velvet Presentation Cushion Base
+  x.fillStyle = '#991b1b';
+  x.beginPath(); x.roundRect(w * 0.1, baseY - 32, w * 0.8, 30, 10); x.fill();
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 3; x.stroke();
+
+  // W.R. Soepratman Historic Violin
+  const vX = w * 0.35, vY = baseY - 70;
+  // Violin Body (Classic 8-shape curve in flamed amber maple)
+  x.fillStyle = '#b45309';
+  x.beginPath();
+  x.ellipse(vX, vY + 15, 32, 26, 0, 0, TAU); // lower bout
+  x.ellipse(vX, vY - 22, 24, 20, 0, 0, TAU); // upper bout
+  x.fill();
+  x.strokeStyle = '#78350f'; x.lineWidth = 2.5; x.stroke();
+
+  // Waist C-bouts
+  x.fillStyle = '#92400e';
+  x.beginPath(); x.arc(vX - 18, vY - 3, 10, -Math.PI * 0.5, Math.PI * 0.5); x.fill();
+  x.beginPath(); x.arc(vX + 18, vY - 3, 10, Math.PI * 0.5, -Math.PI * 0.5); x.fill();
+
+  // Ebony Fingerboard & Neck
+  x.fillStyle = '#1c1917';
+  x.fillRect(vX - 5, vY - 75, 10, 55);
+  // Pegbox & Scroll
+  x.beginPath(); x.arc(vX, vY - 82, 8, 0, TAU); x.fill();
+  x.strokeStyle = '#78350f'; x.lineWidth = 2; x.stroke();
+
+  // F-holes on soundboard
+  x.strokeStyle = '#1c1917'; x.lineWidth = 2;
+  x.beginPath(); x.arc(vX - 10, vY, 7, 0, Math.PI * 0.8); x.stroke();
+  x.beginPath(); x.arc(vX + 10, vY, 7, Math.PI * 0.2, Math.PI); x.stroke();
+
+  // 4 Fine Steel Strings
+  x.strokeStyle = '#f8fafc'; x.lineWidth = 1;
+  for (let s = -3; s <= 3; s += 2) {
+    x.beginPath(); x.moveTo(vX + s, vY + 36); x.lineTo(vX + s, vY - 75); x.stroke();
+  }
+
+  // Horsehair Violin Bow resting diagonally
+  x.strokeStyle = '#b45309'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(vX - 45, vY + 40); x.lineTo(vX + 65, vY - 85); x.stroke();
+  x.strokeStyle = '#fef08a'; x.lineWidth = 1.5;
+  x.beginPath(); x.moveTo(vX - 42, vY + 42); x.lineTo(vX + 68, vY - 83); x.stroke();
+
+  // Original Handwritten Musical Score Sheets (Spread 1)
+  const docX = w * 0.55, docY = baseY - 110, docW = w * 0.38, docH = 95;
+  x.save();
+  x.translate(docX + docW * 0.5, docY + docH * 0.5);
+  x.rotate(0.08);
+  x.fillStyle = '#fef3c7'; // aged colonial parchment
+  x.beginPath(); x.roundRect(-docW * 0.5, -docH * 0.5, docW, docH, 6); x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 2; x.stroke();
+
+  // Musical Staves & Notes
+  x.strokeStyle = '#451a03'; x.lineWidth = 1;
+  for (let sy = -docH * 0.35; sy < docH * 0.35; sy += 18) {
+    for (let sl = 0; sl < 5; sl += 2) {
+      x.beginPath(); x.moveTo(-docW * 0.42, sy + sl); x.lineTo(docW * 0.42, sy + sl); x.stroke();
+    }
+  }
+  x.fillStyle = '#78350f';
+  x.font = '700 11px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('INDONESIA RAYA - 1927', 0, -docH * 0.38);
+  x.restore();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 13. Ruko Penjahit Jas Pusaka Bombay (Harioms / Isardas) (Spread 2)
+export function makeBombayTailorShop(hm = 0.22) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const bW = w * 0.88, bH = h * 0.78;
+  const bX = (w - bW) * 0.5, bY = baseY - bH;
+
+  // Dark Mahogany & British Colonial Storefront
+  x.fillStyle = '#1c1917';
+  x.fillRect(bX, bY + 35, bW, bH - 35);
+  x.strokeStyle = '#d97706'; x.lineWidth = 3.5; x.strokeRect(bX, bY + 35, bW, bH - 35);
+
+  // Iconic Gold Carved Signboard: HARIOMS BESPOKE TAILOR - EST. 1937
+  x.fillStyle = '#0f172a';
+  x.fillRect(bX, bY, bW, 42);
+  x.strokeStyle = '#fbbf24'; x.lineWidth = 3; x.strokeRect(bX, bY, bW, 42);
+  x.fillStyle = '#fef08a';
+  x.font = '700 20px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('HARIOMS  BESPOKE  TAILOR', bX + bW * 0.5, bY + 22);
+
+  // Large Glass Showcase Windows
+  const winW = bW * 0.42, winH = bH * 0.58;
+  const winY = bY + 55;
+
+  // Left Window: Bespoke Tuxedo Mannequin
+  x.fillStyle = '#0f172a';
+  x.fillRect(bX + 16, winY, winW, winH);
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 2; x.strokeRect(bX + 16, winY, winW, winH);
+
+  // Mannequin wearing navy tuxedo with black satin lapel
+  const manX = bX + 16 + winW * 0.5, manY = winY + winH * 0.55;
+  x.fillStyle = '#1e3a8a'; // royal navy suit
+  x.beginPath(); x.roundRect(manX - 28, manY - 45, 56, 85, 12); x.fill();
+  // White dress shirt & black bow tie
+  x.fillStyle = '#ffffff';
+  x.beginPath(); x.moveTo(manX - 12, manY - 45); x.lineTo(manX, manY - 15); x.lineTo(manX + 12, manY - 45); x.fill();
+  x.fillStyle = '#000';
+  x.beginPath(); x.arc(manX, manY - 38, 5, 0, TAU); x.fill();
+
+  // Right Window: Rolls of Imported British Wool & Cashmere
+  x.fillStyle = '#0f172a';
+  x.fillRect(bX + bW - winW - 16, winY, winW, winH);
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 2; x.strokeRect(bX + bW - winW - 16, winY, winW, winH);
+
+  const colors = ['#065f46', '#991b1b', '#1e293b', '#b45309'];
+  colors.forEach((col, idx) => {
+    x.fillStyle = col;
+    x.fillRect(bX + bW - winW - 6, winY + 20 + idx * 28, winW - 20, 22);
+    x.strokeStyle = '#fff'; x.lineWidth = 1; x.strokeRect(bX + bW - winW - 6, winY + 20 + idx * 28, winW - 20, 22);
+  });
+
+  const out = finishCut(c, 10, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 14. Lemari Etalase Bursa Kamera Analog Vintage (Spread 2)
+export function makeVintageCameraDisplay(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.25);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const dW = w * 0.84, dH = h * 0.82;
+  const dX = (w - dW) * 0.5, dY = baseY - dH;
+
+  // Dark Brushed Aluminium Vitrine Cabinet
+  x.fillStyle = '#1e293b';
+  x.beginPath(); x.roundRect(dX, dY, dW, dH, 12); x.fill();
+  x.strokeStyle = '#0284c7'; x.lineWidth = 3; x.strokeRect(dX, dY, dW, dH);
+
+  // Neon Vitrine Sign: KAMERA ANALOG KLASIK
+  x.fillStyle = '#0369a1';
+  x.fillRect(dX + 12, dY + 12, dW - 24, 28);
+  x.fillStyle = '#e0f2fe';
+  x.font = '700 13px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('BURSA KAMERA ANALOG PASAR BARU', dX + dW * 0.5, dY + 26);
+
+  // Glass Shelves
+  const shelfY1 = dY + 75, shelfY2 = dY + 140;
+  x.strokeStyle = 'rgba(56, 189, 248, 0.4)'; x.lineWidth = 2.5;
+  x.beginPath(); x.moveTo(dX + 15, shelfY1); x.lineTo(dX + dW - 15, shelfY1); x.stroke();
+  x.beginPath(); x.moveTo(dX + 15, shelfY2); x.lineTo(dX + dW - 15, shelfY2); x.stroke();
+
+  // Shelf 1: Twin-Lens Reflex (Rolleiflex) & Rangefinder
+  // Rolleiflex TLR Camera (Left)
+  const tlrX = dX + 45, tlrY = shelfY1 - 42;
+  x.fillStyle = '#0f172a';
+  x.fillRect(tlrX, tlrY, 36, 42);
+  // Dual Lenses
+  x.fillStyle = '#38bdf8';
+  x.beginPath(); x.arc(tlrX + 18, tlrY + 14, 8, 0, TAU); x.fill();
+  x.beginPath(); x.arc(tlrX + 18, tlrY + 30, 8, 0, TAU); x.fill();
+
+  // Leica Rangefinder (Right)
+  const lX = dX + dW - 85, lY = shelfY1 - 32;
+  x.fillStyle = '#334155';
+  x.fillRect(lX, lY, 52, 32);
+  x.fillStyle = '#e2e8f0';
+  x.fillRect(lX, lY, 52, 10);
+  x.fillStyle = '#0284c7';
+  x.beginPath(); x.arc(lX + 26, lY + 18, 11, 0, TAU); x.fill();
+
+  // Shelf 2: Stacked 35mm Film Rolls (Kodak Gold Yellow & Fujifilm Green)
+  const filmCols = ['#f59e0b', '#16a34a', '#dc2626', '#f59e0b', '#16a34a'];
+  filmCols.forEach((fc, idx) => {
+    x.fillStyle = fc;
+    x.beginPath(); x.roundRect(dX + 25 + idx * 28, shelfY2 - 32, 22, 32, 4); x.fill();
+    x.strokeStyle = '#000'; x.lineWidth = 1; x.strokeRect(dX + 25 + idx * 28, shelfY2 - 32, 22, 32);
+  });
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 15. Plang Enamel Toko Sepatu Bata Pertama (Spread 2)
+export function makeSepatuBataSign(hm = 0.12) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.5);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  // Vintage Red Enamel Plaque with White Script
+  x.fillStyle = '#dc2626';
+  x.beginPath(); x.roundRect(w * 0.1, baseY - 55, w * 0.8, 50, 10); x.fill();
+  x.strokeStyle = '#fff'; x.lineWidth = 3; x.strokeRect(w * 0.1, baseY - 55, w * 0.8, 50);
+
+  x.fillStyle = '#ffffff';
+  x.font = '900 26px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('Bata', w * 0.5, baseY - 32);
+
+  x.font = '600 10px "Fredoka"';
+  x.fillText('TOKO PERTAMA DI INDONESIA • 1931', w * 0.5, baseY - 12);
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 16. Gerobak Street Food Malam ala Myeongdong (Spread 3)
+export function makeStreetFoodCart(hm = 0.17) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.4);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const cW = w * 0.82, cH = h * 0.80;
+  const cX = (w - cW) * 0.5, cY = baseY - cH;
+
+  // Red and White Striped Fabric Canopy (Khas Myeongdong Street Food)
+  const canW = cW + 15, canH = 38;
+  const canX = cX - 7.5, canY = cY;
+
+  for (let s = 0; s < 8; s++) {
+    x.fillStyle = s % 2 === 0 ? '#ef4444' : '#f8fafc';
+    x.fillRect(canX + s * (canW / 8), canY, canW / 8, canH);
+  }
+  x.strokeStyle = '#991b1b'; x.lineWidth = 2.5; x.strokeRect(canX, canY, canW, canH);
+
+  // Warm Hanging Edison Filament Bulbs under canopy
+  [canX + canW * 0.25, canX + canW * 0.5, canX + canW * 0.75].forEach(bx => {
+    x.strokeStyle = '#1e293b'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(bx, canY + canH); x.lineTo(bx, canY + canH + 14); x.stroke();
+    // Glowing bulb
+    const gBulb = x.createRadialGradient(bx, canY + canH + 20, 2, bx, canY + canH + 20, 16);
+    gBulb.addColorStop(0, '#fef08a'); gBulb.addColorStop(0.5, '#f59e0b'); gBulb.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    x.fillStyle = gBulb;
+    x.beginPath(); x.arc(bx, canY + canH + 20, 16, 0, TAU); x.fill();
+    x.fillStyle = '#fffbeb'; x.beginPath(); x.arc(bx, canY + canH + 20, 6, 0, TAU); x.fill();
+  });
+
+  // Food Cart Body (Clean warm oakwood & stainless counter)
+  const bodyY = canY + canH + 28, bodyH = baseY - bodyY;
+  x.fillStyle = '#78350f';
+  x.beginPath(); x.roundRect(cX, bodyY, cW, bodyH, 10); x.fill();
+  x.strokeStyle = '#451a03'; x.lineWidth = 3; x.strokeRect(cX, bodyY, cW, bodyH);
+
+  // Heated Glass Food Showcase with Golden Street Food
+  x.fillStyle = 'rgba(254, 240, 138, 0.25)';
+  x.beginPath(); x.roundRect(cX + 12, bodyY + 6, cW - 24, 42, 6); x.fill();
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 2; x.strokeRect(cX + 12, bodyY + 6, cW - 24, 42);
+
+  // Skewers: Corndog, Tteokbokki & Cakue Pasar Baru
+  const skwColors = ['#d97706', '#dc2626', '#f59e0b', '#dc2626', '#d97706'];
+  skwColors.forEach((sc, idx) => {
+    x.fillStyle = sc;
+    x.beginPath(); x.roundRect(cX + 24 + idx * 22, bodyY + 12, 14, 28, 6); x.fill();
+  });
+
+  // Cart Menu Sign: KULINER MALAM MYEONGDONG x PASAR BARU
+  x.fillStyle = '#0f172a';
+  x.fillRect(cX + 20, bodyY + bodyH - 32, cW - 40, 22);
+  x.fillStyle = '#fef08a';
+  x.font = '700 12px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('STREET FOOD 24 JAM', cX + cW * 0.5, bodyY + bodyH - 21);
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 17. Panggung Akustik Busker Musik Jalanan (Spread 3)
+export function makeBuskingStage(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.3);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  // Vintage Oriental Persian Rug on the street
+  x.fillStyle = '#991b1b';
+  x.beginPath(); x.ellipse(w * 0.5, baseY - 12, w * 0.42, 16, 0, 0, TAU); x.fill();
+  x.strokeStyle = '#fbbf24'; x.lineWidth = 3; x.stroke();
+
+  // Sunburst Acoustic Guitar on Stand (Left)
+  const gX = w * 0.35, gY = baseY - 65;
+  // Guitar body
+  const gGrad = x.createRadialGradient(gX, gY + 10, 4, gX, gY + 10, 28);
+  gGrad.addColorStop(0, '#fef08a'); gGrad.addColorStop(0.5, '#ea580c'); gGrad.addColorStop(1, '#451a03');
+  x.fillStyle = gGrad;
+  x.beginPath();
+  x.ellipse(gX, gY + 18, 28, 22, 0, 0, TAU);
+  x.ellipse(gX, gY - 14, 20, 16, 0, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#1c1917'; x.lineWidth = 2.5; x.stroke();
+
+  // Soundhole & Strings
+  x.fillStyle = '#000';
+  x.beginPath(); x.arc(gX, gY, 8, 0, TAU); x.fill();
+  // Guitar Neck & Headstock
+  x.fillStyle = '#78350f';
+  x.fillRect(gX - 4, gY - 65, 8, 52);
+
+  // Chrome Microphone Stand (Right)
+  const mX = w * 0.65, mY = baseY - 95;
+  x.strokeStyle = '#cbd5e1'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(mX, baseY - 12); x.lineTo(mX, mY + 18); x.stroke();
+  // Tripod base
+  x.beginPath(); x.moveTo(mX - 18, baseY - 10); x.lineTo(mX, baseY - 14); x.lineTo(mX + 18, baseY - 10); x.stroke();
+  // Microphone Capsule
+  x.fillStyle = '#475569';
+  x.beginPath(); x.roundRect(mX - 7, mY, 14, 20, 6); x.fill();
+  x.strokeStyle = '#f8fafc'; x.lineWidth = 1.5; x.stroke();
+
+  // Open Guitar Case with Coins for Busker (Front)
+  const cX = w * 0.52, cY = baseY - 24;
+  x.fillStyle = '#1c1917';
+  x.beginPath(); x.ellipse(cX, cY, 32, 12, 0.1, 0, TAU); x.fill();
+  x.fillStyle = '#7f1d1d'; // red velvet lining
+  x.beginPath(); x.ellipse(cX, cY, 28, 9, 0.1, 0, TAU); x.fill();
+  // Golden tip coins
+  x.fillStyle = '#f59e0b';
+  [[cX - 8, cY - 2], [cX + 4, cY + 1], [cX + 12, cY - 2]].forEach(([px, py]) => {
+    x.beginPath(); x.arc(px, py, 4, 0, TAU); x.fill();
+  });
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 18. Totem Penunjuk Arah Pejalan Kaki & MRT Harmoni (Spread 3)
+export function makeMrtDirectionPylon(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.7);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const pW = w * 0.7, pH = h * 0.85;
+  const pX = (w - pW) * 0.5, pY = baseY - pH;
+
+  // Modern Anthracite Grey Wayfinding Totem
+  x.fillStyle = '#0f172a';
+  x.beginPath(); x.roundRect(pX, pY, pW, pH, 10); x.fill();
+  x.strokeStyle = '#0284c7'; x.lineWidth = 3; x.strokeRect(pX, pY, pW, pH);
+
+  // Top Yellow Accent: KAWASAN RENDAH EMISI
+  x.fillStyle = '#f59e0b';
+  x.fillRect(pX, pY, pW, 26);
+  x.fillStyle = '#0f172a';
+  x.font = '900 10px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('ZONA BEBAS EMISI', pX + pW * 0.5, pY + 13);
+
+  // Arrows: MRT HARMONI (300m) & STASIUN JUANDA (200m)
+  x.fillStyle = '#38bdf8';
+  x.font = '700 12px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('MRT HARMONI', pX + pW * 0.5, pY + 48);
+  x.fillStyle = '#cbd5e1';
+  x.font = '500 10px "Fredoka"';
+  x.fillText('300M → JALUR PEDESTRIAN', pX + pW * 0.5, pY + 64);
+
+  x.strokeStyle = 'rgba(255,255,255,0.2)'; x.lineWidth = 1.5;
+  x.beginPath(); x.moveTo(pX + 10, pY + 80); x.lineTo(pX + pW - 10, pY + 80); x.stroke();
+
+  x.fillStyle = '#10b981';
+  x.font = '700 12px "Lilita One"';
+  x.fillText('STASIUN JUANDA', pX + pW * 0.5, pY + 102);
+  x.fillStyle = '#cbd5e1';
+  x.font = '500 10px "Fredoka"';
+  x.fillText('200M ← KRL COMMUTER', pX + pW * 0.5, pY + 118);
+
+  // Pedestrian Icon at bottom
+  x.fillStyle = '#0284c7';
+  x.beginPath(); x.arc(pX + pW * 0.5, pY + pH - 24, 12, 0, TAU); x.fill();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 19. Gerbang Restorasi Myeongdong of Jakarta (Spread 3)
+export function makeMyeongdongArcadeGate(hm = 0.24) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.4);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.95;
+
+  // Fully Restored Neoclassical Gateway with Warm Architectural Lighting
+  const pW = w * 0.16, pH = h * 0.76;
+  const lX = w * 0.12, rX = w * 0.72;
+
+  // Pristine cream stone pillars
+  [lX, rX].forEach(px => {
+    x.fillStyle = '#fdfbf7';
+    x.fillRect(px, baseY - pH, pW, pH);
+    x.strokeStyle = '#d97706'; x.lineWidth = 3.5; x.strokeRect(px, baseY - pH, pW, pH);
+
+    // Warm vertical LED architectural accent ribbon
+    const gLed = x.createLinearGradient(px, baseY, px, baseY - pH);
+    gLed.addColorStop(0, '#f59e0b'); gLed.addColorStop(1, '#fef08a');
+    x.fillStyle = gLed;
+    x.fillRect(px + pW * 0.5 - 3, baseY - pH + 15, 6, pH - 30);
+  });
+
+  // Triumphal Entablature
+  const entY = baseY - pH - 45, entH = 45;
+  x.fillStyle = '#1e1b4b'; // deep royal indigo plaque
+  x.fillRect(lX - 15, entY, (rX + pW + 15) - (lX - 15), entH);
+  x.strokeStyle = '#fbbf24'; x.lineWidth = 4;
+  x.strokeRect(lX - 15, entY, (rX + pW + 15) - (lX - 15), entH);
+
+  // Glowing Typography: PASAR BARU • MYEONGDONG OF JAKARTA
+  x.fillStyle = '#fef08a';
+  x.font = '900 24px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('PASAR BARU  •  MYEONGDONG OF JAKARTA', w * 0.5, entY + entH * 0.5);
+
+  // Festoon String Lights draped across the arch span
+  x.strokeStyle = '#475569'; x.lineWidth = 2.5;
+  x.beginPath();
+  x.moveTo(lX + pW, baseY - pH + 20);
+  x.quadraticCurveTo(w * 0.5, baseY - pH + 70, rX, baseY - pH + 20);
+  x.stroke();
+
+  // 7 Glowing Fairy Festoon Lightbulbs
+  for (let f = 1; f <= 7; f++) {
+    const u = f / 8;
+    const fx = (lX + pW) + u * (rX - (lX + pW));
+    const fy = (baseY - pH + 20) + Math.sin(u * Math.PI) * 45;
+
+    const gFairy = x.createRadialGradient(fx, fy, 2, fx, fy, 14);
+    gFairy.addColorStop(0, '#fffbeb'); gFairy.addColorStop(0.6, '#f59e0b'); gFairy.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    x.fillStyle = gFairy;
+    x.beginPath(); x.arc(fx, fy, 14, 0, TAU); x.fill();
+    x.fillStyle = '#ffffff'; x.beginPath(); x.arc(fx, fy, 4, 0, TAU); x.fill();
+  }
+
+  const out = finishCut(c, 10, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
