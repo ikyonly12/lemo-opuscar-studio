@@ -1,117 +1,115 @@
 // Story timeline, camera choreography & subtitles for The Hidden Geometry of QWERTY
+// Broadcast Three.js r170 simulation with DQ - Documenter Native Indonesian Voiceover
 
-export const DUR = 104.5;
+export const DUR = 117.07;
 
-export const OPEN = [0.0, 2.5];
-export const CLOSE = [101.5, 104.5];
+export const OPEN = [0.0, 2.4];
+export const CLOSE = [114.27, 117.07];
 
-export const PAGE_TURN_0 = [24.8, 27.2];
-export const PAGE_TURN_1 = [50.4, 52.8];
-export const PAGE_TURN_2 = [75.7, 78.1];
+export const PAGE_TURN_0 = [25.59, 27.79];
+export const PAGE_TURN_1 = [53.85, 56.05];
+export const PAGE_TURN_2 = [83.05, 85.25];
 
 // Chapters for overhead ribbon banners
 export const CHAPTERS = [
-  [2.8, 7.5, "BABAK I", "Misteri Huruf Acak di Layar Kaca"],
-  [27.5, 32.5, "BABAK II", "Bengkel Milwaukee 1873 & Krisis Tuas"],
-  [53.0, 58.0, "BABAK III", "Matriks Anti-Macet & Kode Morse"],
-  [78.5, 83.5, "BABAK IV", "Kutukan Memori Otot di Era Digital"]
+  [2.5, 7.5, "BABAK I", "Misteri Huruf Acak di Layar Kaca"],
+  [28.0, 33.0, "BABAK II", "Bengkel Milwaukee 1873 & Krisis Tuas"],
+  [56.5, 61.5, "BABAK III", "Matriks Anti-Macet & Kode Morse"],
+  [85.5, 90.5, "BABAK IV", "Kutukan Memori Otot di Era Digital"]
 ];
 
 // Character speech bubbles: [who, start, end, text]
 export const BUB = [
-  ['user', 13.4, 18.0, "Kenapa tidak berurutan saja A-B-C-D?"],
-  ['sholes', 48.0, 50.2, "Tuasnya bertubrukan dan tersangkut lagi!"]
+  ['user', 15.38, 18.69, "Kenapa tidak berurutan saja A-B-C-D?"],
+  ['sholes', 51.15, 53.55, "Tuasnya bertubrukan dan tersangkut lagi!"]
 ];
 
 // Subtitle chunks (Clean, single-line, 2 to 5 words max, strictly lower-third)
 export const SUBS = [
-  [2.8, 3.42, "Setiap hari,"],
-  [3.42, 4.86, "miliaran jari kita menari di"],
-  [4.86, 6.4, "atas keyboard laptop dan layar"],
-  [6.4, 7.38, "kaca ponsel cerdas."],
-
-  [7.8, 9.02, "Namun pernahkah Anda heran,"],
-  [9.02, 10.64, "mengapa susunan hurufnya begitu acak"],
-  [10.64, 11.77, "dan huruf A diletakkan di"],
-  [11.77, 12.95, "bawah kelingking terlemah?"],
-
-  [13.4, 18.16, "Kenapa tidak berurutan seperti A-B-C-D?"],
-
-  [18.6, 20.38, "Banyak orang percaya mitos bahwa"],
-  [20.38, 22.16, "keyboard sengaja dibuat lambat."],
-  [22.16, 24.38, "Padahal faktanya justru kebalikan total."],
-
-  [27.5, 29.5, "Semua bermula dari krisis mekanis"],
-  [29.5, 31.8, "di bengkel Milwaukee tahun 1873,"],
-  [31.8, 34.5, "saat Christopher Sholes merakit mesin tik."],
-
-  [35.0, 37.2, "Pada rancangan awal, batang huruf"],
-  [37.2, 39.0, "menggantung melingkar di dalam keranjang"],
-  [39.0, 40.06, "besi di bawah kertas."],
-
-  [40.6, 42.8, "Kelemahannya fatal: saat tombol ditekan,"],
-  [42.8, 45.2, "tuas besi berdekatan berayun bersamaan,"],
-  [45.2, 47.65, "bertubrukan keras dan macet total."],
-
-  [48.0, 49.93, "Tuasnya bertubrukan dan tersangkut lagi!"],
-
-  [53.0, 55.2, "Untuk memecahkan kebuntuan mekanik ini,"],
-  [55.2, 58.05, "Sholes membedah frekuensi pasangan huruf."],
-
-  [58.5, 60.8, "Kombinasi umum seperti T-H, S-T,"],
-  [60.8, 62.8, "dan E-R sengaja dipisahkan jauh"],
-  [62.8, 64.56, "ke sisi keranjang yang berseberangan."],
-
-  [65.0, 67.2, "Dengan posisi fisik yang berlawanan,"],
-  [67.2, 69.91, "tuas besi tidak lagi bertubrukan."],
-
-  [70.4, 72.8, "Susunan ini langsung diadopsi operator"],
-  [72.8, 75.29, "telegraf Morse untuk mengetik kilat."],
-
-  [78.3, 80.5, "Mesin tik Remington kemudian memproduksi"],
-  [80.5, 82.62, "tata letak QWERTY ke seluruh dunia."],
-
-  [83.1, 85.2, "Kini di era modern, tidak ada lagi"],
-  [85.2, 87.86, "tuas besi yang bisa macet di layar ponsel."],
-
-  [88.3, 90.8, "Namun tata letak alternatif seperti Dvorak"],
-  [90.8, 92.5, "selalu gagal karena miliaran jari"],
-  [92.5, 94.02, "telah terikat memori otot permanen."],
-
-  [94.5, 97.2, "Sebuah solusi kemacetan mekanik 1873,"],
-  [97.2, 100.98, "yang kini menjadi takdir digital manusia."]
+  [2.5, 3.23, "Setiap hari,"],
+  [3.23, 4.94, "miliaran jari kita menari di"],
+  [4.94, 6.77, "atas keyboard laptop dan layar"],
+  [6.77, 7.93, "kaca ponsel cerdas."],
+  [8.23, 9.85, "Namun pernahkah Anda heran,"],
+  [9.85, 12.02, "mengapa susunan hurufnya begitu acak"],
+  [12.02, 13.52, "dan huruf A diletakkan di"],
+  [13.52, 15.08, "bawah kelingking terlemah?"],
+  [15.38, 18.69, "Kenapa tidak berurutan saja seperti A-B-C-D?"],
+  [18.99, 20.93, "Banyak orang percaya mitos bahwa"],
+  [20.93, 22.87, "keyboard sengaja dibuat lambat ."],
+  [22.87, 25.29, "Padahal faktanya justru kebalikan total."],
+  [27.99, 30.25, "Semua bermula dari krisis mekanis"],
+  [30.25, 32.44, "di bengkel Milwaukee tahun 1873,"],
+  [32.44, 35.04, "saat Christopher Latham Sholes merakit"],
+  [35.04, 36.27, "mesin tik pertama."],
+  [36.57, 37.66, "Pada rancangan awal,"],
+  [37.66, 39.95, "batang-batang huruf dari logam menggantung"],
+  [39.95, 41.76, "melingkar di dalam keranjang besi"],
+  [41.76, 42.63, "di bawah kertas."],
+  [42.93, 45.87, "Kelemahannya fatal: saat tombol ditekan cepat,"],
+  [45.87, 48.68, "tuas-tuas besi berdekatan berayun bersamaan,"],
+  [48.68, 49.83, "bertubrukan keras,"],
+  [49.83, 50.85, "dan macet total."],
+  [51.15, 53.55, "Tuasnya bertubrukan dan tersangkut lagi!"],
+  [56.25, 58.05, "Untuk memecahkan kebuntuan ini,"],
+  [58.05, 60.37, "Sholes membedah frekuensi pasangan huruf"],
+  [60.37, 62.52, "yang paling sering diketik berurutan."],
+  [62.82, 64.77, "Kombinasi umum seperti T-H, S-T,"],
+  [64.77, 66.78, "dan E-R sengaja dipisahkan sejauh"],
+  [66.78, 69.52, "mungkin ke sisi keranjang yang berseberangan."],
+  [69.82, 71.96, "Dengan posisi fisik yang berlawanan,"],
+  [71.96, 74.16, "tuas-tuas besi tidak lagi bertubrukan"],
+  [74.16, 75.76, "saat berayun ke pita tinta."],
+  [76.06, 78.37, "Susunan ini langsung diadopsi operator"],
+  [78.37, 80.56, "telegraf kode Morse yang membutuhkan"],
+  [80.56, 82.75, "pengetikan kilat tanpa pernah macet."],
+  [85.45, 87.89, "Mesin tik Remington kemudian memproduksi"],
+  [87.89, 89.78, "tata letak QWERTY secara massal"],
+  [89.78, 91.3, "ke seluruh penjuru dunia."],
+  [91.6, 92.79, "Kini di era modern,"],
+  [92.79, 94.29, "tidak ada lagi tuas besi"],
+  [94.29, 96.04, "maupun kabel yang bisa macet"],
+  [96.04, 98.04, "di balik kaca layar sentuh kita."],
+  [98.34, 100.36, "Namun tata letak alternatif yang"],
+  [100.36, 102.07, "lebih efisien selalu gagal,"],
+  [102.07, 104.22, "karena miliaran jari manusia telah"],
+  [104.22, 106.05, "terikat memori otot permanen."],
+  [106.35, 109.53, "Sebuah solusi kemacetan mekanik tahun 1873,"],
+  [109.53, 111.9, "yang kini menjadi takdir digital"],
+  [111.9, 113.97, "jemari seluruh umat manusia."]
 ];
 
-// 19 Contextual Micro-Shots Schedule & Camera Spline Trajectory
+// 22 Contextual Micro-Shots Schedule & Continuous Spline Trajectory
 // [shot_id, t_start, t_end, name, type, camPos, lookAt, fov, focus]
+// All camera distances calibrated to >= 0.354m to prevent papercut pixelation
 export const SHOTS = [
-  // Spread 0 (Modern Desk)
-  { id: 1,  t0: 0.0,   t1: 3.8,   name: "Establishing Desk & Book Open",   type: "Establishing Wide",  cam: [0.0, 0.44, 0.65],  look: [0.0, 0.12, 0.15], fov: 42, focus: 0.58 },
-  { id: 2,  t0: 3.8,   t1: 7.5,   name: "Smartphone Pop-up Reveal",        type: "Subject Tracking",    cam: [0.06, 0.32, 0.42], look: [0.06, 0.15, 0.12], fov: 38, focus: 0.38 },
-  { id: 3,  t0: 7.5,   t1: 11.0,  name: "Typist Character Reaction",       type: "Reaction Cut",        cam: [-0.08, 0.28, 0.38], look: [-0.08, 0.16, 0.14], fov: 36, focus: 0.34 },
-  { id: 4,  t0: 11.0,  t1: 14.5,  name: "Macro Detail on Letter 'A'",      type: "Extreme Macro",       cam: [0.08, 0.24, 0.28], look: [0.08, 0.15, 0.12], fov: 30, focus: 0.26 },
-  { id: 5,  t0: 14.5,  t1: 18.5,  name: "User Puzzled Speech Bubble",      type: "POV / Reaction",      cam: [-0.06, 0.26, 0.36], look: [-0.04, 0.16, 0.13], fov: 36, focus: 0.32 },
-  { id: 6,  t0: 18.5,  t1: 24.8,  name: "Myth Debunking Wide Angle",       type: "Establishing Wide",   cam: [0.0, 0.36, 0.52],  look: [0.0, 0.14, 0.14], fov: 40, focus: 0.46 },
+  // Spread 0 (Modern Studio)
+  { id: 1,  t0: 0.0,    t1: 4.2,    name: "Establishing Desk & Book Open",   type: "Establishing Wide",  cam: [0.0, 0.44, 0.65],   look: [0.0, 0.12, 0.15],  fov: 42, focus: 0.59 },
+  { id: 2,  t0: 4.2,    t1: 8.2,    name: "Smartphone Pop-up Reveal",        type: "Subject Tracking",    cam: [0.05, 0.34, 0.48],  look: [0.05, 0.14, 0.13], fov: 38, focus: 0.40 },
+  { id: 3,  t0: 8.2,    t1: 12.0,   name: "Typist Character Reaction",       type: "Reaction Cut",        cam: [-0.07, 0.32, 0.46], look: [-0.07, 0.15, 0.14], fov: 36, focus: 0.36 },
+  { id: 4,  t0: 12.0,   t1: 15.4,   name: "Medium Close-up on Letter 'A'",   type: "Medium Close-Up",     cam: [0.05, 0.32, 0.46],  look: [0.05, 0.14, 0.13], fov: 36, focus: 0.38 },
+  { id: 5,  t0: 15.4,   t1: 19.0,   name: "User Puzzled Speech Bubble",      type: "POV / Reaction",      cam: [-0.05, 0.32, 0.46], look: [-0.04, 0.15, 0.13], fov: 36, focus: 0.37 },
+  { id: 6,  t0: 19.0,   t1: 25.59,  name: "Myth Debunking Wide Angle",       type: "Establishing Wide",   cam: [0.0, 0.36, 0.52],   look: [0.0, 0.14, 0.14],  fov: 40, focus: 0.44 },
 
   // Spread 1 (1873 Milwaukee Machine Shop)
-  { id: 7,  t0: 24.8,  t1: 27.2,  name: "Page Turn 0 to 1873 Workshop",    type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],  look: [0.0, 0.14, 0.14], fov: 42, focus: 0.50 },
-  { id: 8,  t0: 27.2,  t1: 31.0,  name: "Milwaukee Workshop Establishing", type: "Establishing Wide",  cam: [-0.04, 0.34, 0.48], look: [-0.02, 0.15, 0.13], fov: 38, focus: 0.42 },
-  { id: 9,  t0: 31.0,  t1: 35.0,  name: "Christopher Sholes at Workbench", type: "Subject Tracking",    cam: [-0.09, 0.28, 0.38], look: [-0.09, 0.16, 0.15], fov: 34, focus: 0.34 },
-  { id: 10, t0: 35.0,  t1: 40.5,  name: "Top-Down Circular Typebar Basket",type: "Isometric Diagram",   cam: [0.07, 0.42, 0.32], look: [0.07, 0.10, 0.12], fov: 36, focus: 0.38 },
-  { id: 11, t0: 40.5,  t1: 45.0,  name: "Macro Typebars Clash & Spark",    type: "Extreme Macro",       cam: [0.07, 0.22, 0.24], look: [0.07, 0.12, 0.12], fov: 28, focus: 0.22 },
-  { id: 12, t0: 45.0,  t1: 50.4,  name: "Sholes Frustrated Reaction Cut",  type: "Reaction Cut",        cam: [-0.09, 0.27, 0.36], look: [-0.09, 0.16, 0.15], fov: 34, focus: 0.32 },
+  { id: 7,  t0: 25.59,  t1: 27.79,  name: "Page Turn 0 to 1873 Workshop",    type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],   look: [0.0, 0.14, 0.14],  fov: 42, focus: 0.51 },
+  { id: 8,  t0: 27.79,  t1: 32.0,   name: "Milwaukee Workshop Establishing", type: "Establishing Wide",  cam: [-0.04, 0.34, 0.48],  look: [-0.02, 0.15, 0.13], fov: 38, focus: 0.40 },
+  { id: 9,  t0: 32.0,   t1: 36.5,   name: "Christopher Sholes at Workbench", type: "Subject Tracking",    cam: [-0.08, 0.32, 0.46], look: [-0.08, 0.15, 0.14], fov: 36, focus: 0.36 },
+  { id: 10, t0: 36.5,   t1: 42.8,   name: "Top-Down Circular Typebar Basket",type: "Isometric Diagram",   cam: [0.06, 0.40, 0.44],  look: [0.06, 0.12, 0.13], fov: 36, focus: 0.42 },
+  { id: 11, t0: 42.8,   t1: 48.0,   name: "Medium Close-up Typebars Clash",  type: "Medium Close-Up",     cam: [0.06, 0.32, 0.45],  look: [0.06, 0.13, 0.13], fov: 36, focus: 0.37 },
+  { id: 12, t0: 48.0,   t1: 53.85,  name: "Sholes Frustrated Reaction Cut",  type: "Reaction Cut",        cam: [-0.08, 0.32, 0.45], look: [-0.08, 0.15, 0.14], fov: 36, focus: 0.35 },
 
   // Spread 2 (Digraph Frequency Matrix & Morse Telegraph)
-  { id: 13, t0: 50.4,  t1: 52.8,  name: "Page Turn 1 to Telegraph Office", type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],  look: [0.0, 0.14, 0.14], fov: 42, focus: 0.50 },
-  { id: 14, t0: 52.8,  t1: 58.0,  name: "Digraph Frequency Matrix Board",  type: "Isometric Diagram",   cam: [-0.08, 0.30, 0.38], look: [-0.08, 0.15, 0.11], fov: 35, focus: 0.34 },
-  { id: 15, t0: 58.0,  t1: 64.0,  name: "Macro Reallocation Vectors 180°", type: "Extreme Macro",       cam: [-0.06, 0.24, 0.29], look: [-0.06, 0.14, 0.11], fov: 30, focus: 0.26 },
-  { id: 16, t0: 64.0,  t1: 70.0,  name: "Morse Operator Tapping Telegraph",type: "Subject Tracking",    cam: [0.09, 0.28, 0.37], look: [0.09, 0.15, 0.14], fov: 34, focus: 0.33 },
-  { id: 17, t0: 70.0,  t1: 75.7,  name: "Flawless High-Speed Typing Cut",  type: "Establishing Wide",   cam: [0.0, 0.34, 0.50],  look: [0.0, 0.14, 0.13], fov: 38, focus: 0.44 },
+  { id: 13, t0: 53.85,  t1: 56.05,  name: "Page Turn 1 to Telegraph Office", type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],   look: [0.0, 0.14, 0.14],  fov: 42, focus: 0.51 },
+  { id: 14, t0: 56.05,  t1: 62.5,   name: "Digraph Frequency Matrix Board",  type: "Isometric Diagram",   cam: [-0.07, 0.32, 0.46], look: [-0.07, 0.15, 0.12], fov: 36, focus: 0.38 },
+  { id: 15, t0: 62.5,   t1: 69.5,   name: "Reallocation Vectors Separation", type: "Medium Close-Up",     cam: [-0.05, 0.32, 0.45], look: [-0.05, 0.15, 0.12], fov: 36, focus: 0.37 },
+  { id: 16, t0: 69.5,   t1: 76.0,   name: "Morse Operator Tapping Telegraph",type: "Subject Tracking",    cam: [0.08, 0.32, 0.46],  look: [0.08, 0.15, 0.14], fov: 36, focus: 0.36 },
+  { id: 17, t0: 76.0,   t1: 83.05,  name: "Flawless High-Speed Typing Cut",  type: "Establishing Wide",   cam: [0.0, 0.34, 0.50],   look: [0.0, 0.14, 0.13],  fov: 38, focus: 0.42 },
 
   // Spread 3 (Modern Path Dependency & Epilogue)
-  { id: 18, t0: 75.7,  t1: 78.1,  name: "Page Turn 2 to Modern Epilogue",  type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],  look: [0.0, 0.14, 0.14], fov: 42, focus: 0.50 },
-  { id: 19, t0: 78.1,  t1: 85.0,  name: "Remington to Smartphone Morph",   type: "Subject Tracking",    cam: [0.08, 0.30, 0.40], look: [0.08, 0.15, 0.13], fov: 36, focus: 0.36 },
-  { id: 20, t0: 85.0,  t1: 92.0,  name: "Dvorak vs QWERTY Muscle Memory",  type: "Isometric Diagram",   cam: [-0.07, 0.29, 0.38], look: [-0.07, 0.15, 0.11], fov: 34, focus: 0.34 },
-  { id: 21, t0: 92.0,  t1: 99.0,  name: "Global Digital Hands Collage",    type: "Establishing Wide",   cam: [0.0, 0.34, 0.48],  look: [0.0, 0.14, 0.12], fov: 38, focus: 0.42 },
-  { id: 22, t0: 99.0,  t1: 104.5, name: "Book Closes on Walnut Desk",      type: "Epilogue Pullback",   cam: [0.0, 0.48, 0.72],  look: [0.0, 0.12, 0.15], fov: 44, focus: 0.65 }
+  { id: 18, t0: 83.05,  t1: 85.25,  name: "Page Turn 2 to Modern Epilogue",  type: "Sweep Transition",    cam: [0.0, 0.40, 0.58],   look: [0.0, 0.14, 0.14],  fov: 42, focus: 0.51 },
+  { id: 19, t0: 85.25,  t1: 92.0,   name: "Remington to Smartphone Morph",   type: "Subject Tracking",    cam: [0.07, 0.32, 0.46],  look: [0.07, 0.15, 0.13], fov: 36, focus: 0.37 },
+  { id: 20, t0: 92.0,   t1: 99.0,   name: "Dvorak vs QWERTY Muscle Memory",  type: "Isometric Diagram",   cam: [-0.06, 0.32, 0.46], look: [-0.06, 0.15, 0.12], fov: 36, focus: 0.38 },
+  { id: 21, t0: 99.0,   t1: 106.5,  name: "Global Digital Hands Collage",    type: "Establishing Wide",   cam: [0.0, 0.34, 0.48],   look: [0.0, 0.14, 0.12],  fov: 38, focus: 0.41 },
+  { id: 22, t0: 106.5,  t1: 117.07, name: "Book Closes on Walnut Desk",      type: "Epilogue Pullback",   cam: [0.0, 0.48, 0.72],   look: [0.0, 0.12, 0.15],  fov: 44, focus: 0.67 }
 ];

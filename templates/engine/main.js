@@ -203,32 +203,42 @@ const clashSparks = particles(quad, addMat(starTex, new THREE.Color(2.5, 1.4, 0.
 }));
 book.stage.add(clashSparks); PS.push(clashSparks);
 
-// ---------- Camera & Shot Interpolation ----------
+// ---------- Continuous Camera Spline & Dynamic Physical DoF ----------
+// Seamless continuous travelling across shots with zero cut-to-cut jumps
+const camKeys = [];
+for (let i = 0; i < SHOTS.length; i++) {
+  const s = SHOTS[i];
+  const dur = s.t1 - s.t0;
+  const tIn = s.t0 + Math.min(0.35, dur * 0.22);
+  const tOut = s.t1 - Math.min(0.35, dur * 0.22);
+
+  // Subtle motivated camera drift during the shot (gentle push-in)
+  const cIn = [s.cam[0], s.cam[1], s.cam[2]];
+  const cOut = [s.cam[0] + 0.003, s.cam[1] - 0.002, s.cam[2] - 0.005];
+  const lIn = [s.look[0], s.look[1], s.look[2]];
+  const lOut = [s.look[0], s.look[1], s.look[2]];
+
+  camKeys.push([tIn, [...cIn, ...lIn, s.fov]]);
+  camKeys.push([tOut, [...cOut, ...lOut, s.fov]]);
+}
+const camTrack = track(camKeys);
+const lookVec = new THREE.Vector3();
+
 function updateCamera(t) {
-  let curShot = SHOTS[0];
-  for (const s of SHOTS) {
-    if (t >= s.t0 && t <= s.t1) {
-      curShot = s;
-      break;
-    }
-  }
-
-  const u = clamp((t - curShot.t0) / Math.max(0.001, curShot.t1 - curShot.t0), 0, 1);
-  const kEase = eio(u);
-
-  cam.position.set(
-    curShot.cam[0],
-    curShot.cam[1] - (1 - kEase) * 0.008,
-    curShot.cam[2] + (1 - kEase) * 0.012
-  );
-  cam.lookAt(curShot.look[0], curShot.look[1], curShot.look[2]);
-  cam.fov = curShot.fov;
+  const cur = camTrack(t);
+  cam.position.set(cur[0], cur[1], cur[2]);
+  lookVec.set(cur[3], cur[4], cur[5]);
+  cam.lookAt(lookVec);
+  cam.fov = cur[6];
   cam.updateProjectionMatrix();
 
   camQ.copy(cam.quaternion);
 
-  // Update physical DoF
-  post.dof.focus = curShot.focus;
+  // Dynamic physical DoF: dynamically lock focus distance to the exact target subject!
+  const targetDist = cam.position.distanceTo(lookVec);
+  post.dof.focus = targetDist;
+  post.dof.aper = 1.8;
+  post.dof.maxCoc = 11;
 }
 
 // ---------- Render Frame (Exposed to Playwright) ----------

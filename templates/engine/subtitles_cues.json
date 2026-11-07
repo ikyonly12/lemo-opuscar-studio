@@ -1,257 +1,257 @@
 [
   {
-    "t0": 2.8,
-    "t1": 3.417,
+    "t0": 2.5,
+    "t1": 3.232,
     "text": "Setiap hari,"
   },
   {
-    "t0": 3.417,
-    "t1": 4.857,
+    "t0": 3.232,
+    "t1": 4.94,
     "text": "miliaran jari kita menari di"
   },
   {
-    "t0": 4.857,
-    "t1": 6.4,
+    "t0": 4.94,
+    "t1": 6.771,
     "text": "atas keyboard laptop dan layar"
   },
   {
-    "t0": 6.4,
-    "t1": 7.377,
+    "t0": 6.771,
+    "t1": 7.93,
     "text": "kaca ponsel cerdas."
   },
   {
-    "t0": 7.8,
-    "t1": 9.019,
+    "t0": 8.23,
+    "t1": 9.852,
     "text": "Namun pernahkah Anda heran,"
   },
   {
-    "t0": 9.019,
-    "t1": 10.645,
+    "t0": 9.852,
+    "t1": 12.016,
     "text": "mengapa susunan hurufnya begitu acak"
   },
   {
-    "t0": 10.645,
-    "t1": 11.774,
+    "t0": 12.016,
+    "t1": 13.518,
     "text": "dan huruf A diletakkan di"
   },
   {
-    "t0": 11.774,
-    "t1": 12.948,
+    "t0": 13.518,
+    "t1": 15.08,
     "text": "bawah kelingking terlemah?"
   },
   {
-    "t0": 13.4,
-    "t1": 18.165,
+    "t0": 15.38,
+    "t1": 18.69,
     "text": "Kenapa tidak berurutan saja seperti A-B-C-D?"
   },
   {
-    "t0": 18.6,
-    "t1": 20.377,
+    "t0": 18.99,
+    "t1": 20.928,
     "text": "Banyak orang percaya mitos bahwa"
   },
   {
-    "t0": 20.377,
-    "t1": 22.155,
+    "t0": 20.928,
+    "t1": 22.867,
     "text": "keyboard sengaja dibuat lambat ."
   },
   {
-    "t0": 22.155,
-    "t1": 24.377,
+    "t0": 22.867,
+    "t1": 25.29,
     "text": "Padahal faktanya justru kebalikan total."
   },
   {
-    "t0": 27.5,
-    "t1": 29.408,
+    "t0": 27.99,
+    "t1": 30.248,
     "text": "Semua bermula dari krisis mekanis"
   },
   {
-    "t0": 29.408,
-    "t1": 31.259,
+    "t0": 30.248,
+    "t1": 32.438,
     "text": "di bengkel Milwaukee tahun 1873,"
   },
   {
-    "t0": 31.259,
-    "t1": 33.457,
+    "t0": 32.438,
+    "t1": 35.038,
     "text": "saat Christopher Latham Sholes merakit"
   },
   {
-    "t0": 33.457,
-    "t1": 34.498,
+    "t0": 35.038,
+    "t1": 36.27,
     "text": "mesin tik pertama."
   },
   {
-    "t0": 35.0,
-    "t1": 35.911,
+    "t0": 36.57,
+    "t1": 37.662,
     "text": "Pada rancangan awal,"
   },
   {
-    "t0": 35.911,
-    "t1": 37.824,
+    "t0": 37.662,
+    "t1": 39.955,
     "text": "batang-batang huruf dari logam menggantung"
   },
   {
-    "t0": 37.824,
-    "t1": 39.327,
+    "t0": 39.955,
+    "t1": 41.756,
     "text": "melingkar di dalam keranjang besi"
   },
   {
-    "t0": 39.327,
-    "t1": 40.056,
+    "t0": 41.756,
+    "t1": 42.63,
     "text": "di bawah kertas."
   },
   {
-    "t0": 40.6,
-    "t1": 43.217,
+    "t0": 42.93,
+    "t1": 45.868,
     "text": "Kelemahannya fatal: saat tombol ditekan cepat,"
   },
   {
-    "t0": 43.217,
-    "t1": 45.719,
+    "t0": 45.868,
+    "t1": 48.678,
     "text": "tuas-tuas besi berdekatan berayun bersamaan,"
   },
   {
-    "t0": 45.719,
-    "t1": 46.743,
+    "t0": 48.678,
+    "t1": 49.828,
     "text": "bertubrukan keras,"
   },
   {
-    "t0": 46.743,
-    "t1": 47.653,
+    "t0": 49.828,
+    "t1": 50.85,
     "text": "dan macet total."
   },
   {
-    "t0": 48.0,
-    "t1": 49.925,
+    "t0": 51.15,
+    "t1": 53.55,
     "text": "Tuasnya bertubrukan dan tersangkut lagi!"
   },
   {
-    "t0": 53.0,
-    "t1": 54.449,
+    "t0": 56.25,
+    "t1": 58.05,
     "text": "Untuk memecahkan kebuntuan ini,"
   },
   {
-    "t0": 54.449,
-    "t1": 56.32,
+    "t0": 58.05,
+    "t1": 60.372,
     "text": "Sholes membedah frekuensi pasangan huruf"
   },
   {
-    "t0": 56.32,
-    "t1": 58.05,
+    "t0": 60.372,
+    "t1": 62.52,
     "text": "yang paling sering diketik berurutan."
   },
   {
-    "t0": 58.5,
-    "t1": 60.263,
+    "t0": 62.82,
+    "t1": 64.769,
     "text": "Kombinasi umum seperti T-H, S-T,"
   },
   {
-    "t0": 60.263,
-    "t1": 62.081,
+    "t0": 64.769,
+    "t1": 66.779,
     "text": "dan E-R sengaja dipisahkan sejauh"
   },
   {
-    "t0": 62.081,
-    "t1": 64.56,
+    "t0": 66.779,
+    "t1": 69.52,
     "text": "mungkin ke sisi keranjang yang berseberangan."
   },
   {
-    "t0": 65.0,
-    "t1": 66.768,
+    "t0": 69.82,
+    "t1": 71.958,
     "text": "Dengan posisi fisik yang berlawanan,"
   },
   {
-    "t0": 66.768,
-    "t1": 68.585,
+    "t0": 71.958,
+    "t1": 74.156,
     "text": "tuas-tuas besi tidak lagi bertubrukan"
   },
   {
-    "t0": 68.585,
-    "t1": 69.91,
+    "t0": 74.156,
+    "t1": 75.76,
     "text": "saat berayun ke pita tinta."
   },
   {
-    "t0": 70.4,
-    "t1": 72.089,
+    "t0": 76.06,
+    "t1": 78.371,
     "text": "Susunan ini langsung diadopsi operator"
   },
   {
-    "t0": 72.089,
-    "t1": 73.69,
+    "t0": 78.371,
+    "t1": 80.561,
     "text": "telegraf kode Morse yang membutuhkan"
   },
   {
-    "t0": 73.69,
-    "t1": 75.29,
+    "t0": 80.561,
+    "t1": 82.75,
     "text": "pengetikan kilat tanpa pernah macet."
   },
   {
-    "t0": 78.3,
-    "t1": 80.098,
+    "t0": 85.45,
+    "t1": 87.888,
     "text": "Mesin tik Remington kemudian memproduksi"
   },
   {
-    "t0": 80.098,
-    "t1": 81.492,
+    "t0": 87.888,
+    "t1": 89.777,
     "text": "tata letak QWERTY secara massal"
   },
   {
-    "t0": 81.492,
-    "t1": 82.615,
+    "t0": 89.777,
+    "t1": 91.3,
     "text": "ke seluruh penjuru dunia."
   },
   {
-    "t0": 83.1,
-    "t1": 83.978,
+    "t0": 91.6,
+    "t1": 92.788,
     "text": "Kini di era modern,"
   },
   {
-    "t0": 83.978,
-    "t1": 85.086,
+    "t0": 92.788,
+    "t1": 94.289,
     "text": "tidak ada lagi tuas besi"
   },
   {
-    "t0": 85.086,
-    "t1": 86.379,
+    "t0": 94.289,
+    "t1": 96.039,
     "text": "maupun kabel yang bisa macet"
   },
   {
-    "t0": 86.379,
-    "t1": 87.857,
+    "t0": 96.039,
+    "t1": 98.04,
     "text": "di balik kaca layar sentuh kita."
   },
   {
-    "t0": 88.3,
-    "t1": 89.801,
+    "t0": 98.34,
+    "t1": 100.362,
     "text": "Namun tata letak alternatif yang"
   },
   {
-    "t0": 89.801,
-    "t1": 91.067,
+    "t0": 100.362,
+    "t1": 102.069,
     "text": "lebih efisien selalu gagal,"
   },
   {
-    "t0": 91.067,
-    "t1": 92.662,
+    "t0": 102.069,
+    "t1": 104.217,
     "text": "karena miliaran jari manusia telah"
   },
   {
-    "t0": 92.662,
-    "t1": 94.022,
+    "t0": 104.217,
+    "t1": 106.05,
     "text": "terikat memori otot permanen."
   },
   {
-    "t0": 94.5,
-    "t1": 97.205,
+    "t0": 106.35,
+    "t1": 109.531,
     "text": "Sebuah solusi kemacetan mekanik tahun 1873,"
   },
   {
-    "t0": 97.205,
-    "t1": 99.218,
+    "t0": 109.531,
+    "t1": 111.899,
     "text": "yang kini menjadi takdir digital"
   },
   {
-    "t0": 99.218,
-    "t1": 100.98,
+    "t0": 111.899,
+    "t1": 113.97,
     "text": "jemari seluruh umat manusia."
   }
 ]

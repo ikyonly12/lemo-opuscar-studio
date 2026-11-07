@@ -12,10 +12,10 @@ lib_candidate = os.environ.get('LIB', os.path.expanduser('~/lemo-opuscar'))
 if not os.path.exists(lib_candidate):
     lib_candidate = 'C:/Users/Kenzie kafi/lemo-opuscar'
 sys.path.insert(0, lib_candidate)
-from core.audio import sampler as S
+# S sampler not required, procedural synthesis handled via numpy & scipy
 
 SR = 48000
-DUR = 104.5
+DUR = 117.07
 N = int(DUR * SR)
 rng = np.random.default_rng(20261107)
 
@@ -81,6 +81,34 @@ def book_thud(g=0.8):
     x = (sub * 0.8 + slap * 0.5) * g
     return st(x, 0.0)
 
+def clock_tick(pan=0.0, tock=False):
+    t = tt(0.04)
+    f = 1700 if not tock else 1250
+    click = np.sin(2 * np.pi * f * t) * ex(t, 0.0005, 0.007)
+    wood = lp(noise(len(t)), 850) * ex(t, 0.001, 0.012)
+    return st((click * 0.55 + wood * 0.45) * 0.25, pan)
+
+def steam_whisper(d=1.5, g=0.18):
+    t = tt(d)
+    x = bp(noise(len(t)), 700, 2800) * np.sin(np.pi * t / d) ** 1.3 * g
+    return st(x, -0.35)
+
+def carriage_ratchet(g=0.55):
+    t = tt(0.22)
+    x = np.zeros(len(t))
+    for k in range(5):
+        idx = int(k * 0.038 * SR)
+        sub_t = tt(0.03)
+        imp = noise(len(sub_t)) * ex(sub_t, 0.0008, 0.006)
+        ring = np.sin(2 * np.pi * 2600 * sub_t) * ex(sub_t, 0.001, 0.009)
+        x[idx:idx + len(sub_t)] += (imp * 0.6 + ring * 0.4)
+    return st(x * g, 0.2)
+
+def bell_ding(f=2350, g=0.48):
+    t = tt(0.42)
+    ding = np.sin(2 * np.pi * f * t) * ex(t, 0.001, 0.16) + 0.35 * np.sin(2 * np.pi * f * 2.76 * t) * ex(t, 0.001, 0.07)
+    return st(ding * g, 0.25)
+
 # Stems
 voice_stem = np.zeros((N, 2))
 foley_stem = np.zeros((N, 2))
@@ -90,12 +118,12 @@ def put(buf, t, x):
     i = int(t * SR); j = min(N, i + len(x))
     if j > i and i >= 0: buf[i:j] += x[:j - i]
 
-# 1. Place Voiceovers
+# 1. Place Voiceovers (Calibrated 117.07s DQ - Documenter timeline)
 vo_times = [
-    ("v01", 2.8), ("v02", 7.8), ("b01", 13.4), ("v03", 18.6),
-    ("v04", 27.5), ("v05", 35.0), ("v06", 40.6), ("b02", 48.0),
-    ("v07", 53.0), ("v08", 58.5), ("v09", 65.0), ("v10", 70.4),
-    ("v11", 78.3), ("v12", 83.1), ("v13", 88.3), ("v14", 94.5)
+    ("v01", 2.50),  ("v02", 8.23),  ("b01", 15.38), ("v03", 18.99),
+    ("v04", 27.99), ("v05", 36.57), ("v06", 42.93), ("b02", 51.15),
+    ("v07", 56.25), ("v08", 62.82), ("v09", 69.82), ("v10", 76.06),
+    ("v11", 85.45), ("v12", 91.60), ("v13", 98.34), ("v14", 106.35)
 ]
 
 for vid, t_start in vo_times:
@@ -109,48 +137,114 @@ for vid, t_start in vo_times:
             data = st(data, 0.0)
         put(voice_stem, t_start, data)
 
-# 2. Procedural Foley Placement
-put(foley_stem, 0.6, swish(0.8, 0.7))
-put(foley_stem, 1.2, crinkle(0.5, 0.6))
+# 2. Rich Environmental Soundscape & Procedural Foley Placement
+# Opening Book Foley
+put(foley_stem, 0.5, swish(0.9, 0.75))
+put(foley_stem, 1.1, crinkle(0.55, 0.65))
 
-# Modern glass taps (Spread 0)
-for dt in [3.2, 3.6, 4.1, 4.8, 8.4, 9.2, 10.0, 11.2]:
-    put(foley_stem, dt, glass_tap(0.35, rng.uniform(-0.3, 0.3)))
+# --- Spread 0: Modern Studio Atmosphere ---
+# Bursts of modern capacitive touchscreen taps & chiclet laptop keyboard typing
+tap_times = [
+    2.8, 3.0, 3.15, 3.4, 3.65, 4.05, 4.25, 4.5, 4.8, 5.0,
+    8.6, 8.8, 9.05, 9.3, 9.6, 10.0, 10.25, 10.5, 11.0, 11.25,
+    16.0, 16.2, 16.45, 19.5, 19.7, 20.0, 21.5, 21.8, 22.1, 23.5, 24.0
+]
+for dt in tap_times:
+    put(foley_stem, dt, glass_tap(0.32, rng.uniform(-0.25, 0.25)))
 
-# Page Turn 0
-put(foley_stem, 24.8, swish(0.85, 0.8))
-put(foley_stem, 25.4, crinkle(0.6, 0.7))
+# Camera transition whoosh into Shot 3 / 4
+put(foley_stem, 8.0, swish(0.65, 0.35))
+put(foley_stem, 11.8, swish(0.6, 0.3))
 
-# 1873 Typebar clacks (Spread 1)
-for dt in [28.2, 28.9, 29.5, 30.2, 35.6, 36.1, 36.8, 41.2, 41.6, 42.1]:
-    put(foley_stem, dt, type_clack(0.55, rng.uniform(-0.4, 0.4)))
+# --- Page Turn 0 (25.59s -> 27.79s) ---
+put(foley_stem, 25.59, swish(0.95, 0.85))
+put(foley_stem, 26.10, crinkle(0.7, 0.75))
 
-# Typebar Jam Impact
-put(foley_stem, 42.6, jam_chank(0.95))
-put(foley_stem, 47.6, jam_chank(0.85))
+# --- Spread 1: 1873 Milwaukee Machine Shop Soundscape ---
+# Antique Grandfather Clock Ticking throughout Spread 1 (27s to 54s at 120 BPM = 0.5s intervals)
+for k in range(int((53.5 - 27.5) / 0.5)):
+    t_clk = 27.5 + k * 0.5
+    tock = (k % 2 == 1)
+    put(foley_stem, t_clk, clock_tick(pan=-0.35, tock=tock))
 
-# Page Turn 1
-put(foley_stem, 50.4, swish(0.85, 0.8))
-put(foley_stem, 51.0, crinkle(0.6, 0.7))
+# Occasional steam pipe hiss
+for t_st in [28.5, 34.5, 41.2, 49.5]:
+    put(foley_stem, t_st, steam_whisper(1.4, 0.16))
 
-# Morse code pips (Spread 2)
-for dt in [53.5, 53.7, 54.0, 54.2, 54.4, 55.0, 55.2, 71.0, 71.2, 71.5, 71.7, 72.0, 72.3]:
-    put(foley_stem, dt, morse_pip(760, 0.05, 0.28, -0.2))
+# Heavy Victorian Typebar Clacks (Testing prototype)
+mech_hits = [
+    28.8, 29.2, 29.6, 30.1, 30.8, 31.2, 31.6, 32.8, 33.2, 33.7,
+    37.0, 37.4, 37.8, 38.3, 39.0, 39.5, 40.1, 40.6,
+    43.2, 43.6, 43.9, 44.2, 44.5, 44.8
+]
+for dt in mech_hits:
+    put(foley_stem, dt, type_clack(0.58, rng.uniform(-0.35, 0.35)))
 
-# Smooth fast typing (Spread 2)
-for dt in [58.8, 59.2, 59.6, 60.1, 65.5, 66.0, 66.4, 66.9, 72.8, 73.2, 73.6]:
-    put(foley_stem, dt, type_clack(0.48, rng.uniform(-0.3, 0.3)))
+# Carriage returns & bell dings during Sholes' typing
+put(foley_stem, 31.8, bell_ding(2200, 0.45))
+put(foley_stem, 32.0, carriage_ratchet(0.5))
+put(foley_stem, 40.8, bell_ding(2200, 0.45))
+put(foley_stem, 41.0, carriage_ratchet(0.5))
 
-# Page Turn 2
-put(foley_stem, 75.7, swish(0.85, 0.8))
-put(foley_stem, 76.3, crinkle(0.6, 0.7))
+# THE FATAL TYPEBAR JAM IMPACT at 45.2s - 46.0s (during "bertubrukan keras, dan macet total")
+# Massive clashing resonance, metal binding & spring shiver
+put(foley_stem, 45.2, jam_chank(1.2))
+put(foley_stem, 45.45, jam_chank(0.95))
+put(foley_stem, 45.85, type_clack(0.7, 0.2))
+put(foley_stem, 50.8, jam_chank(0.95)) # Sholes testing stuck lever in frustration
 
-# Epilogue glass taps & close
-for dt in [84.2, 85.0, 89.2, 90.1, 95.0, 96.2]:
-    put(foley_stem, dt, glass_tap(0.35, rng.uniform(-0.3, 0.3)))
+# Camera pan whoosh into Sholes reaction
+put(foley_stem, 47.8, swish(0.65, 0.4))
 
-put(foley_stem, 102.0, swish(0.9, 0.8))
-put(foley_stem, 102.8, book_thud(0.85))
+# --- Page Turn 1 (53.85s -> 56.05s) ---
+put(foley_stem, 53.85, swish(0.95, 0.85))
+put(foley_stem, 54.35, crinkle(0.7, 0.75))
+
+# --- Spread 2: Western Union Telegraph Office & Morse Code ---
+# Background telegraph chatter (authentic dit-dah sequences)
+morse_seq = [
+    56.5, 56.62, 56.74, 56.98, 57.1, 57.4, 57.52, 57.75, 58.0,
+    58.5, 58.62, 58.85, 59.1, 59.4, 59.65, 59.78, 60.1,
+    70.2, 70.32, 70.44, 70.7, 70.82, 71.1, 71.22, 71.45, 71.7, 71.9,
+    76.5, 76.62, 76.85, 77.0, 77.25, 77.4, 77.52, 77.8, 78.05
+]
+for dt in morse_seq:
+    put(foley_stem, dt, morse_pip(750, 0.05, 0.32, -0.25))
+
+# High-Speed Flawless Typing on Revised Anti-Jam Layout (63.0s - 68.5s and 72.0s - 81.5s)
+rapid_hits = [
+    63.2, 63.42, 63.65, 63.88, 64.1, 64.32, 64.6, 64.82, 65.05, 65.3, 65.6, 65.85, 66.1, 66.4,
+    72.5, 72.7, 72.92, 73.15, 73.4, 73.65, 73.9, 74.2, 74.5, 74.75, 75.0,
+    78.5, 78.7, 78.92, 79.15, 79.38, 79.6, 79.85, 80.1, 80.35
+]
+for dt in rapid_hits:
+    put(foley_stem, dt, type_clack(0.52, rng.uniform(-0.3, 0.3)))
+
+put(foley_stem, 66.6, bell_ding(2400, 0.42))
+put(foley_stem, 66.8, carriage_ratchet(0.48))
+put(foley_stem, 75.2, bell_ding(2400, 0.42))
+put(foley_stem, 75.4, carriage_ratchet(0.48))
+
+# --- Page Turn 2 (83.05s -> 85.25s) ---
+put(foley_stem, 83.05, swish(0.95, 0.85))
+put(foley_stem, 83.55, crinkle(0.7, 0.75))
+
+# --- Spread 3: Modern Epilogue & Path Dependency ---
+# Blend of mechanical typewriter strike evolving into digital phone capacitive clicks
+morph_hits = [
+    86.0, 86.4, 86.8, 87.2, 87.7, 88.2, 88.8, 89.4,
+    91.8, 92.2, 92.7, 93.3, 93.8, 94.5, 95.3, 96.1,
+    99.2, 99.8, 100.4, 101.2, 102.4, 103.2, 104.2, 105.4, 106.2, 107.5, 109.0
+]
+for idx, dt in enumerate(morph_hits):
+    k_morph = idx / len(morph_hits) # 0 = mechanical, 1 = glass tap
+    if k_morph < 0.5:
+        put(foley_stem, dt, type_clack(0.45 * (1 - k_morph), rng.uniform(-0.2, 0.2)))
+    put(foley_stem, dt, glass_tap(0.35 * (0.3 + 0.7 * k_morph), rng.uniform(-0.25, 0.25)))
+
+# Climax & Final Closing at 114.5s
+put(foley_stem, 114.5, swish(0.95, 0.85))
+put(foley_stem, 115.3, book_thud(0.9))
 
 # 3. Procedural Thematic Musical Score (Investigative Science Pulse)
 # 4 Sonic Layers:

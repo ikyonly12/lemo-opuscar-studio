@@ -575,12 +575,12 @@ export function buildSets(book) {
 }
 
 // ============================================================================
-// 3. Dynamic Frame Updates (Springs, Sway, Collisions)
+// 3. Dynamic Frame Updates (Springs, Sway, Idle Micro-Animations)
 // ============================================================================
 export function updateSets(sets, t) {
   const { L, ex } = sets;
 
-  // 1. Update all paper pop-up pieces with physical spring hinges
+  // 1. Update all paper pop-up pieces with physical spring hinges + continuous subtle paper breathing
   for (const r of L) {
     const k = riseOf(r, t);
     r.g.visible = k > 0.001;
@@ -588,53 +588,96 @@ export function updateSets(sets, t) {
       // Paper hinge rotation: folds flat at angle (dir * PI/2), stands up at 0
       const angle = (1 - k) * (r.dir * Math.PI / 2);
       r.m.rotation.x = angle;
-      if (r.sway) {
-        r.m.rotation.z = Math.sin(t * 1.6 + r.ph) * r.sway * k;
-      }
+      
+      // Continuous idle paper sway & micro-breathing (eliminates rigid cardboard feel)
+      const idleSway = Math.sin(t * 1.8 + r.ph) * 0.014 * k;
+      r.m.rotation.z = (r.sway ? Math.sin(t * 1.6 + r.ph) * r.sway * k : 0) + idleSway;
+      r.m.position.y = (Math.sin(t * 2.4 + r.ph) * 0.0006) * k;
+
       if (r.upd) r.upd(r, t, k);
     }
   }
 
-  // 2. Suspended props swaying gently
+  // 2. Suspended props swinging and breathing
   if (ex.ideaBulb) {
     const s0vis = t >= RISE[0] && t < FOLD[0];
     ex.ideaBulb.visible = s0vis;
     if (s0vis) {
-      ex.ideaBulb.rotation.z = Math.sin(t * 1.4) * 0.04;
+      ex.ideaBulb.rotation.z = Math.sin(t * 1.4) * 0.055;
+      ex.ideaBulb.position.x = -0.16 + Math.sin(t * 1.4) * 0.003;
     }
   }
   if (ex.gasLantern) {
     const s1vis = t >= RISE[1] && t < FOLD[1];
     ex.gasLantern.visible = s1vis;
     if (s1vis) {
-      ex.gasLantern.rotation.z = Math.sin(t * 1.8) * 0.03;
+      ex.gasLantern.rotation.z = Math.sin(t * 1.7) * 0.045;
+      ex.gasLantern.position.x = -0.17 + Math.sin(t * 1.7) * 0.002;
     }
   }
 
-  // 3. Actors visibility and poses
+  // 3. Actors: Full Continuous Procedural Idle Animation (Breathing, Sway, Speech Sync, Eye Blinks)
+  // --- Modern Typist Actor ---
   const uVis = t >= RISE[0] && t < FOLD[0];
   ex.userActor.root.visible = uVis;
   ex.userActor.shadow.visible = uVis;
   if (uVis) {
-    const blink = Math.sin(t * 4.2) > 0.94 ? 1 : 0;
-    const mood = t > 13.0 && t < 18.5 ? 'puzzled' : 'typing';
-    ex.userActor.pose({ mood, blink, mouthOpen: t > 13.4 && t < 18.0 ? 0.8 : 0.0 });
+    // Continuous chest breathing squash & stretch
+    const breathU = Math.sin(t * 3.2);
+    ex.userActor.body.scale.set(1.0 - 0.015 * breathU, 1.0 + 0.02 * breathU, 1.0);
+    // Organic weight shift & posture sway
+    ex.userActor.body.rotation.z = Math.sin(t * 1.4) * 0.025;
+    ex.userActor.body.position.y = Math.sin(t * 3.2) * 0.001;
+
+    // Organic double-blink pattern
+    const blinkU = (Math.sin(t * 2.8) > 0.94 || (t % 5.5 > 5.3)) ? 1 : 0;
+    const mood = t > 15.0 && t < 19.0 ? 'puzzled' : 'typing';
+    
+    // Expressive speech flutter when speaking dialogue
+    const isSpeaking = t > 15.38 && t < 18.69;
+    const mouthOpen = isSpeaking ? (0.35 + 0.5 * Math.abs(Math.sin(t * 14.0))) : 0.0;
+    
+    ex.userActor.pose({ mood, blink: blinkU, mouthOpen });
   }
 
+  // --- Christopher Latham Sholes Actor ---
   const sVis = t >= RISE[1] && t < FOLD[1];
   ex.sholesActor.root.visible = sVis;
   ex.sholesActor.shadow.visible = sVis;
   if (sVis) {
-    const blink = Math.sin(t * 3.8) > 0.94 ? 1 : 0;
-    const mood = t > 40.0 ? 'frustrated' : 'working';
-    ex.sholesActor.pose({ mood, blink, mouthOpen: t > 48.0 && t < 50.2 ? 0.9 : 0.0 });
+    // Deep chest breathing
+    const breathS = Math.sin(t * 2.6);
+    ex.sholesActor.body.scale.set(1.0 - 0.016 * breathS, 1.0 + 0.022 * breathS, 1.0);
+    
+    // Posture sway & emotional fidgeting
+    const isFrustrated = t > 43.0;
+    const tremble = isFrustrated ? (Math.sin(t * 12.0) * 0.015) : 0;
+    ex.sholesActor.body.rotation.z = Math.sin(t * 1.3) * 0.028 + tremble;
+    ex.sholesActor.body.position.y = Math.sin(t * 2.6) * 0.001;
+
+    const blinkS = (Math.sin(t * 3.1) > 0.94 || (t % 6.0 > 5.8)) ? 1 : 0;
+    const mood = isFrustrated ? 'frustrated' : 'working';
+
+    // Expressive speech flutter when shouting about the jam
+    const isSpeaking = t > 51.15 && t < 53.55;
+    const mouthOpen = isSpeaking ? (0.45 + 0.5 * Math.abs(Math.sin(t * 15.0))) : 0.0;
+
+    ex.sholesActor.pose({ mood, blink: blinkS, mouthOpen });
   }
 
+  // --- Morse Telegraph Operator Actor ---
   const teleVis = t >= RISE[2] && t < FOLD[2];
   ex.teleActor.root.visible = teleVis;
   ex.teleActor.shadow.visible = teleVis;
   if (teleVis) {
-    const blink = Math.sin(t * 4.0) > 0.94 ? 1 : 0;
-    ex.teleActor.pose({ mood: 'focused', blink, tapOffset: Math.sin(t * 22) * 0.003 });
+    // Breathing & posture
+    const breathT = Math.sin(t * 2.9);
+    ex.teleActor.body.scale.set(1.0 - 0.014 * breathT, 1.0 + 0.018 * breathT, 1.0);
+    ex.teleActor.body.rotation.z = Math.sin(t * 1.5) * 0.02;
+    
+    // Continuous rhythmic key tapping vibration
+    ex.teleActor.body.position.y = Math.abs(Math.sin(t * 12.0)) * 0.0012;
+    const blinkT = Math.sin(t * 3.5) > 0.94 ? 1 : 0;
+    ex.teleActor.pose({ mood: 'focused', blink: blinkT, tapOffset: Math.sin(t * 24.0) * 0.004 });
   }
 }
