@@ -1,5 +1,5 @@
-# Score + narration + procedural foley -> audio.wav
-# Archetype: Investigative / Science & Technology Pulse
+# Score + narration + procedural foley -> audio.wav & out/mix.wav
+# Archetype: Historical Drama & Cultural Pulse — Passer Baroe: Detak Jantung 200 Tahun
 import json, re, os, sys
 import numpy as np, soundfile as sf
 from scipy.signal import butter, sosfilt, fftconvolve
@@ -12,12 +12,11 @@ lib_candidate = os.environ.get('LIB', os.path.expanduser('~/lemo-opuscar'))
 if not os.path.exists(lib_candidate):
     lib_candidate = 'C:/Users/Kenzie kafi/lemo-opuscar'
 sys.path.insert(0, lib_candidate)
-# S sampler not required, procedural synthesis handled via numpy & scipy
 
 SR = 48000
-DUR = 117.07
+DUR = 88.90
 N = int(DUR * SR)
-rng = np.random.default_rng(20261107)
+rng = np.random.default_rng(20261108)
 
 def bp(x, lo, hi, o=2): return sosfilt(butter(o, [lo, hi], 'band', fs=SR, output='sos'), x)
 def lp(x, f, o=2): return sosfilt(butter(o, f, 'low', fs=SR, output='sos'), x)
@@ -47,32 +46,53 @@ def crinkle(d=0.45, g=0.75):
         x[i:i + L] += noise(L) * np.exp(-np.arange(L) / (L / 4)) * rng.uniform(0.3, 1)
     return st(bp(x, 1400, 8000) * g, 0.1)
 
-def type_clack(g=0.6, pan=0.0):
-    t = tt(0.08)
-    imp = noise(len(t)) * ex(t, 0.001, 0.015)
-    f = 1200 * np.exp(-t * 35)
-    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * ex(t, 0.002, 0.035)
-    x = (imp * 0.7 + body * 0.5) * g
-    return st(x, pan)
+def horse_hoof(g=0.55, pan=0.0):
+    t = tt(0.12)
+    slap = lp(noise(len(t)), 750) * ex(t, 0.002, 0.035)
+    ring = np.sin(2 * np.pi * 320 * t) * ex(t, 0.005, 0.06)
+    return st((slap * 0.7 + ring * 0.3) * g, pan)
 
-def jam_chank(g=0.85):
+def carriage_creak(g=0.45, pan=-0.15):
     t = tt(0.35)
-    ring1 = np.sin(2 * np.pi * 840 * t) * ex(t, 0.002, 0.12)
-    ring2 = np.sin(2 * np.pi * 1160 * t) * ex(t, 0.002, 0.08)
-    imp = noise(len(t)) * ex(t, 0.001, 0.03)
-    x = (ring1 * 0.6 + ring2 * 0.5 + bp(imp, 600, 4500) * 0.8) * g
-    return st(x, 0.15)
+    f = np.linspace(420, 280, len(t))
+    wood = np.sin(2 * np.pi * np.cumsum(f) / SR) * ex(t, 0.01, 0.15)
+    return st(wood * g, pan)
 
-def morse_pip(f=750, dur=0.06, g=0.3, pan=-0.2):
-    t = tt(dur)
-    env = np.sin(np.pi * t / dur) ** 2
-    x = np.sin(2 * np.pi * f * t) * env * g
-    return st(x, pan)
+def scissors_snip(g=0.5, pan=0.2):
+    t = tt(0.14)
+    scrap = hp(noise(len(t)), 2500) * ex(t, 0.001, 0.025)
+    clack = np.sin(2 * np.pi * 1850 * t) * ex(t, 0.002, 0.04)
+    return st((scrap * 0.65 + clack * 0.35) * g, pan)
 
-def glass_tap(g=0.4, pan=0.2):
-    t = tt(0.04)
-    x = np.sin(2 * np.pi * 2200 * t) * ex(t, 0.001, 0.012) * g
-    return st(x, pan)
+def needle_drop(g=0.6, pan=-0.1):
+    t = tt(0.08)
+    imp = noise(len(t)) * ex(t, 0.0005, 0.012)
+    pop = np.sin(2 * np.pi * 650 * t) * ex(t, 0.001, 0.03)
+    return st((imp * 0.7 + pop * 0.4) * g, pan)
+
+def camera_shutter(g=0.65, pan=0.15):
+    t = tt(0.09)
+    click1 = noise(len(t)) * ex(t, 0.0005, 0.01)
+    click2 = np.sin(2 * np.pi * 1400 * t) * ex(t, 0.008, 0.025)
+    return st((click1 * 0.6 + click2 * 0.5) * g, pan)
+
+def steam_hiss(d=1.2, g=0.25):
+    t = tt(d)
+    hiss = bp(noise(len(t)), 1200, 4800) * np.sin(np.pi * t / d) ** 1.4 * g
+    return st(hiss, -0.2)
+
+def bowl_clink(g=0.45, pan=0.1):
+    t = tt(0.3)
+    ding = np.sin(2 * np.pi * 2800 * t) * ex(t, 0.001, 0.09) + 0.3 * np.sin(2 * np.pi * 5600 * t) * ex(t, 0.001, 0.04)
+    return st(ding * g, pan)
+
+def mrt_whoosh(d=2.5, g=0.35):
+    t = tt(d)
+    hum = (np.sin(2 * np.pi * np.linspace(110, 220, len(t)) * t) * 0.5 + 
+           np.sin(2 * np.pi * np.linspace(220, 440, len(t)) * t) * 0.3)
+    air = bp(noise(len(t)), 300, 1500) * 0.4
+    env = np.sin(np.pi * t / d) ** 1.8
+    return st((hum + air) * env * g, 0.0)
 
 def book_thud(g=0.8):
     t = tt(0.5)
@@ -80,34 +100,6 @@ def book_thud(g=0.8):
     slap = lp(noise(len(t)), 450) * ex(t, 0.002, 0.06)
     x = (sub * 0.8 + slap * 0.5) * g
     return st(x, 0.0)
-
-def clock_tick(pan=0.0, tock=False):
-    t = tt(0.04)
-    f = 1700 if not tock else 1250
-    click = np.sin(2 * np.pi * f * t) * ex(t, 0.0005, 0.007)
-    wood = lp(noise(len(t)), 850) * ex(t, 0.001, 0.012)
-    return st((click * 0.55 + wood * 0.45) * 0.25, pan)
-
-def steam_whisper(d=1.5, g=0.18):
-    t = tt(d)
-    x = bp(noise(len(t)), 700, 2800) * np.sin(np.pi * t / d) ** 1.3 * g
-    return st(x, -0.35)
-
-def carriage_ratchet(g=0.55):
-    t = tt(0.22)
-    x = np.zeros(len(t))
-    for k in range(5):
-        idx = int(k * 0.038 * SR)
-        sub_t = tt(0.03)
-        imp = noise(len(sub_t)) * ex(sub_t, 0.0008, 0.006)
-        ring = np.sin(2 * np.pi * 2600 * sub_t) * ex(sub_t, 0.001, 0.009)
-        x[idx:idx + len(sub_t)] += (imp * 0.6 + ring * 0.4)
-    return st(x * g, 0.2)
-
-def bell_ding(f=2350, g=0.48):
-    t = tt(0.42)
-    ding = np.sin(2 * np.pi * f * t) * ex(t, 0.001, 0.16) + 0.35 * np.sin(2 * np.pi * f * 2.76 * t) * ex(t, 0.001, 0.07)
-    return st(ding * g, 0.25)
 
 # Stems
 voice_stem = np.zeros((N, 2))
@@ -118,12 +110,17 @@ def put(buf, t, x):
     i = int(t * SR); j = min(N, i + len(x))
     if j > i and i >= 0: buf[i:j] += x[:j - i]
 
-# 1. Place Voiceovers (Calibrated 117.07s DQ - Documenter timeline)
+# 1. Place Voiceovers (Calibrated 88.90s Indonesian Documentary Timeline)
 vo_times = [
-    ("v01", 2.50),  ("v02", 8.23),  ("b01", 15.38), ("v03", 18.99),
-    ("v04", 27.99), ("v05", 36.57), ("v06", 42.93), ("b02", 51.15),
-    ("v07", 56.25), ("v08", 62.82), ("v09", 69.82), ("v10", 76.06),
-    ("v11", 85.45), ("v12", 91.60), ("v13", 98.34), ("v14", 106.35)
+    ("v01", 2.40),
+    ("v02", 9.58),
+    ("v03", 18.59),
+    ("v04", 27.92),
+    ("v05", 43.00),
+    ("v06", 50.31),
+    ("v07", 62.80),
+    ("v08", 72.27),
+    ("v09", 80.13)
 ]
 
 for vid, t_start in vo_times:
@@ -138,215 +135,142 @@ for vid, t_start in vo_times:
         put(voice_stem, t_start, data)
 
 # 2. Rich Environmental Soundscape & Procedural Foley Placement
-# Opening Book Foley
 put(foley_stem, 0.5, swish(0.9, 0.75))
 put(foley_stem, 1.1, crinkle(0.55, 0.65))
 
-# --- Spread 0: Modern Studio Atmosphere ---
-# Bursts of modern capacitive touchscreen taps & chiclet laptop keyboard typing
-tap_times = [
-    2.8, 3.0, 3.15, 3.4, 3.65, 4.05, 4.25, 4.5, 4.8, 5.0,
-    8.6, 8.8, 9.05, 9.3, 9.6, 10.0, 10.25, 10.5, 11.0, 11.25,
-    16.0, 16.2, 16.45, 19.5, 19.7, 20.0, 21.5, 21.8, 22.1, 23.5, 24.0
-]
-for dt in tap_times:
-    put(foley_stem, dt, glass_tap(0.32, rng.uniform(-0.25, 0.25)))
+# --- Spread 0: Weltevreden 1820 & Rekaman 1927 ---
+# Horse carriage hooves
+for ht in [4.8, 5.25, 5.7, 6.15, 6.6, 7.05, 7.5, 7.95, 10.2, 10.65, 11.1, 11.55]:
+    put(foley_stem, ht, horse_hoof(0.42, rng.uniform(-0.25, 0.15)))
+put(foley_stem, 6.2, carriage_creak(0.35, -0.2))
 
-# Camera transition whoosh into Shot 3 / 4
-put(foley_stem, 8.0, swish(0.65, 0.35))
-put(foley_stem, 11.8, swish(0.6, 0.3))
+# Fabric scissors snips
+put(foley_stem, 19.2, scissors_snip(0.48, 0.22))
+put(foley_stem, 20.4, scissors_snip(0.45, 0.18))
+put(foley_stem, 22.8, scissors_snip(0.46, 0.25))
 
-# --- Page Turn 0 (25.59s -> 27.79s) ---
-put(foley_stem, 25.59, swish(0.95, 0.85))
-put(foley_stem, 26.10, crinkle(0.7, 0.75))
+# Gramophone needle drop & vinyl crackle at 1927 climax
+put(foley_stem, 28.5, needle_drop(0.65, -0.1))
+# Subtle vinyl crackle
+t_crackle = tt(9.0)
+crackle = noise(len(t_crackle)) * (rng.random(len(t_crackle)) > 0.998) * 0.15
+put(foley_stem, 28.6, st(bp(crackle, 2000, 8000), -0.05))
 
-# --- Spread 1: 1873 Milwaukee Machine Shop Soundscape ---
-# Antique Grandfather Clock Ticking throughout Spread 1 (27s to 54s at 120 BPM = 0.5s intervals)
-for k in range(int((53.5 - 27.5) / 0.5)):
-    t_clk = 27.5 + k * 0.5
-    tock = (k % 2 == 1)
-    put(foley_stem, t_clk, clock_tick(pan=-0.35, tock=tock))
+# Page Turn 0 (39.8s -> 42.6s)
+put(foley_stem, 39.8, swish(0.95, 0.85))
+put(foley_stem, 40.4, crinkle(0.7, 0.75))
 
-# Occasional steam pipe hiss
-for t_st in [28.5, 34.5, 41.2, 49.5]:
-    put(foley_stem, t_st, steam_whisper(1.4, 0.16))
+# --- Spread 1: Pasar Baru Masa Kini (Nostalgia & Tradisi) ---
+# Analog camera shutter clicks
+put(foley_stem, 51.0, camera_shutter(0.62, 0.2))
+put(foley_stem, 53.5, camera_shutter(0.58, -0.15))
 
-# Heavy Victorian Typebar Clacks (Testing prototype)
-mech_hits = [
-    28.8, 29.2, 29.6, 30.1, 30.8, 31.2, 31.6, 32.8, 33.2, 33.7,
-    37.0, 37.4, 37.8, 38.3, 39.0, 39.5, 40.1, 40.6,
-    43.2, 43.6, 43.9, 44.2, 44.5, 44.8
-]
-for dt in mech_hits:
-    put(foley_stem, dt, type_clack(0.58, rng.uniform(-0.35, 0.35)))
+# Culinary noodle steam & bowl tap
+put(foley_stem, 55.2, steam_hiss(1.8, 0.28))
+put(foley_stem, 56.5, bowl_clink(0.45, 0.12))
 
-# Carriage returns & bell dings during Sholes' typing
-put(foley_stem, 31.8, bell_ding(2200, 0.45))
-put(foley_stem, 32.0, carriage_ratchet(0.5))
-put(foley_stem, 40.8, bell_ding(2200, 0.45))
-put(foley_stem, 41.0, carriage_ratchet(0.5))
+# Page Turn 1 (59.5s -> 62.3s)
+put(foley_stem, 59.5, swish(0.95, 0.85))
+put(foley_stem, 60.1, crinkle(0.7, 0.75))
 
-# THE FATAL TYPEBAR JAM IMPACT at 45.2s - 46.0s (during "bertubrukan keras, dan macet total")
-# Massive clashing resonance, metal binding & spring shiver
-put(foley_stem, 45.2, jam_chank(1.2))
-put(foley_stem, 45.45, jam_chank(0.95))
-put(foley_stem, 45.85, type_clack(0.7, 0.2))
-put(foley_stem, 50.8, jam_chank(0.95)) # Sholes testing stuck lever in frustration
+# --- Spread 2: Metropolitan Masa Depan ---
+# MRT whoosh passing by
+put(foley_stem, 67.8, mrt_whoosh(2.8, 0.38))
+put(foley_stem, 75.0, mrt_whoosh(2.5, 0.32))
 
-# Camera pan whoosh into Sholes reaction
-put(foley_stem, 47.8, swish(0.65, 0.4))
+# Climax & Final Closing at 86.5s
+put(foley_stem, 86.5, swish(0.95, 0.85))
+put(foley_stem, 87.2, book_thud(0.9))
 
-# --- Page Turn 1 (53.85s -> 56.05s) ---
-put(foley_stem, 53.85, swish(0.95, 0.85))
-put(foley_stem, 54.35, crinkle(0.7, 0.75))
-
-# --- Spread 2: Western Union Telegraph Office & Morse Code ---
-# Background telegraph chatter (authentic dit-dah sequences)
-morse_seq = [
-    56.5, 56.62, 56.74, 56.98, 57.1, 57.4, 57.52, 57.75, 58.0,
-    58.5, 58.62, 58.85, 59.1, 59.4, 59.65, 59.78, 60.1,
-    70.2, 70.32, 70.44, 70.7, 70.82, 71.1, 71.22, 71.45, 71.7, 71.9,
-    76.5, 76.62, 76.85, 77.0, 77.25, 77.4, 77.52, 77.8, 78.05
-]
-for dt in morse_seq:
-    put(foley_stem, dt, morse_pip(750, 0.05, 0.32, -0.25))
-
-# High-Speed Flawless Typing on Revised Anti-Jam Layout (63.0s - 68.5s and 72.0s - 81.5s)
-rapid_hits = [
-    63.2, 63.42, 63.65, 63.88, 64.1, 64.32, 64.6, 64.82, 65.05, 65.3, 65.6, 65.85, 66.1, 66.4,
-    72.5, 72.7, 72.92, 73.15, 73.4, 73.65, 73.9, 74.2, 74.5, 74.75, 75.0,
-    78.5, 78.7, 78.92, 79.15, 79.38, 79.6, 79.85, 80.1, 80.35
-]
-for dt in rapid_hits:
-    put(foley_stem, dt, type_clack(0.52, rng.uniform(-0.3, 0.3)))
-
-put(foley_stem, 66.6, bell_ding(2400, 0.42))
-put(foley_stem, 66.8, carriage_ratchet(0.48))
-put(foley_stem, 75.2, bell_ding(2400, 0.42))
-put(foley_stem, 75.4, carriage_ratchet(0.48))
-
-# --- Page Turn 2 (83.05s -> 85.25s) ---
-put(foley_stem, 83.05, swish(0.95, 0.85))
-put(foley_stem, 83.55, crinkle(0.7, 0.75))
-
-# --- Spread 3: Modern Epilogue & Path Dependency ---
-# Blend of mechanical typewriter strike evolving into digital phone capacitive clicks
-morph_hits = [
-    86.0, 86.4, 86.8, 87.2, 87.7, 88.2, 88.8, 89.4,
-    91.8, 92.2, 92.7, 93.3, 93.8, 94.5, 95.3, 96.1,
-    99.2, 99.8, 100.4, 101.2, 102.4, 103.2, 104.2, 105.4, 106.2, 107.5, 109.0
-]
-for idx, dt in enumerate(morph_hits):
-    k_morph = idx / len(morph_hits) # 0 = mechanical, 1 = glass tap
-    if k_morph < 0.5:
-        put(foley_stem, dt, type_clack(0.45 * (1 - k_morph), rng.uniform(-0.2, 0.2)))
-    put(foley_stem, dt, glass_tap(0.35 * (0.3 + 0.7 * k_morph), rng.uniform(-0.25, 0.25)))
-
-# Climax & Final Closing at 114.5s
-put(foley_stem, 114.5, swish(0.95, 0.85))
-put(foley_stem, 115.3, book_thud(0.9))
-
-# 3. Procedural Thematic Musical Score (Investigative Science Pulse)
+# 3. Procedural Thematic Musical Score (Historical Drama & Cultural Pulse)
 # 4 Sonic Layers:
-# 1) Low-passed analog bass pulse & upright bass
-# 2) Continuous harmonic progression (Rhodes / acoustic grand piano) in D Minor / G Dorian
-# 3) Syncopated acoustic marimba ostinato & clockwork chime
-# 4) Shaker / brush swing & acoustic woodblocks maintaining 112 BPM momentum
+# 1) Deep cello & bass foundation
+# 2) Continuous harmonic progression (acoustic piano + warm Rhodes) in A minor / D minor
+# 3) Expressive violin & marimba ostinatos
+# 4) Gentle shaker & clockwork percussion maintaining 108 BPM narrative pace
 
-BPM = 112.0
+BPM = 108.0
 beat_dur = 60.0 / BPM
 bar_dur = beat_dur * 4.0
 n_bars = int(np.ceil(DUR / bar_dur))
 
-# D Minor / G Dorian chord progression
-# Bar 0-3: Dm - F - C - Gm
-# Bar 4-7: Dm - Bb - C - A7sus
-roots = [50, 53, 48, 55, 50, 46, 48, 57] # MIDI notes (D3, F3, C3, G3, D3, Bb2, C3, A3)
+# Piano / Cello note synthesizer
+def note(f, dur, g=0.3, a=0.015, r=0.45, harm=[1.0, 0.5, 0.25, 0.12]):
+    t = tt(dur)
+    env = ex(t, a, r)
+    sig = np.zeros(len(t))
+    for idx, h_amp in enumerate(harm, 1):
+        sig += np.sin(2 * np.pi * f * idx * t) * h_amp
+    # Add subtle resonance
+    return sig * env * g
 
-def midi_to_freq(m): return 440.0 * (2.0 ** ((m - 69.0) / 12.0))
-
-# Pre-render musical layers
-music_raw = np.zeros((N, 2))
-
-# Layer 1: Pulse Bass
-for bar in range(n_bars):
-    t_bar = bar * bar_dur
-    root_m = roots[bar % len(roots)] - 12
-    freq = midi_to_freq(root_m)
-    for b in range(4):
-        t_note = t_bar + b * beat_dur
-        if t_note >= DUR - 2: break
-        # 8th note pulsing bass
-        for sub in [0.0, beat_dur * 0.5]:
-            t_sub = t_note + sub
-            t_len = beat_dur * 0.42
-            tt_arr = tt(t_len)
-            osc = np.sin(2 * np.pi * freq * tt_arr) + 0.35 * np.sin(2 * np.pi * freq * 2 * tt_arr)
-            env = ex(tt_arr, 0.005, 0.16)
-            b_sig = lp(osc * env * 0.32, 280)
-            put(music_raw, t_sub, st(b_sig, -0.05))
-
-# Layer 2: Harmonic Ostinato (Acoustic Piano / Rhodes)
-chords = [
-    [62, 65, 69], # Dm
-    [65, 69, 72], # F
-    [60, 64, 67], # C
-    [58, 62, 67], # Gm
-    [62, 65, 69], # Dm
-    [58, 62, 65], # Bb
-    [60, 64, 67], # C
-    [61, 64, 67], # A
+# Chord progression in A Minor / D Minor (Emotional historical grandeur)
+CHORDS = [
+    # Bar 0-3: Intro (A minor)
+    [220.0, 261.63, 329.63, 440.0],
+    [174.61, 220.0, 261.63, 349.23], # F major
+    [196.0, 246.94, 293.66, 392.0],  # G major
+    [220.0, 261.63, 329.63, 440.0],  # A minor
+    # Bar 4-7: Colonial 1820 & Trade (D minor progression)
+    [146.83, 220.0, 261.63, 293.66], # D minor
+    [174.61, 220.0, 261.63, 349.23], # F major
+    [164.81, 246.94, 329.63, 392.0], # E minor
+    [220.0, 261.63, 329.63, 440.0],  # A minor
+    # Bar 8-11: 1927 Climax Indonesia Raya (Grand D minor to F major)
+    [146.83, 220.0, 293.66, 349.23],
+    [174.61, 220.0, 261.63, 349.23],
+    [196.0, 246.94, 293.66, 392.0],
+    [220.0, 261.63, 329.63, 440.0],
+    # Bar 12-15: Masa Kini (Reflective, rhythmic pulse)
+    [220.0, 261.63, 329.63, 440.0],
+    [146.83, 220.0, 261.63, 293.66],
+    [174.61, 220.0, 261.63, 349.23],
+    [196.0, 246.94, 293.66, 392.0],
+    # Bar 16-19: Masa Depan (Soaring harmonic lift)
+    [220.0, 261.63, 329.63, 523.25], # Am
+    [174.61, 261.63, 329.63, 349.23], # Fmaj7
+    [196.0, 293.66, 392.0, 493.88],  # G
+    [220.0, 261.63, 329.63, 440.0],  # Am
+    # Bar 20+: Climax Pullback & Outro
+    [220.0, 261.63, 329.63, 440.0],
+    [220.0, 261.63, 329.63, 440.0]
 ]
 
-for bar in range(n_bars):
-    t_bar = bar * bar_dur
-    c_notes = chords[bar % len(chords)]
-    for idx, mn in enumerate(c_notes):
-        freq = midi_to_freq(mn)
-        # Broken arpeggio pattern: beat 0, 1.5, 2.5, 3.5
-        for b_off in [0.0, 1.5 * beat_dur, 2.5 * beat_dur]:
-            t_p = t_bar + b_off + (idx * 0.02)
-            if t_p >= DUR - 2: break
-            t_len = beat_dur * 1.8
-            tt_arr = tt(t_len)
-            osc = np.sin(2 * np.pi * freq * tt_arr) + 0.2 * np.sin(2 * np.pi * freq * 2.01 * tt_arr) + 0.08 * np.sin(2 * np.pi * freq * 3.02 * tt_arr)
-            env = ex(tt_arr, 0.004, 0.65)
-            p_sig = bp(osc * env * 0.22, 180, 4200)
-            put(music_raw, t_p, st(p_sig, 0.15 * (idx - 1)))
+music_raw = np.zeros((N, 2))
 
-# Layer 3: Muted Marimba & Science Clockwork Ostinato
-marimba_pat = [74, 69, 72, 74, 76, 74, 72, 69] # High D, A, C, D, E, D, C, A
-for bar in range(n_bars):
-    t_bar = bar * bar_dur
-    for i, mn in enumerate(marimba_pat):
-        t_m = t_bar + i * (beat_dur * 0.5)
-        if t_m >= DUR - 1.5: break
-        freq = midi_to_freq(mn)
-        t_len = 0.18
-        tt_arr = tt(t_len)
-        strike = noise(len(tt_arr)) * ex(tt_arr, 0.001, 0.012) * 0.4
-        tonal = np.sin(2 * np.pi * freq * tt_arr) * ex(tt_arr, 0.002, 0.07)
-        m_sig = (strike + tonal) * 0.24
-        pan = 0.35 if (i % 2 == 0) else -0.35
-        put(music_raw, t_m, st(m_sig, pan))
+for b in range(n_bars):
+    t_bar = b * bar_dur
+    if t_bar >= DUR - 1.0: break
+    chord = CHORDS[b % len(CHORDS)]
+    root = chord[0]
 
-# Layer 4: Shaker & Woodblock Rhythm
-for bar in range(n_bars):
-    t_bar = bar * bar_dur
-    for step in range(8):
-        t_s = t_bar + step * (beat_dur * 0.5)
-        if t_s >= DUR - 1.0: break
-        # Shaker tick
-        t_len = 0.05
-        shk = bp(noise(int(t_len * SR)), 4000, 11000) * ex(tt(t_len), 0.001, 0.018) * 0.14
-        put(music_raw, t_s, st(shk, 0.2))
-        # Woodblock syncopation on steps 2 and 6
-        if step in [2, 6]:
-            wb = np.sin(2 * np.pi * 920 * tt(0.06)) * ex(tt(0.06), 0.001, 0.015) * 0.18
-            put(music_raw, t_s, st(wb, -0.25))
+    # Layer 1: Warm Cello / Bass Foundation (Sustained bass note)
+    bass_sig = note(root / 2.0, bar_dur * 1.1, g=0.48, a=0.08, r=bar_dur * 0.8, harm=[1.0, 0.45, 0.15])
+    put(music_raw, t_bar, st(lp(bass_sig, 380), 0.0))
 
-# 4. Calibrated Music Mastering & Gentle Ducking (-3.5 dB during voiceovers)
-# Create voice envelope for ducking
+    # Layer 2: Harmonic Piano Chords on beats 0 and 2
+    for beat in [0, 2]:
+        t_beat = t_bar + beat * beat_dur
+        for f in chord:
+            ch_sig = note(f, beat_dur * 2.2, g=0.18, a=0.012, r=beat_dur * 1.8, harm=[1.0, 0.35, 0.12])
+            pan = (f - 260.0) / 400.0
+            put(music_raw, t_beat, st(ch_sig, np.clip(pan, -0.4, 0.4)))
+
+    # Layer 3: Syncopated Marimba / Celesta Arpeggios on 8th notes
+    for beat_sub in range(8):
+        t_sub = t_bar + beat_sub * (beat_dur / 2.0)
+        f_arp = chord[beat_sub % len(chord)] * (2.0 if beat_sub % 2 == 1 else 1.0)
+        mar_sig = note(f_arp, 0.35, g=0.14, a=0.003, r=0.18, harm=[1.0, 0.18, 0.06])
+        put(music_raw, t_sub, st(mar_sig, rng.uniform(-0.35, 0.35)))
+
+    # Layer 4: Percussion Clockwork Shaker (Subtle continuous groove)
+    for beat_sub in range(8):
+        t_sub = t_bar + beat_sub * (beat_dur / 2.0)
+        shk_t = tt(0.06)
+        shk_noise = hp(noise(len(shk_t)), 3500) * ex(shk_t, 0.002, 0.02) * (0.09 if beat_sub % 2 == 0 else 0.05)
+        put(music_raw, t_sub, st(shk_noise, 0.15))
+
+# 4. Master Mix Calibrations & Speech Ducking (-3.5 dB during voiceover)
 voice_env = lp(np.abs(voice_stem[:, 0]) + np.abs(voice_stem[:, 1]), 8.0)
 v_max = np.max(voice_env) if np.max(voice_env) > 0 else 1.0
 voice_norm = np.clip(voice_env / (v_max * 0.4), 0.0, 1.0)
@@ -375,5 +299,4 @@ if peak > 0.94:
 sf.write(OUT, final_mix, SR)
 os.makedirs('out', exist_ok=True)
 sf.write('out/mix.wav', final_mix, SR)
-print(f"Rendered {OUT} & out/mix.wav: duration {len(final_mix)/SR:.2f}s, peak {np.max(np.abs(final_mix)):.2f}")
-
+print(f"[OK] Master audio rendered: {OUT} & out/mix.wav (Duration: {len(final_mix)/SR:.2f}s, Peak: {np.max(np.abs(final_mix)):.2f})")

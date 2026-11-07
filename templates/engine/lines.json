@@ -1,98 +1,74 @@
 [
   {
     "id": "v01",
-    "text": "Setiap hari, miliaran jari kita menari di atas keyboard laptop dan layar kaca ponsel cerdas.",
-    "say": "Setiap hari, miliaran jari kita menari di atas keyboard laptop dan layar kaca ponsel cerdas.",
-    "role": "narrator"
+    "text": "Di tengah kepungan gedung pencakar langit kaca dan mal megah Jakarta, ada satu lorong waktu dua ratus tahun yang menolak mati: Passer Baroe.",
+    "say": "Di tengah kepungan gedung pencakar langit kaca dan mal megah Jakarta, ada satu lorong waktu dua ratus tahun yang menolak mati: Passer Baroe.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v02",
-    "text": "Namun pernahkah Anda heran, mengapa susunan hurufnya begitu acak dan huruf A diletakkan di bawah kelingking terlemah?",
-    "say": "Namun pernahkah Anda heran, mengapa susunan hurufnya begitu acak dan huruf A diletakkan di bawah kelingking terlemah?",
-    "role": "narrator"
-  },
-  {
-    "id": "b01",
-    "text": "Kenapa tidak berurutan saja seperti A-B-C-D?",
-    "say": "Kenapa tidak berurutan saja seperti A, B, C, D?",
-    "role": "character"
+    "text": "Tahun 1820, saat Gubernur Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan sebagai pusat perbelanjaan paling elite di Hindia Belanda.",
+    "say": "Tahun 1820, saat Gubernur Daendels memindahkan pusat Batavia ke Weltevreden, gerbang ini didirikan sebagai pusat perbelanjaan paling elite di Hindia Belanda.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v03",
-    "text": "Banyak orang percaya mitos bahwa keyboard sengaja dibuat lambat. Padahal faktanya justru kebalikan total.",
-    "say": "Banyak orang percaya mitos bahwa keyboard sengaja dibuat lambat. Padahal faktanya justru kebalikan total.",
-    "role": "narrator"
+    "text": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay dari India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
+    "say": "Bukan sekadar pasar biasa, ini adalah titik lebur peradaban: saudagar sutra Bombay dari India, perajin Tionghoa, dan elit Eropa bertransaksi di bawah satu atap.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v04",
-    "text": "Semua bermula dari krisis mekanis di bengkel Milwaukee tahun 1873, saat Christopher Latham Sholes merakit mesin tik pertama.",
-    "say": "Semua bermula dari krisis mekanis di bengkel Milwaukee tahun 1873, saat Christopher Latham Sholes merakit mesin tik pertama.",
-    "role": "narrator"
+    "text": "Dan tahukah Anda? Di lorong inilah sejarah bangsa bergetar. Tahun 1927, di Toko Populer Pasar Baru, piringan hitam lagu Indonesia Raya pertama kali direkam ke dunia.",
+    "say": "Dan tahukah Anda? Di lorong inilah sejarah bangsa bergetar. Tahun 1927, di Toko Populer Pasar Baru, piringan hitam lagu Indonesia Raya pertama kali direkam ke dunia.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v05",
-    "text": "Pada rancangan awal, batang-batang huruf dari logam menggantung melingkar di dalam keranjang besi di bawah kertas.",
-    "say": "Pada rancangan awal, batang-batang huruf dari logam menggantung melingkar di dalam keranjang besi di bawah kertas.",
-    "role": "narrator"
+    "text": "Dua abad berlalu. Saat raksasa e-commerce dan mal beton kaca menggulung ratusan toko, Pasar Baru tetap berdiri teguh.",
+    "say": "Dua abad berlalu. Saat raksasa e-commerce dan mal beton kaca menggulung ratusan toko, Pasar Baru tetap berdiri teguh.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v06",
-    "text": "Kelemahannya fatal: saat tombol ditekan cepat, tuas-tuas besi berdekatan berayun bersamaan, bertubrukan keras, dan macet total.",
-    "say": "Kelemahannya fatal: saat tombol ditekan cepat, tuas-tuas besi berdekatan berayun bersamaan, bertubrukan keras, dan macet total.",
-    "role": "narrator"
-  },
-  {
-    "id": "b02",
-    "text": "Tuasnya bertubrukan dan tersangkut lagi!",
-    "say": "Tuasnya bertubrukan dan tersangkut lagi!",
-    "role": "inventor"
+    "text": "Jiwa tempat ini tak bisa digantikan kurir instan: sentuhan jemari penjahit jas pusaka, detak rana kamera analog, hingga kepulan hangat semangkuk bakmi legendaris Gang Kelinci.",
+    "say": "Jiwa tempat ini tak bisa digantikan kurir instan: sentuhan jemari penjahit jas pusaka, detak rana kamera analog, hingga kepulan hangat semangkuk bakmi legendaris Gang Kelinci.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v07",
-    "text": "Untuk memecahkan kebuntuan ini, Sholes membedah frekuensi pasangan huruf yang paling sering diketik berurutan.",
-    "say": "Untuk memecahkan kebuntuan ini, Sholes membedah frekuensi pasangan huruf yang paling sering diketik berurutan.",
-    "role": "narrator"
+    "text": "Kini, lorong legendaris ini tidak berniat menua. Jakarta merajut wajah baru: pedestrian cagar budaya yang terintegrasi langsung dengan simpul modern MRT.",
+    "say": "Kini, lorong legendaris ini tidak berniat menua. Jakarta merajut wajah baru: pedestrian cagar budaya yang terintegrasi langsung dengan simpul modern MRT.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v08",
-    "text": "Kombinasi umum seperti T-H, S-T, dan E-R sengaja dipisahkan sejauh mungkin ke sisi keranjang yang berseberangan.",
-    "say": "Kombinasi umum seperti T-H, S-T, dan E-R sengaja dipisahkan sejauh mungkin ke sisi keranjang yang berseberangan.",
-    "role": "narrator"
+    "text": "Bukan disulap menjadi mal baru, melainkan bertransformasi menjadi distrik budaya 24 jam yang merawat memori kolektif tanpa kehilangan akar sejarahnya.",
+    "say": "Bukan disulap menjadi mal baru, melainkan bertransformasi menjadi distrik budaya 24 jam yang merawat memori kolektif tanpa kehilangan akar sejarahnya.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   },
   {
     "id": "v09",
-    "text": "Dengan posisi fisik yang berlawanan, tuas-tuas besi tidak lagi bertubrukan saat berayun ke pita tinta.",
-    "say": "Dengan posisi fisik yang berlawanan, tuas-tuas besi tidak lagi bertubrukan saat berayun ke pita tinta.",
-    "role": "narrator"
-  },
-  {
-    "id": "v10",
-    "text": "Susunan ini langsung diadopsi operator telegraf kode Morse yang membutuhkan pengetikan kilat tanpa pernah macet.",
-    "say": "Susunan ini langsung diadopsi operator telegraf kode Morse yang membutuhkan pengetikan kilat tanpa pernah macet.",
-    "role": "narrator"
-  },
-  {
-    "id": "v11",
-    "text": "Mesin tik Remington kemudian memproduksi tata letak QWERTY secara massal ke seluruh penjuru dunia.",
-    "say": "Mesin tik Remington kemudian memproduksi tata letak QWERTY secara massal ke seluruh penjuru dunia.",
-    "role": "narrator"
-  },
-  {
-    "id": "v12",
-    "text": "Kini di era modern, tidak ada lagi tuas besi maupun kabel yang bisa macet di balik kaca layar sentuh kita.",
-    "say": "Kini di era modern, tidak ada lagi tuas besi maupun kabel yang bisa macet di balik kaca layar sentuh kita.",
-    "role": "narrator"
-  },
-  {
-    "id": "v13",
-    "text": "Namun tata letak alternatif yang lebih efisien selalu gagal, karena miliaran jari manusia telah terikat memori otot permanen.",
-    "say": "Namun tata letak alternatif yang lebih efisien selalu gagal, karena miliaran jari manusia telah terikat memori otot permanen.",
-    "role": "narrator"
-  },
-  {
-    "id": "v14",
-    "text": "Sebuah solusi kemacetan mekanik tahun 1873, yang kini menjadi takdir digital jemari seluruh umat manusia.",
-    "say": "Sebuah solusi kemacetan mekanik tahun 1873, yang kini menjadi takdir digital jemari seluruh umat manusia.",
-    "role": "narrator"
+    "text": "Sebuah kota yang hebat tidak pernah meruntuhkan masa lalunya demi masa depan, melainkan menjaga denyutnya tetap hidup abadi.",
+    "say": "Sebuah kota yang hebat tidak pernah meruntuhkan masa lalunya demi masa depan, melainkan menjaga denyutnya tetap hidup abadi.",
+    "role": "narrator",
+    "voice": "id-ID-ArdiNeural",
+    "rate": "+6%"
   }
 ]

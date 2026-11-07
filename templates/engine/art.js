@@ -1547,3 +1547,737 @@ export function makeScatteredKeycap(letter = 'Q', hm = 0.032, isVintage = true) 
   return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.95 };
 }
 
+
+
+// ============================================================================
+// PASAR BARU (1820 - 2035+) PAPER CRAFT ASSETS & PROPS (PPM = 2000)
+// ============================================================================
+
+// 1. Neoclassical Colonial Gateway: Passer Baroe 1820 (Spread 0)
+export function makePasserBaroeGate(hm = 0.24) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Neoclassical Arch Gateway in warm antique colonial ivory and red brick
+  // Twin brick pillars
+  const pillarW = w * 0.18, pillarH = h * 0.72;
+  const leftX = w * 0.12, rightX = w * 0.70, baseY = h * 0.95;
+
+  // Brick pillars with mortar lines
+  [leftX, rightX].forEach(px => {
+    x.fillStyle = '#991b1b'; // weathered Batavia terracotta red brick
+    x.fillRect(px, baseY - pillarH, pillarW, pillarH);
+    // Classical stone base plinth
+    x.fillStyle = '#e2e8f0';
+    x.fillRect(px - 10, baseY - 35, pillarW + 20, 35);
+    x.strokeStyle = '#64748b'; x.lineWidth = 3; x.strokeRect(px - 10, baseY - 35, pillarW + 20, 35);
+    
+    // Brick mortar lines
+    x.strokeStyle = 'rgba(254, 243, 199, 0.4)'; x.lineWidth = 2;
+    for (let by = baseY - pillarH + 15; by < baseY - 35; by += 18) {
+      x.beginPath(); x.moveTo(px, by); x.lineTo(px + pillarW, by); x.stroke();
+    }
+    // Classical capital / cornice on pillar top
+    x.fillStyle = '#f1f5f9';
+    x.fillRect(px - 8, baseY - pillarH - 24, pillarW + 16, 24);
+    x.strokeStyle = '#475569'; x.lineWidth = 3; x.strokeRect(px - 8, baseY - pillarH - 24, pillarW + 16, 24);
+
+    // Wrought-iron gas lantern sconce on pillar
+    const lx = px + pillarW * 0.5, ly = baseY - pillarH * 0.55;
+    x.strokeStyle = '#1e293b'; x.lineWidth = 4;
+    x.beginPath(); x.moveTo(px + (px === leftX ? pillarW : 0), ly); x.lineTo(lx, ly - 20); x.stroke();
+    // Glowing lantern glass
+    const gLamp = x.createRadialGradient(lx, ly - 20, 4, lx, ly - 20, 24);
+    gLamp.addColorStop(0, '#fef08a'); gLamp.addColorStop(0.7, '#f59e0b'); gLamp.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    x.fillStyle = gLamp; x.beginPath(); x.arc(lx, ly - 20, 24, 0, TAU); x.fill();
+    x.fillStyle = '#fffbeb'; x.beginPath(); x.arc(lx, ly - 20, 8, 0, TAU); x.fill();
+    x.strokeRect(lx - 10, ly - 32, 20, 24);
+  });
+
+  // Central triumphal arch span
+  const archL = leftX + pillarW, archR = rightX, archW = archR - archL;
+  const archSpringY = baseY - pillarH + 10;
+  
+  // Arch masonry opening
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(archL, baseY);
+  x.lineTo(archL, archSpringY);
+  x.bezierCurveTo(archL + archW * 0.15, archSpringY - archW * 0.55, archR - archW * 0.15, archSpringY - archW * 0.55, archR, archSpringY);
+  x.lineTo(archR, baseY);
+  x.closePath();
+  // Spandrel wall above arch
+  x.fillStyle = '#f1f5f9';
+  x.fillRect(archL, baseY - pillarH - 24, archW, pillarH + 24 - (baseY - archSpringY));
+
+  // Massive Entablature and Classical Pediment
+  const entabY = baseY - pillarH - 75, entabH = 50;
+  x.fillStyle = '#e2e8f0';
+  x.fillRect(leftX - 20, entabY, (rightX + pillarW + 20) - (leftX - 20), entabH);
+  x.strokeStyle = '#334155'; x.lineWidth = 4;
+  x.strokeRect(leftX - 20, entabY, (rightX + pillarW + 20) - (leftX - 20), entabH);
+
+  // Triangular pediment on top
+  const pedimPeakY = entabY - 65;
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(leftX - 25, entabY);
+  x.lineTo(w * 0.5, pedimPeakY);
+  x.lineTo(rightX + pillarW + 25, entabY);
+  x.closePath();
+  x.fill();
+  x.stroke();
+
+  // Dutch Colonial Coat of Arms / Decorative Medallion in pediment
+  x.fillStyle = '#b45309';
+  x.beginPath(); x.arc(w * 0.5, entabY - 26, 20, 0, TAU); x.fill();
+  x.strokeStyle = '#d97706'; x.lineWidth = 3; x.stroke();
+  x.fillStyle = '#fef3c7'; x.font = '700 16px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('1820', w * 0.5, entabY - 26);
+
+  // Iconic Gold Carved Typography on Entablature: PASSER BAROE
+  x.fillStyle = '#92400e';
+  x.font = '900 32px "Lilita One"';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('PASSER  BAROE', w * 0.5, entabY + entabH * 0.52);
+
+  const out = finishCut(c, 10, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 2. Batavia Horse Carriage (Kretek 1820)
+export function makeHorseCarriage(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.75);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Ground baseline
+  const baseY = h * 0.92;
+
+  // Trotting Batavia Thoroughbred Horse (Right side)
+  const horseX = w * 0.68, horseY = baseY - 60;
+  x.fillStyle = '#78350f'; // rich chestnut brown
+  // Horse torso
+  x.beginPath();
+  x.ellipse(horseX, horseY - 30, 75, 42, -0.05, 0, TAU);
+  x.fill();
+  // Muscular neck & head
+  x.beginPath();
+  x.moveTo(horseX + 50, horseY - 45);
+  x.quadraticCurveTo(horseX + 85, horseY - 95, horseX + 110, horseY - 90);
+  x.quadraticCurveTo(horseX + 130, horseY - 75, horseX + 115, horseY - 55);
+  x.lineTo(horseX + 70, horseY - 20);
+  x.closePath();
+  x.fill();
+  // Ears
+  x.beginPath(); x.moveTo(horseX + 98, horseY - 92); x.lineTo(horseX + 104, horseY - 110); x.lineTo(horseX + 112, horseY - 92); x.fill();
+  // Flowing black mane & tail
+  x.fillStyle = '#1c1917';
+  x.beginPath(); x.moveTo(horseX - 70, horseY - 40); x.quadraticCurveTo(horseX - 110, horseY - 20, horseX - 95, horseY + 25); x.lineTo(horseX - 65, horseY - 25); x.fill();
+  // 4 Trot legs with black hooves
+  x.fillStyle = '#78350f';
+  [[-45, 10], [-15, 0], [35, 15], [60, -5]].forEach(([lx, ang]) => {
+    x.save();
+    x.translate(horseX + lx, horseY);
+    x.rotate(ang * Math.PI / 180);
+    x.fillRect(-7, 0, 14, 60);
+    x.fillStyle = '#1c1917';
+    x.fillRect(-8, 55, 16, 12);
+    x.fillStyle = '#78350f';
+    x.restore();
+  });
+  // Leather harness & reins
+  x.strokeStyle = '#451a03'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(horseX + 115, horseY - 70); x.lineTo(horseX - 100, horseY - 55); x.stroke();
+
+  // Elegant Lacquered Carriage Cabin (Left side)
+  const cabX = w * 0.12, cabY = baseY - 135, cabW = w * 0.42, cabH = 95;
+  // Wooden chassis curved bottom
+  x.fillStyle = '#1e1b4b'; // deep midnight lacquer
+  x.beginPath();
+  x.roundRect(cabX, cabY, cabW, cabH, [24, 24, 16, 16]);
+  x.fill();
+  x.strokeStyle = '#d97706'; x.lineWidth = 4; x.stroke();
+
+  // Glass oval window with warm amber glow
+  x.fillStyle = '#fef08a';
+  x.beginPath();
+  x.ellipse(cabX + cabW * 0.45, cabY + cabH * 0.42, 36, 26, 0, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#b45309'; x.lineWidth = 3; x.stroke();
+  // Window cross frame
+  x.beginPath(); x.moveTo(cabX + cabW * 0.45 - 36, cabY + cabH * 0.42); x.lineTo(cabX + cabW * 0.45 + 36, cabY + cabH * 0.42); x.stroke();
+  x.beginPath(); x.moveTo(cabX + cabW * 0.45, cabY + cabH * 0.42 - 26); x.lineTo(cabX + cabW * 0.45, cabY + cabH * 0.42 + 26); x.stroke();
+
+  // Driver Coachman Box with leather seat
+  x.fillStyle = '#451a03';
+  x.fillRect(cabX + cabW - 10, cabY + 25, 45, 45);
+  // Driver in colonial blangkon & beskap
+  x.fillStyle = '#d97706';
+  x.beginPath(); x.arc(cabX + cabW + 12, cabY + 10, 14, 0, TAU); x.fill();
+  x.fillStyle = '#78350f'; // blangkon
+  x.beginPath(); x.arc(cabX + cabW + 12, cabY + 5, 14, Math.PI, 0); x.fill();
+
+  // Brass carriage lantern
+  x.fillStyle = '#f59e0b';
+  x.fillRect(cabX - 18, cabY + 20, 16, 26);
+  x.strokeStyle = '#78350f'; x.lineWidth = 2.5; x.strokeRect(cabX - 18, cabY + 20, 16, 26);
+
+  // Large Spoked Wooden Carriage Wheels
+  [[cabX + 45, baseY - 45, 42], [cabX + cabW - 35, baseY - 38, 36]].forEach(([wx, wy, wr]) => {
+    // Outer wooden rim
+    x.fillStyle = '#b45309';
+    x.beginPath(); x.arc(wx, wy, wr, 0, TAU); x.fill();
+    x.fillStyle = '#fffdf7';
+    x.beginPath(); x.arc(wx, wy, wr - 8, 0, TAU); x.fill();
+    x.strokeStyle = '#451a03'; x.lineWidth = 4; x.stroke();
+    // Center brass axle hub
+    x.fillStyle = '#d97706';
+    x.beginPath(); x.arc(wx, wy, 10, 0, TAU); x.fill();
+    // 8 spokes
+    x.strokeStyle = '#78350f'; x.lineWidth = 3;
+    for (let a = 0; a < TAU; a += Math.PI / 4) {
+      x.beginPath(); x.moveTo(wx, wy); x.lineTo(wx + Math.cos(a) * (wr - 8), wy + Math.sin(a) * (wr - 8)); x.stroke();
+    }
+  });
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 3. 1927 Toko Populer Gramophone & Indonesia Raya Shellac Record (Spread 0)
+export function makeGramophoneRecord(hm = 0.18) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.25);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.92;
+
+  // Solid Polished Teak Wood Turntable Cabinet Base
+  const boxX = w * 0.18, boxY = baseY - 75, boxW = w * 0.64, boxH = 68;
+  x.fillStyle = '#78350f'; // dark aged teak
+  x.beginPath(); x.roundRect(boxX, boxY, boxW, boxH, 12); x.fill();
+  x.strokeStyle = '#451a03'; x.lineWidth = 4; x.stroke();
+
+  // Brass plaque on cabinet: "TOKO POPULER - PASSER BAROE 1927"
+  x.fillStyle = '#f59e0b';
+  x.fillRect(boxX + 25, boxY + boxH - 28, boxW - 50, 18);
+  x.strokeStyle = '#78350f'; x.lineWidth = 1.5; x.strokeRect(boxX + 25, boxY + boxH - 28, boxW - 50, 18);
+  x.fillStyle = '#451a03';
+  x.font = '700 11px "Lilita One"';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('TOKO POPULER  1927', boxX + boxW * 0.5, boxY + boxH - 18);
+
+  // Spinning Shellac Disc (Piringan Hitam 78 RPM)
+  const discCX = boxX + boxW * 0.42, discCY = boxY - 10, discRX = boxW * 0.44, discRY = 22;
+  // Black shellac body
+  x.fillStyle = '#0f172a';
+  x.beginPath();
+  x.ellipse(discCX, discCY, discRX, discRY, 0, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#334155'; x.lineWidth = 2.5; x.stroke();
+
+  // Concentric groove reflections
+  x.strokeStyle = 'rgba(255, 255, 255, 0.22)'; x.lineWidth = 1.2;
+  [0.85, 0.70, 0.55].forEach(scale => {
+    x.beginPath();
+    x.ellipse(discCX, discCY, discRX * scale, discRY * scale, 0, 0, TAU);
+    x.stroke();
+  });
+
+  // Red Circular Center Label: INDONESIA RAYA
+  x.fillStyle = '#b91c1c';
+  x.beginPath();
+  x.ellipse(discCX, discCY, discRX * 0.34, discRY * 0.34, 0, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#fef08a'; x.lineWidth = 1.5; x.stroke();
+  // Gold center text
+  x.fillStyle = '#fef3c7';
+  x.font = '900 10px "Lilita One"';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('INDONESIA RAYA', discCX, discCY);
+
+  // Spindle center hole
+  x.fillStyle = '#f8fafc';
+  x.beginPath(); x.arc(discCX, discCY, 3, 0, TAU); x.fill();
+
+  // Magnificent Flared Brass Acoustic Morning Glory Horn
+  const hornBaseX = boxX + boxW * 0.82, hornBaseY = boxY - 5;
+  const hornFlareX = boxX - 10, hornFlareY = boxY - 140, hornFlareR = 65;
+
+  // Brass Tone Arm connecting to record
+  x.strokeStyle = '#d97706'; x.lineWidth = 5;
+  x.beginPath();
+  x.moveTo(hornBaseX - 15, hornBaseY);
+  x.lineTo(hornBaseX - 35, hornBaseY - 25);
+  x.lineTo(discCX + 15, discCY - 2);
+  x.stroke();
+  // Soundbox & needle head
+  x.fillStyle = '#f59e0b';
+  x.beginPath(); x.arc(discCX + 15, discCY - 2, 8, 0, TAU); x.fill();
+  x.strokeStyle = '#1e293b'; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(discCX + 15, discCY - 2); x.lineTo(discCX + 12, discCY + 3); x.stroke();
+
+  // Flared Brass Horn Body
+  const gHorn = x.createLinearGradient(hornBaseX, hornBaseY, hornFlareX, hornFlareY);
+  gHorn.addColorStop(0, '#78350f');
+  gHorn.addColorStop(0.3, '#d97706');
+  gHorn.addColorStop(0.65, '#fef08a');
+  gHorn.addColorStop(1, '#b45309');
+
+  x.fillStyle = gHorn;
+  x.beginPath();
+  x.moveTo(hornBaseX, hornBaseY);
+  x.quadraticCurveTo(hornBaseX + 25, hornBaseY - 65, hornFlareX + 35, hornFlareY + 55);
+  // Horn opening flare ellipse
+  x.ellipse(hornFlareX, hornFlareY, hornFlareR, hornFlareR * 0.65, -0.4, 0, TAU);
+  x.quadraticCurveTo(hornBaseX - 25, hornBaseY - 80, hornBaseX - 15, hornBaseY);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#92400e'; x.lineWidth = 3; x.stroke();
+
+  // Horn Bell Rim highlight
+  x.strokeStyle = '#fef08a'; x.lineWidth = 4;
+  x.beginPath();
+  x.ellipse(hornFlareX, hornFlareY, hornFlareR, hornFlareR * 0.65, -0.4, 0, TAU);
+  x.stroke();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 4. Bespoke Textile & Silk Rolls with Tailor Scissors (Spread 1)
+export function makeTextileRolls(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.45);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.92;
+
+  // Stack of 4 Luxurious Fabric Rolls (Bombay Silk, Crimson Brocade, Indigo Batik, Saffron Satin)
+  const rolls = [
+    { col: '#047857', pat: '#065f46', rib: '#fef08a', y: baseY - 35, w: w * 0.88, h: 42 },
+    { col: '#b91c1c', pat: '#991b1b', rib: '#fbbf24', y: baseY - 70, w: w * 0.78, h: 40 },
+    { col: '#1e3a8a', pat: '#1e40af', rib: '#f8fafc', y: baseY - 105, w: w * 0.68, h: 38 },
+    { col: '#d97706', pat: '#b45309', rib: '#fef3c7', y: baseY - 138, w: w * 0.56, h: 36 }
+  ];
+
+  rolls.forEach((r, idx) => {
+    const rx = (w - r.w) * 0.5;
+    // Cylindrical roll body
+    x.fillStyle = r.col;
+    x.beginPath(); x.roundRect(rx, r.y, r.w, r.h, 16); x.fill();
+    x.strokeStyle = 'rgba(0,0,0,0.25)'; x.lineWidth = 2.5; x.stroke();
+
+    // Geometric pattern weaves on fabric
+    x.strokeStyle = r.pat; x.lineWidth = 3;
+    for (let fx = rx + 20; fx < rx + r.w - 20; fx += 28) {
+      x.beginPath(); x.moveTo(fx, r.y + 4); x.lineTo(fx + 12, r.y + r.h - 4); x.stroke();
+    }
+
+    // Gold ribbon tied around center
+    x.fillStyle = r.rib;
+    x.fillRect(rx + r.w * 0.5 - 12, r.y, 24, r.h);
+    x.strokeStyle = '#92400e'; x.lineWidth = 1.5; x.strokeRect(rx + r.w * 0.5 - 12, r.y, 24, r.h);
+
+    // Roll side circular fabric cylinder
+    x.fillStyle = r.pat;
+    x.beginPath();
+    x.ellipse(rx + 14, r.y + r.h * 0.5, 12, r.h * 0.42, 0, 0, TAU);
+    x.fill();
+    x.strokeStyle = '#fff'; x.lineWidth = 1.5; x.stroke();
+  });
+
+  // Tailor Yellow Measuring Tape draped over stack
+  x.strokeStyle = '#fef08a'; x.lineWidth = 8;
+  x.beginPath();
+  x.moveTo(w * 0.22, baseY - 145);
+  x.bezierCurveTo(w * 0.38, baseY - 110, w * 0.28, baseY - 60, w * 0.16, baseY - 10);
+  x.stroke();
+  // Tape black tick marks
+  x.strokeStyle = '#1e293b'; x.lineWidth = 2;
+  for (let ty = baseY - 140; ty < baseY - 10; ty += 12) {
+    x.beginPath(); x.moveTo(w * 0.26 - (ty % 20), ty); x.lineTo(w * 0.26 - (ty % 20) + 6, ty); x.stroke();
+  }
+
+  // Heavy Vintage Brass Tailor Shears / Scissors on foreground
+  const scX = w * 0.65, scY = baseY - 25;
+  x.strokeStyle = '#d97706'; x.lineWidth = 7;
+  // Blade 1
+  x.beginPath(); x.moveTo(scX - 35, scY + 10); x.lineTo(scX + 45, scY - 12); x.stroke();
+  // Blade 2
+  x.beginPath(); x.moveTo(scX - 35, scY - 10); x.lineTo(scX + 45, scY + 12); x.stroke();
+  // Brass finger finger loops
+  x.fillStyle = '#b45309';
+  x.beginPath(); x.arc(scX - 45, scY + 14, 15, 0, TAU); x.stroke();
+  x.beginPath(); x.arc(scX - 45, scY - 14, 15, 0, TAU); x.stroke();
+  // Center pivot screw
+  x.fillStyle = '#fef08a';
+  x.beginPath(); x.arc(scX, scY, 5, 0, TAU); x.fill();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 5. Vintage 35mm Mechanical Rangefinder Camera (Spread 1)
+export function makeVintageCamera(hm = 0.15) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.92;
+  const bodyX = w * 0.15, bodyY = baseY - 120, bodyW = w * 0.70, bodyH = 110;
+
+  // Camera Body - Matte Black Textured Leatherette
+  x.fillStyle = '#1e293b';
+  x.beginPath(); x.roundRect(bodyX, bodyY + 30, bodyW, bodyH - 30, 16); x.fill();
+  x.strokeStyle = '#0f172a'; x.lineWidth = 3; x.stroke();
+  // Fine leatherette stipple
+  x.fillStyle = 'rgba(255,255,255,0.06)';
+  for (let py = bodyY + 35; py < bodyY + bodyH - 5; py += 6) {
+    for (let px = bodyX + 8; px < bodyX + bodyW - 8; px += 8) {
+      x.fillRect(px, py, 2, 2);
+    }
+  }
+
+  // Brushed Satin Chrome Top Plate
+  x.fillStyle = '#e2e8f0';
+  x.beginPath(); x.roundRect(bodyX, bodyY, bodyW, 35, [14, 14, 4, 4]); x.fill();
+  x.strokeStyle = '#94a3b8'; x.lineWidth = 3; x.stroke();
+
+  // Rangefinder Viewfinder Windows
+  x.fillStyle = '#0284c7';
+  x.fillRect(bodyX + 22, bodyY + 8, 22, 16);
+  x.strokeStyle = '#0f172a'; x.lineWidth = 2; x.strokeRect(bodyX + 22, bodyY + 8, 22, 16);
+  x.fillStyle = '#38bdf8';
+  x.fillRect(bodyX + bodyW - 48, bodyY + 8, 18, 16);
+  x.strokeRect(bodyX + bodyW - 48, bodyY + 8, 18, 16);
+
+  // Chrome Shutter Button & Dial Knobs on top
+  x.fillStyle = '#cbd5e1';
+  x.fillRect(bodyX + 55, bodyY - 14, 18, 15); // Shutter button
+  x.fillRect(bodyX + bodyW - 35, bodyY - 18, 26, 19); // Shutter speed dial
+  x.strokeStyle = '#475569'; x.lineWidth = 2;
+  x.strokeRect(bodyX + 55, bodyY - 14, 18, 15);
+  x.strokeRect(bodyX + bodyW - 35, bodyY - 18, 26, 19);
+
+  // Prominent Precision Lens Barrel in Center
+  const lensCX = bodyX + bodyW * 0.5, lensCY = bodyY + 68;
+  // Chrome outer bezel
+  x.fillStyle = '#94a3b8';
+  x.beginPath(); x.arc(lensCX, lensCY, 48, 0, TAU); x.fill();
+  x.strokeStyle = '#475569'; x.lineWidth = 3; x.stroke();
+
+  // Aperture calibration ring with white tick marks
+  x.fillStyle = '#0f172a';
+  x.beginPath(); x.arc(lensCX, lensCY, 42, 0, TAU); x.fill();
+  x.strokeStyle = '#f8fafc'; x.lineWidth = 1.5;
+  for (let a = 0; a < TAU; a += Math.PI / 6) {
+    x.beginPath(); x.moveTo(lensCX + Math.cos(a) * 38, lensCY + Math.sin(a) * 38); x.lineTo(lensCX + Math.cos(a) * 42, lensCY + Math.sin(a) * 42); x.stroke();
+  }
+
+  // Deep Glass Optics with Cyan Anti-Reflective Coating Reflection
+  const gLens = x.createRadialGradient(lensCX - 8, lensCY - 8, 4, lensCX, lensCY, 32);
+  gLens.addColorStop(0, '#38bdf8');
+  gLens.addColorStop(0.5, '#0369a1');
+  gLens.addColorStop(1, '#082f49');
+  x.fillStyle = gLens;
+  x.beginPath(); x.arc(lensCX, lensCY, 32, 0, TAU); x.fill();
+
+  // Specular curved glare arc
+  x.strokeStyle = 'rgba(255, 255, 255, 0.75)'; x.lineWidth = 3.5;
+  x.beginPath();
+  x.arc(lensCX, lensCY, 24, -Math.PI * 0.75, -Math.PI * 0.25);
+  x.stroke();
+
+  // Classic Brown Leather Neck Strap drooping at sides
+  x.strokeStyle = '#92400e'; x.lineWidth = 6;
+  x.beginPath();
+  x.moveTo(bodyX, bodyY + 45);
+  x.bezierCurveTo(bodyX - 25, bodyY + 75, bodyX - 15, baseY, bodyX + 20, baseY);
+  x.stroke();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 6. Legendary Gang Kelinci Steaming Noodle Bowl (Spread 1)
+export function makeGangKelinciNoodles(hm = 0.14) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.35);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.92;
+  const bowlCX = w * 0.5, bowlCY = baseY - 50, bowlRX = w * 0.38, bowlRY = 24;
+
+  // Traditional Porcelain Bowl (Classic Chinese Batavia Blue-White pattern)
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(bowlCX - bowlRX, bowlCY);
+  x.bezierCurveTo(bowlCX - bowlRX * 0.85, baseY, bowlCX + bowlRX * 0.85, baseY, bowlCX + bowlRX, bowlCY);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#1e3a8a'; x.lineWidth = 4; x.stroke();
+
+  // Blue decorative floral band around rim
+  x.fillStyle = '#2563eb';
+  x.fillRect(bowlCX - bowlRX + 8, bowlCY - 2, bowlRX * 2 - 16, 8);
+
+  // Broth surface inside bowl
+  x.fillStyle = '#fef08a';
+  x.beginPath();
+  x.ellipse(bowlCX, bowlCY, bowlRX, bowlRY, 0, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#ca8a04'; x.lineWidth = 3; x.stroke();
+
+  // Curly Golden Egg Noodles
+  x.strokeStyle = '#eab308'; x.lineWidth = 4.5;
+  for (let n = 0; n < 8; n++) {
+    const nx = bowlCX - bowlRX * 0.7 + n * 18, ny = bowlCY - 6;
+    x.beginPath();
+    x.moveTo(nx, ny);
+    x.bezierCurveTo(nx + 10, ny - 14, nx - 8, ny + 12, nx + 14, ny - 2);
+    x.stroke();
+  }
+
+  // Savory Braised Chicken Cubes
+  x.fillStyle = '#b45309';
+  [[bowlCX - 25, bowlCY - 8], [bowlCX - 5, bowlCY - 14], [bowlCX + 15, bowlCY - 6]].forEach(([cx, cy]) => {
+    x.beginPath(); x.roundRect(cx, cy, 18, 14, 4); x.fill();
+    x.strokeStyle = '#78350f'; x.lineWidth = 1.5; x.stroke();
+  });
+
+  // Fresh Green Bok Choy Leaves
+  x.fillStyle = '#16a34a';
+  x.beginPath();
+  x.ellipse(bowlCX + 35, bowlCY - 5, 22, 10, -0.3, 0, TAU);
+  x.fill();
+  x.strokeStyle = '#15803d'; x.lineWidth = 2; x.stroke();
+
+  // Golden Crispy Fried Shallots & Scallions sprinkled
+  x.fillStyle = '#d97706';
+  for (let s = 0; s < 12; s++) {
+    x.fillRect(bowlCX - 30 + (s * 7) % 60, bowlCY - 12 + (s * 5) % 18, 4, 3);
+  }
+
+  // Bamboo Chopsticks resting across rim
+  x.strokeStyle = '#92400e'; x.lineWidth = 4;
+  x.beginPath(); x.moveTo(bowlCX - bowlRX - 15, bowlCY - 12); x.lineTo(bowlCX + bowlRX + 25, bowlCY + 4); x.stroke();
+  x.beginPath(); x.moveTo(bowlCX - bowlRX - 15, bowlCY - 6); x.lineTo(bowlCX + bowlRX + 25, bowlCY + 10); x.stroke();
+
+  // Soft Translucent Curving Steam Wisps rising
+  x.strokeStyle = 'rgba(255, 255, 255, 0.65)'; x.lineWidth = 4;
+  x.lineCap = 'round';
+  [bowlCX - 25, bowlCX, bowlCX + 25].forEach((sx, idx) => {
+    x.beginPath();
+    x.moveTo(sx, bowlCY - 15);
+    x.bezierCurveTo(sx - 15, bowlCY - 45, sx + 20, bowlCY - 75, sx - 5, bowlCY - 105 - idx * 10);
+    x.stroke();
+  });
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 7. Cyber-Heritage Smart Glass Arcade Canopy (Spread 2)
+export function makeFutureArcade(hm = 0.24) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.45);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.95;
+
+  // Ultra-modern Sweeping Parametric Kinetic Canopy Pillars
+  const leftX = w * 0.12, rightX = w * 0.72, pillarW = w * 0.16, pillarH = h * 0.75;
+  [leftX, rightX].forEach(px => {
+    // Sleek titanium white & brushed bronze composite column
+    x.fillStyle = '#0f172a';
+    x.fillRect(px, baseY - pillarH, pillarW, pillarH);
+    x.strokeStyle = '#06b6d4'; x.lineWidth = 3; x.strokeRect(px, baseY - pillarH, pillarW, pillarH);
+
+    // Glowing cyan vertical smart LED ribbon
+    x.fillStyle = '#06b6d4';
+    x.fillRect(px + pillarW * 0.5 - 3, baseY - pillarH + 15, 6, pillarH - 30);
+  });
+
+  // Kinetic Glass & Solar Hexagonal Lattice Arch
+  const archL = leftX + pillarW, archR = rightX, archW = archR - archL;
+  const archSpringY = baseY - pillarH + 20;
+
+  // Translucent Solar Glass Dome
+  const gGlass = x.createLinearGradient(archL, baseY - pillarH - 80, archR, archSpringY);
+  gGlass.addColorStop(0, 'rgba(6, 182, 212, 0.35)');
+  gGlass.addColorStop(0.5, 'rgba(59, 130, 246, 0.25)');
+  gGlass.addColorStop(1, 'rgba(236, 72, 153, 0.15)');
+
+  x.fillStyle = gGlass;
+  x.beginPath();
+  x.moveTo(archL, archSpringY);
+  x.bezierCurveTo(archL + archW * 0.2, baseY - pillarH - 90, archR - archW * 0.2, baseY - pillarH - 90, archR, archSpringY);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#38bdf8'; x.lineWidth = 4; x.stroke();
+
+  // Smart Hexagonal Photovoltaic Grid
+  x.strokeStyle = 'rgba(255, 255, 255, 0.45)'; x.lineWidth = 2;
+  for (let hx = archL + 25; hx < archR - 25; hx += 35) {
+    x.beginPath();
+    x.moveTo(hx, archSpringY - 10);
+    x.lineTo(hx + 15, baseY - pillarH - 45);
+    x.stroke();
+  }
+
+  // Floating Holographic Signage: PASAR BARU 2035+
+  const signY = baseY - pillarH - 25;
+  x.fillStyle = 'rgba(15, 23, 42, 0.85)';
+  x.beginPath(); x.roundRect(w * 0.5 - 130, signY - 22, 260, 44, 12); x.fill();
+  x.strokeStyle = '#06b6d4'; x.lineWidth = 2.5; x.stroke();
+
+  x.fillStyle = '#38bdf8';
+  x.font = '900 18px "Lilita One"';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('PASAR BARU  2035+', w * 0.5, signY);
+
+  const out = finishCut(c, 10, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 8. Elevated High-Speed MRT Jakarta Train (Spread 2)
+export function makeSkyMrtTrain(hm = 0.16) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 2.2);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  const baseY = h * 0.90;
+
+  // Concrete Elevated Viaduct Rail Beam
+  const viaductY = baseY - 35, viaductH = 30;
+  x.fillStyle = '#64748b';
+  x.fillRect(0, viaductY, w, viaductH);
+  x.strokeStyle = '#334155'; x.lineWidth = 3; x.strokeRect(0, viaductY, w, viaductH);
+  // Power rail line
+  x.strokeStyle = '#38bdf8'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(0, viaductY - 3); x.lineTo(w, viaductY - 3); x.stroke();
+
+  // Aerodynamic MRT Jakarta Train Car (Crisp White + MRT Navy Blue Livery)
+  const trainX = w * 0.08, trainY = viaductY - 75, trainW = w * 0.84, trainH = 72;
+
+  // Streamlined Train Body with bullet nose on right
+  x.fillStyle = '#f8fafc';
+  x.beginPath();
+  x.moveTo(trainX, trainY + trainH);
+  x.lineTo(trainX, trainY + 12);
+  x.roundRect(trainX, trainY, trainW - 40, trainH, [16, 0, 0, 0]);
+  // Aerodynamic nose slope
+  x.bezierCurveTo(trainX + trainW - 20, trainY + 10, trainX + trainW, trainY + 35, trainX + trainW, trainY + trainH);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#cbd5e1'; x.lineWidth = 3; x.stroke();
+
+  // MRT Jakarta Signature Navy & Cyan Stripe
+  x.fillStyle = '#1e3a8a';
+  x.fillRect(trainX, trainY + trainH - 24, trainW - 8, 12);
+  x.fillStyle = '#06b6d4';
+  x.fillRect(trainX, trainY + trainH - 12, trainW - 5, 8);
+
+  // Tinted Panoramic Cabin Windows with interior lighting
+  const winY = trainY + 15, winH = 26;
+  for (let wx = trainX + 25; wx < trainX + trainW - 65; wx += 52) {
+    x.fillStyle = '#0f172a';
+    x.beginPath(); x.roundRect(wx, winY, 38, winH, 6); x.fill();
+    // Warm interior passenger glow
+    x.fillStyle = '#fef08a';
+    x.fillRect(wx + 4, winY + 4, 30, 4);
+    x.strokeStyle = '#38bdf8'; x.lineWidth = 1.5; x.strokeRect(wx, winY, 38, winH, 6);
+  }
+  // Front driver windshield
+  x.fillStyle = '#0f172a';
+  x.beginPath();
+  x.moveTo(trainX + trainW - 35, winY);
+  x.lineTo(trainX + trainW - 8, winY + 18);
+  x.lineTo(trainX + trainW - 14, winY + winH);
+  x.lineTo(trainX + trainW - 35, winY + winH);
+  x.closePath();
+  x.fill();
+  x.strokeStyle = '#38bdf8'; x.lineWidth = 2; x.stroke();
+
+  // High-intensity front LED headlights
+  x.fillStyle = '#fef08a';
+  x.beginPath(); x.arc(trainX + trainW - 12, trainY + trainH - 18, 6, 0, TAU); x.fill();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 9. Weltevreden 1820 Daendels Commemorative Plaque (Spread 0)
+export function makeDaendelsPlaque(hm = 0.14) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 1.3);
+  const c = cv(w, h), x = c.getContext('2d');
+
+  // Antique Carved Brass Plaque on Dark Colonial Marble
+  x.fillStyle = '#1e293b'; // Belgian dark marble
+  x.beginPath(); x.roundRect(20, 20, w - 40, h - 40, 16); x.fill();
+  x.strokeStyle = '#d97706'; x.lineWidth = 5; x.stroke();
+
+  // Inner ornate brass border
+  x.strokeStyle = '#f59e0b'; x.lineWidth = 2.5;
+  x.strokeRect(32, 32, w - 64, h - 64);
+
+  // 4 corner rosette studs
+  [[32, 32], [w - 32, 32], [32, h - 32], [w - 32, h - 32]].forEach(([sx, sy]) => {
+    x.fillStyle = '#fef08a'; x.beginPath(); x.arc(sx, sy, 6, 0, TAU); x.fill();
+    x.strokeStyle = '#b45309'; x.lineWidth = 2; x.stroke();
+  });
+
+  // Engraved Colonial Inscription
+  x.fillStyle = '#fef3c7';
+  x.font = '700 18px "Lilita One"';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('WELTEVREDEN  1820', w * 0.5, h * 0.38);
+
+  x.font = '400 12px "Fredoka"';
+  x.fillStyle = '#cbd5e1';
+  x.fillText('GOUVERNEUR-GENERAAL DAENDELS', w * 0.5, h * 0.54);
+  x.fillText('PASSER BAROE - BATAVIA', w * 0.5, h * 0.68);
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}
+
+// 10. Smart Pedestrian Transit Information Kiosk (Spread 2)
+export function makeSmartKiosk(hm = 0.17) {
+  const h = Math.round(hm * PPM), w = Math.round(h * 0.9);
+  const c = cv(w, h), x = c.getContext('2d');
+  const baseY = h * 0.94;
+
+  const totemW = w * 0.65, totemH = h * 0.85;
+  const totemX = (w - totemW) * 0.5, totemY = baseY - totemH;
+
+  x.fillStyle = '#0f172a';
+  x.beginPath(); x.roundRect(totemX, totemY, totemW, totemH, 20); x.fill();
+  x.strokeStyle = '#06b6d4'; x.lineWidth = 3.5; x.stroke();
+
+  const scrX = totemX + 16, scrY = totemY + 24, scrW = totemW - 32, scrH = totemH * 0.68;
+  x.fillStyle = '#020617';
+  x.beginPath(); x.roundRect(scrX, scrY, scrW, scrH, 12); x.fill();
+  x.strokeStyle = '#38bdf8'; x.lineWidth = 2; x.stroke();
+
+  x.strokeStyle = '#06b6d4'; x.lineWidth = 4;
+  x.beginPath();
+  x.moveTo(scrX + 20, scrY + scrH * 0.78);
+  x.lineTo(scrX + scrW * 0.45, scrY + scrH * 0.5);
+  x.lineTo(scrX + scrW - 20, scrY + scrH * 0.25);
+  x.stroke();
+
+  [[scrX + 20, scrY + scrH * 0.78, '#38bdf8'], [scrX + scrW * 0.45, scrY + scrH * 0.5, '#f59e0b'], [scrX + scrW - 20, scrY + scrH * 0.25, '#10b981']].forEach(([dx, dy, col]) => {
+    x.fillStyle = col; x.beginPath(); x.arc(dx, dy, 7, 0, TAU); x.fill();
+    x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke();
+  });
+
+  x.fillStyle = '#38bdf8';
+  x.font = '700 14px "Lilita One"'; x.textAlign = 'center';
+  x.fillText('MRT PASAR BARU', scrX + scrW * 0.5, scrY + 30);
+  x.fillStyle = '#94a3b8';
+  x.font = '500 11px "Fredoka"';
+  x.fillText('NEXT TRAIN: 2 MIN', scrX + scrW * 0.5, scrY + 52);
+
+  x.fillStyle = '#06b6d4';
+  x.beginPath(); x.arc(totemX + totemW * 0.5, totemY + totemH - 35, 16, 0, TAU); x.fill();
+  x.strokeStyle = '#e0f2fe'; x.lineWidth = 2; x.stroke();
+
+  const out = finishCut(c, 8, { paper: '#fffdf7', edge: '#b9ad9c' });
+  return { c: out, w: w / PPM, h: hm, ax: 0.5, ay: 0.98 };
+}

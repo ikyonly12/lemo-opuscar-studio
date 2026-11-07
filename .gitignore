@@ -5,3 +5,8 @@ export/
 *.lock
 *.log
 
+templates/engine/assets/
+templates/engine/fonts/
+templates/engine/out/
+templates/engine/stills/
+templates/engine/voices/.cache/
